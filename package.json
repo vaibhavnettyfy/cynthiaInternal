@@ -1,0 +1,31 @@
+{
+  "name": "cynthia",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.8",
+    "@mui/material": "^5.14.8",
+    "@mui/styles": "^5.14.7",
+    "@supabase/supabase-js": "^2.38.0",
+    "axios": "^1.5.1",
+    "dotenv": "^16.3.1",
+    "formik": "^2.4.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "next": "latest",
+    "papaparse": "^5.4.1",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-toastify": "^9.1.3",
+    "universal-cookie": "^6.1.1",
+    "yup": "^1.3.2"
+  }
+}
