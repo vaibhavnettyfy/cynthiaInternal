@@ -122,13 +122,13 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
         .from("summary_feedback")
         .select("*")
         .eq("user_id", userId)
-        .eq("query",text)
+        .eq("query",querryTopic)
         .eq("file_id", fId)
       : await supabase
         .from("summary_feedback")
         .select("*")
         .eq("organization_id", orgId)
-        .eq("query",text)
+        .eq("query",querryTopic)
         .eq("file_id", fId)
     if (!error) {
         console.log("data-----*",data);
@@ -175,7 +175,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     // setLikeFlag(!likeFlag);
     // setDisLike(!disLike);
      setLikeFlag(true);
-  setDisLike(false);
+     setDisLike(false);
     const payload = {
       user_id: userId,
       organization_id: null,
@@ -195,12 +195,14 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
           .from("summary_feedback")
           .select("*")
           .eq("user_id", userId)
-          .eq("file_id", fileId)
+          .eq("query",querryTopic)
+          .eq("file_id", FILEID)
         : await supabase
           .from("summary_feedback")
           .select("*")
           .eq("organization_id", orgId)
-          .eq("file_id", fileId)
+          .eq("query",querryTopic)
+          .eq("file_id", FILEID)
 
 
     if (!error) {
@@ -241,14 +243,14 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
           .from("summary_feedback")
           .select("*")
           .eq("user_id", userId)
-          .eq("query",text)
-          .eq("file_id", fileId)
+          .eq("query",querryTopic)
+          .eq("file_id", FILEID)
         : await supabase
           .from("summary_feedback")
           .select("*")
           .eq("organization_id", orgId)
-          .eq("query",text)
-          .eq("file_id", fileId)
+          .eq("query",querryTopic)
+          .eq("file_id", FILEID)
 
     if (!error) {
       const existingFeedback = data

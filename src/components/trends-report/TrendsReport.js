@@ -191,7 +191,7 @@ const TrendsReport = () => {
     switch (selectedTab) {
       case 0:
         if(topFeedBack){
-          return <ReportDetails data={TopFeedBackDetails}  name="Top FeedBack"/>;
+          return <ReportDetails data={TopFeedBackDetails}  name="Top Feedback"/>;
         }
         return null;
       case 1:

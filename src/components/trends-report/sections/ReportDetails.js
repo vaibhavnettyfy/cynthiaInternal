@@ -140,7 +140,7 @@ const ReportDetails = ({ data,name }) => {
                           }}
                           size={90}
                           thickness={5}
-                          value={res.neutral_percentage}
+                          value={res.percentage_count}
                         />
                       </Box>
                       <Typography

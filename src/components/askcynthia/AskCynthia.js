@@ -133,6 +133,7 @@ const AskCynthia = () => {
       localStorage.setItem("fileNumber", fileNumber);
       localStorage.setItem("fileName", child.props.orgFileName);
     }
+    console.log("1");
     setFileId(fileNumber);
     setFileName(child.props.orgFileName);
     // based on select file we will fecth data saved_queries Table (fileid)
@@ -145,7 +146,8 @@ const AskCynthia = () => {
   const sourceDataHandler = async (source) => {
     try {
       // we are doing fileId null because they selecting new source
-      setFileId(null);
+      console.log("2");
+      // setFileId(null);
       const { data, error } = await supabase
         .from("csv_files")
         .select("*")
@@ -155,12 +157,14 @@ const AskCynthia = () => {
         console.log("error", error);
       } else {
         setSourceList(data);
-
-        if (!fileId && data.length > 0) {
+        console.log("fileID===>fileID",fileId);
+        const userFileId = localStorage.getItem("fileNumber")
+        if (!userFileId && data.length > 0) {
           if (typeof window !== "undefined") {
             localStorage.setItem("fileNumber", data[0].id)
             localStorage.setItem("fileName", data[0].original_filename)
             localStorage.setItem("fileId", data[0].id);
+            console.log("3");
             setFileId(data[0].id);
             setFileName(data[0].original_filename);
             saveQuerryHandler(data[0].id);
@@ -212,6 +216,7 @@ const AskCynthia = () => {
       sourceDataHandler(selectSource);
     }
     if (localStorage.getItem("fileNumber")) {
+      console.log("4")
       setFileId(localStorage.getItem("fileNumber"));
       saveQuerryHandler(localStorage.getItem("fileNumber"));
     }
