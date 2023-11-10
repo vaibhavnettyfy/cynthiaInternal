@@ -19,19 +19,20 @@ export default function RootLayout({ children }) {
         <ThemeRegistry options={{ key: 'mui' }}>
             <Box sx={{
                 display: 'flex', height: '100vh',
-                width: '100vw'
+                width: '100vw',
             }}>
                 <Box
                     component="nav"
-                    sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+                    sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 },zIndex: '9999' }}
                     aria-label="mailbox folders"
                 >
                     <Drawer
                         variant="permanent"
                         sx={{
                             display: { xs: 'block' },
-                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                            '& .MuiDrawer-paper': { backgroundColor: 'black' },
+                            '& .MuiDrawer-root': {  },
+                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, zIndex: '9999' },
+                            '& .MuiDrawer-paper': { backgroundColor: 'black', },
                         }}
                     >
                         <Sidebar handleDrawerToggle={handleDrawerToggle} />

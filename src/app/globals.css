@@ -177,6 +177,10 @@ a:hover {
   border: 1.5px solid #fff !important;
 }
 
+.select_csv .MuiList-root{
+ max-height: 220px !important;
+}
+
 /* :root {
   --orange-a7: #ed6c008c !important;
   --pink-a7: #b6006f53 !important;

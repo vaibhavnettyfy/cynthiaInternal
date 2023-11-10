@@ -70,7 +70,14 @@ export default function WithAuth(Component) {
             }
         }
       };
-      checkSubscription();
+      let accessToken = "";
+        accessToken = localStorage.getItem("accessToken");
+        console.log(accessToken);
+        if(accessToken){
+          checkSubscription();
+        }else{
+          window.location.href = "/";
+        }
     }, []);
 
     return (

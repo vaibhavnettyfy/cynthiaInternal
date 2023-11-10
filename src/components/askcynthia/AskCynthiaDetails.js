@@ -22,46 +22,65 @@ import WithAuth from "../WithAuth";
 import { useRouter } from "next/navigation";
 import Skeleton from "@mui/material/Skeleton";
 import CommonButton from "../common/Button";
-import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 
-function AskCynthiaDetails() {
+function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
+  console.log("querryId",querryId);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const queryId = searchParams.get("id");
+  // const queryId = searchParams.get("id");
   const [jsonData, setJsonData] = useState(null);
   const [subTopics, setSubTopics] = useState(null);
   const [fileId, setFileId] = useState("");
   const [dataNotFound, setDataNotFound] = useState(false);
-  const [likeFlag,setLikeFlag] = useState(false);
-  const [disLike,setDisLike] = useState(false);
+  const [likeFlag, setLikeFlag] = useState(false);
+  const [disLike, setDisLike] = useState(false);
+  const [likeShow,setLikeShow] = useState(false);
 
-  const divRef = useRef(null);
 
   let userRole = "";
   let userId = "";
   let orgId = "";
+  let FILEID = ""
 
+  const divRef = useRef(null);
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     userRole = localStorage.getItem("userRole");
     userId = localStorage.getItem("userId");
     orgId = localStorage.getItem("orgId");
+    FILEID = localStorage.getItem("fileId")
   }
-  // const [subTopicSummary,setSubTopicSummary] = useState([]);
+
+  const backHandler = () =>{
+    console.log("--------1111111");
+    detailFlag();
+  }
 
   useEffect(() => {
-    if (queryId) {
-      getQuerryDataById();
+    console.log("------>querryId",querryId);
+    if (querryId) {
+      getQuerryDataById(querryId);
     }
   }, []);
 
-  const getQuerryDataById = async () => {
+  console.log("querryDetails",querryDetails);
+
+  useEffect(()=>{
+    if(querryDetails){
+      dataDisplay(querryDetails);
+    }
+  },[querryDetails]);
+
+  const getQuerryDataById = async (id) => {
+    console.log("----Id--getQuerryDataById",id)
     const { data, error } = await supabase
       .from("saved_queries")
       .select("*")
-      .eq("id", queryId);
-    setFileId(data[0].file_id)
+      .eq("id", id);
+      console.log("data",data);
+    setFileId( data[0].file_id);
     const response = data[0].response;
     const parsedData = JSON.parse(response);
     if (data && data.length > 0) {
@@ -74,9 +93,55 @@ function AskCynthiaDetails() {
           sub_topic_summary: parsedData?.sub_topic_summary,
         });
         subTopicHandler(parsedData?.sub_topic_summary);
+        likeDislikeCheckHandler(data[0].file_id,parsedData?.query);
+
       } else {
         setDataNotFound(true);
       }
+    }
+  };
+
+
+  const dataDisplay = (response) =>{
+    const parsedData = JSON.parse(response);
+    console.log("ParsedData---->>>",parsedData);
+    setJsonData({
+      query: parsedData?.query,
+      main_topic: parsedData?.main_topic,
+      summary: parsedData?.summary,
+      docs: parsedData?.docs,
+      sub_topic_summary: parsedData?.sub_topic_summary,
+    });
+    subTopicHandler(parsedData?.sub_topic_summary);
+    likeDislikeCheckHandler(FILEID,parsedData?.query)
+  }
+
+  const likeDislikeCheckHandler = async (fId,text) => {
+    const { data, error } = userRole === "individual"
+      ? await supabase
+        .from("summary_feedback")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("query",text)
+        .eq("file_id", fId)
+      : await supabase
+        .from("summary_feedback")
+        .select("*")
+        .eq("organization_id", orgId)
+        .eq("query",text)
+        .eq("file_id", fId)
+    if (!error) {
+        console.log("data-----*",data);
+        if(data && data.length > 0) {
+          if(data[0].feedback) {
+            if (data[0].feedback === "Dislike") {
+              setDisLike(true);
+            } else {
+              setLikeFlag(true);
+            }
+          }
+        }
+        // console.log("data[0].feedback",data[0].feedback);
     }
   };
 
@@ -107,246 +172,357 @@ function AskCynthiaDetails() {
   };
 
   const likeHandler = async (res) => {
-    setLikeFlag(!likeFlag);
+    // setLikeFlag(!likeFlag);
+    // setDisLike(!disLike);
+     setLikeFlag(true);
+  setDisLike(false);
     const payload = {
       user_id: userId,
       organization_id: null,
-      file_id: fileId,
-      query: res.query,
+      file_id: fileId || FILEID,
+      query: querryTopic,
       feedback: "Like",
-      summary_response: res.summary
-    }
+      summary_response: res.summary,
+    };
 
     if (userRole !== "individual") {
-      payload.organization_id = orgId
+      payload.organization_id = orgId;
     }
 
+    const { data, error } =
+      userRole === "individual"
+        ? await supabase
+          .from("summary_feedback")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("file_id", fileId)
+        : await supabase
+          .from("summary_feedback")
+          .select("*")
+          .eq("organization_id", orgId)
+          .eq("file_id", fileId)
 
-    const { data, error } = await supabase.from("summary_feedback").upsert(payload);
 
-
+    if (!error) {
+      const existingFeedback = data
+      if (existingFeedback.length > 0) {
+        const { data, error } = await supabase
+          .from("summary_feedback")
+          .update(payload)
+          .eq("id", existingFeedback[0].id);
+      } else {
+        const { data, error } = await supabase
+          .from("summary_feedback")
+          .insert(payload);
+      }
+    }
   };
+  // Dislike
 
   const disLikeHandler = async (response) => {
-    setDisLike(!disLike);
+    setDisLike(true);
+    setLikeFlag(false);
     const payload = {
       user_id: userId,
       organization_id: null,
-      file_id: fileId,
+      file_id: fileId ||FILEID,
       query: response.query,
       feedback: "Dislike",
-      summary_response: response.summary
-    }
+      summary_response: response.summary,
+    };
 
     if (userRole !== "individual") {
-      payload.organization_id = orgId
+      payload.organization_id = orgId;
     }
 
-    const { data, error } = await supabase.from("summary_feedback").upsert(payload);
+    const { data, error } =
+      userRole === "individual"
+        ? await supabase
+          .from("summary_feedback")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("query",text)
+          .eq("file_id", fileId)
+        : await supabase
+          .from("summary_feedback")
+          .select("*")
+          .eq("organization_id", orgId)
+          .eq("query",text)
+          .eq("file_id", fileId)
+
+    if (!error) {
+      const existingFeedback = data
+      if (existingFeedback.length > 0) {
+        const { data, error } = await supabase
+          .from("summary_feedback")
+          .update(payload)
+          .eq("id", existingFeedback[0].id);
+      } else {
+        const { data, error } = await supabase
+          .from("summary_feedback")
+          .insert(payload);
+      }
+    }
   };
 
   return (
     <>
-      {
-        dataNotFound ?
-          <Box padding={3} margin={"0 250px"} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 2 }} height={'100vh'}>
-
-            <Box sx={{ fontSize: '30px', fontWeight: '600' }}>Data Not Found</Box>
-            <Box>
-              <CommonButton buttonName='Back' onClick={() => router.push('/admin/askcynthia')} />
-            </Box>
+      {dataNotFound ? (
+        <Box
+          padding={3}
+          margin={"0 250px"}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2,
+          }}
+          height={"100vh"}
+        >
+          <Box sx={{ fontSize: "30px", fontWeight: "600" }}>Data Not Found</Box>
+          <Box>
+            <CommonButton
+              buttonName="Back"
+              onClick={()=>backHandler()}
+            />
           </Box>
-          :
-          <Box padding={3} margin={"0 250px"}>
-            <Stack
-              flexDirection={"row"}
-              gap={2}
-              alignItems={"center"}
-              paddingX={3}
-              marginBottom={3}
-            >
-              <Image src={query_stats} style={{ width: "40px", height: "40px" }} />
-              <Divider
-                orientation="vertical"
-                variant="middle"
-                flexItem
-                sx={{ margin: "0" }}
-              />
-              <Box width={"100%"}>
+        </Box>
+      ) : (
+        <Box padding={3} margin={"0 250px"}>
+          <Stack
+            flexDirection={"row"}
+            gap={2}
+            alignItems={"center"}
+            paddingX={3}
+            marginBottom={3}
+          >
+            <Image
+              src={query_stats}
+              style={{ width: "40px", height: "40px" }}
+            />
+            <Divider
+              orientation="vertical"
+              variant="middle"
+              flexItem
+              sx={{ margin: "0" }}
+            />
+            <Box width={"100%"}>
+              {/* {jsonData ? ( */}
+                <Typography
+                  fontSize={"35px"}
+                  fontWeight={"500"}
+                  lineHeight={"37px"}
+                >
+                  {querryTopic}
+                </Typography>
+              {/* ) : ( */}
+                {/* <Skeleton animation="wave" width={'80%'} height={50} /> */}
+              {/* )} */}
+            </Box>
+            <Image
+              src={close}
+              onClick={() => backHandler()}
+              style={{ width: "40px", height: "40px", cursor: "pointer" }}
+            />
+            <Image
+              onClick={downloadPdf}
+              src={ios_share}
+              style={{ width: "40px", height: "40px", cursor: "pointer" }}
+            />
+          </Stack>
+          <div ref={divRef}>
+            <Box maxWidth={"950px"} margin={"auto"} paddingY={4}>
+              <Stack flexDirection={"row"} gap={"3px"}>
+                <SouthEastIcon sx={{ color: "#7a52f4", marginTop: "2px" }} />
                 {jsonData ? (
                   <Typography
-                    fontSize={"35px"}
-                    fontWeight={"500"}
-                    lineHeight={"37px"}
+                    fontSize={"20px"}
+                    fontWeight={"600"}
+                    color={"#7a52f4"}
                   >
-                    {jsonData.query}
+                    EXPLORING
                   </Typography>
                 ) : (
-                  <Skeleton animation="wave" width={200} height={40} />
+                  <Skeleton animation="wave" width={'40%'} height={35} />
                 )}
-              </Box>
-              <Image
-                src={close}
-                onClick={() => router.push(`/admin/askcynthia`)}
-                style={{ width: "40px", height: "40px", cursor: "pointer" }}
-              />
-              <Image
-                onClick={downloadPdf}
-                src={ios_share}
-                style={{ width: "40px", height: "40px", cursor: "pointer" }}
-              />
-            </Stack>
-            <div ref={divRef}>
-              <Box maxWidth={"950px"} margin={"auto"} paddingY={4}>
-                <Stack flexDirection={"row"} gap={"3px"}>
-                  <SouthEastIcon sx={{ color: "#7a52f4", marginTop: "2px" }} />
-                  {jsonData ? (
+              </Stack>
+              {jsonData ? (
+                <Typography
+                  fontSize={"25px"}
+                  fontWeight={"600"}
+                  lineHeight={"35px"}
+                  marginBottom={1}
+                >
+                  {jsonData.main_topic}
+                </Typography>
+              ) : (
+                <Skeleton animation="wave" width={'50%'} height={40} />
+              )}
+              {jsonData ? (
+                <Typography
+                  fontSize={"18px"}
+                  fontWeight={"400"}
+                  lineHeight={"25px"}
+                  marginBottom={1}
+                >
+                  {jsonData.summary}
+                </Typography>
+              ) : (
+                <>
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={'60%'} height={25} />
+                </>
+              )}
+              <Stack
+                flexDirection={"row"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                padding={"15px 100px 0 50px"}
+              >
+                {!jsonData ? <Skeleton animation="wave" width={'100%'} height={40} /> :
+                  <>
+                    <Typography
+                      fontSize={"16px"}
+                      fontWeight={"600"}
+                      lineHeight={"28px"}
+                    >
+                      Was this response helpful?
+                    </Typography>
+                    <Stack gap={"10px"} display={"flex"} flexDirection={"row"}>
+                      {!likeFlag ? (
+                        <ThumbUpOffAltIcon
+                          sx={{ color: "#7a52f4" }}
+                          onClick={() => likeHandler(jsonData)}
+                        />
+                      ) : (
+                        <ThumbUpIcon
+                          sx={{ color: "#7a52f4" }}
+                          onClick={() => disLikeHandler(jsonData)}
+                        />
+                      )}
+                      {!disLike ? (
+                        <ThumbDownOffAltIcon
+                          sx={{ color: "#7a52f4" }}
+                          onClick={() => disLikeHandler(jsonData)}
+                        />
+                      ) : (
+                        <ThumbDownIcon
+                          sx={{ color: "#7a52f4" }}
+                          onClick={() => likeHandler(jsonData)}
+                        />
+                      )}
+                    </Stack></>}
+              </Stack>
+            </Box>
+
+            
+            {subTopics &&
+              Object.keys(subTopics).map((res, index) => {
+                return (
+                  <Box
+                    maxWidth={"1050px"}
+                    margin={"auto"}
+                    paddingY={4}
+                    key={index}
+                  >
                     <Typography
                       fontSize={"20px"}
                       fontWeight={"600"}
                       color={"#7a52f4"}
+                      marginBottom={"10px"}
                     >
-                      EXPLORING
+                      {subTopics[res]?.key}
                     </Typography>
-                  ) : (
-                    <Skeleton animation="wave" width={100} height={20} />
-                  )}
-                </Stack>
-                {jsonData ? (
-                  <Typography
-                    fontSize={"25px"}
-                    fontWeight={"600"}
-                    lineHeight={"35px"}
-                    marginBottom={1}
-                  >
-                    {jsonData.main_topic}
-                  </Typography>
-                ) : (
-                  <Skeleton animation="wave" width={200} height={30} />
-                )}
-                {jsonData ? (
-                  <Typography
-                    fontSize={"18px"}
-                    fontWeight={"400"}
-                    lineHeight={"25px"}
-                    marginBottom={1}
-                  >
-                    {jsonData.summary}
-                  </Typography>
-                ) : (
-                  <>
-                    <Skeleton animation="wave" width={300} height={20} />
-                    <Skeleton animation="wave" width={400} height={20} />
-                    <Skeleton animation="wave" width={200} height={20} />
-                  </>
-                )}
-                <Stack
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  padding={"15px 100px 0 50px"}
-                >
-                  <Typography
-                    fontSize={"16px"}
-                    fontWeight={"600"}
-                    lineHeight={"28px"}
-                  >
-                    Was this response helpful?
-                  </Typography>
-                  <Stack gap={"10px"} display={"flex"} flexDirection={"row"}>
-                  {
-                    !likeFlag ? <ThumbUpOffAltIcon sx={{ color: "#7a52f4" }} onClick={() => likeHandler(jsonData)} /> :
-                    <ThumbUpIcon sx={{ color: "#7a52f4" }} onClick={() => likeHandler(jsonData)} />
-                  }
-                  {
-                    !disLike ?  <ThumbDownOffAltIcon sx={{ color: "#7a52f4" }} onClick={() => disLikeHandler(jsonData)} />:
-                    <ThumbDownIcon sx={{ color: "#7a52f4" }} onClick={() => disLikeHandler(jsonData)} />
-                  }
-                  </Stack>
-                </Stack>
-              </Box>
-              {subTopics &&
-                Object.keys(subTopics).map((res, index) => {
-                  return (
-                    <Box maxWidth={"1050px"} margin={"auto"} paddingY={4} key={index}>
+                    {subTopics[res] ? (
                       <Typography
-                        fontSize={"20px"}
-                        fontWeight={"600"}
-                        color={"#7a52f4"}
-                        marginBottom={"10px"}
+                        fontSize={"18px"}
+                        fontWeight={"500"}
+                        lineHeight={"25px"}
+                        marginBottom={1}
+                        paddingX={2}
                       >
-                        {subTopics[res]?.key}
+                        {subTopics[res]?.summary}
                       </Typography>
-                      {subTopics[res] ? (
-                        <Typography
-                          fontSize={"18px"}
-                          fontWeight={"500"}
-                          lineHeight={"25px"}
-                          marginBottom={1}
-                          paddingX={2}
-                        >
-                          {subTopics[res]?.summary}
-                        </Typography>
-                      ) : (
-                        <>
-                          <Skeleton animation="wave" width={300} height={20} />
-                          <Skeleton animation="wave" width={400} height={20} />
-                          <Skeleton animation="wave" width={200} height={20} />
-                        </>
-                      )}
-                      {/* {subTopics[res]?.docs[0]?.map((response) => { */}
-                      {/* return ( */}
-                      <Stack
-                        flexDirection={"row"}
-                        alignItems={"center"}
-                        justifyContent={"space-between"}
-                        paddingX={5}
-                        gap={2}
-                        key={res}
+                    ) : (
+                      <>
+                        <Skeleton animation="wave" width={'80%'} height={25} />
+                        <Skeleton animation="wave" width={'100%'} height={25} />
+                        <Skeleton animation="wave" width={'100%'} height={25} />
+                        <Skeleton animation="wave" width={'60%'} height={25} />
+                      </>
+                    )}
+                    <Stack
+                      flexDirection={"row"}
+                      alignItems={"center"}
+                      justifyContent={"space-between"}
+                      paddingX={5}
+                      gap={2}
+                      key={res}
+                    >
+                      <Image
+                        src={quoteleft}
+                        style={{
+                          width: "25px",
+                          height: "25px",
+                          alignSelf: "flex-start",
+                        }}
+                      />
+                      <Typography
+                        fontSize={"16px"}
+                        paddingY={2}
+                        fontWeight={"400"}
+                        lineHeight={"25px"}
                       >
-                        <Image
-                          src={quoteleft}
-                          style={{
-                            width: "25px",
-                            height: "25px",
-                            alignSelf: "flex-start",
-                          }}
-                        />
-                        <Typography
-                          fontSize={"16px"}
-                          paddingY={2}
-                          fontWeight={"400"}
-                          lineHeight={"25px"}
-                        >
-                          <i>{subTopics[res]?.docs[0]}</i>
-                        </Typography>
-                        <Image
-                          src={quoteright}
-                          style={{
-                            width: "25px",
-                            height: "25px",
-                            alignSelf: "flex-end",
-                          }}
-                        />
-                      </Stack>
-                      {/* ); */}
-                      {/* })} */}
-                    </Box>
-                  );
-                })}
-              {/* Add a skeleton loader for the subtopics if subTopics is null */}
-              {!subTopics && (
-                <Box maxWidth={"1050px"} margin={"auto"} paddingY={4}>
-                  <Skeleton animation="wave" width={200} height={30} />
-                  <Skeleton animation="wave" width={300} height={20} />
-                  <Skeleton animation="wave" width={400} height={20} />
-                  <Skeleton animation="wave" width={300} height={20} />
-                  <Skeleton animation="wave" width={400} height={20} />
+                        <i>{subTopics[res]?.docs[0]}</i>
+                      </Typography>
+                      <Image
+                        src={quoteright}
+                        style={{
+                          width: "25px",
+                          height: "25px",
+                          alignSelf: "flex-end",
+                        }}
+                      />
+                    </Stack>
+                    {/* ); */}
+                    {/* })} */}
+                  </Box>
+                );
+              })}
+            {/* Add a skeleton loader for the subtopics if subTopics is null */}
+            
+            {!jsonData &&  (
+              <>
+                <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
+                  <Skeleton animation="wave" width={'70%'} height={35} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
                 </Box>
-              )}
-            </div>
-          </Box>
-      }</>
+                <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
+                  <Skeleton animation="wave" width={'70%'} height={35} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                </Box>
+                <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
+                  <Skeleton animation="wave" width={'70%'} height={35} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={'80%'} height={25} />
+                  <Skeleton animation="wave" width={'100%'} height={25} />
+                </Box>
+              </>
+            )}
+          </div>
+        </Box>
+      )}
+    </>
   );
 }
 

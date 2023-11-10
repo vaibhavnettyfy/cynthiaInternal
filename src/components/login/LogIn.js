@@ -43,7 +43,7 @@ const LogIn = () => {
   const router = useRouter();
   const cookies = new Cookies();
   const [rememberMe, setRememberMe] = useState(false);
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState("Not Defiend");
 
   // to fetch data from cookie while login screen
   useEffect(() => {
@@ -59,6 +59,15 @@ const LogIn = () => {
       });
     }
   }, []);
+
+  useEffect(()=>{
+    let accessToken = "";
+    accessToken = localStorage.getItem("accessToken");
+    console.log("-1-1-11-",isActive)
+    if(accessToken && isActive === "true"){
+      router.push(`/admin/uploadintegration`)
+    }
+  },[])
 
   // for the user Login
   const handleSubmit = async () => {
@@ -78,8 +87,17 @@ const LogIn = () => {
           "orgId",
           data.session.user.app_metadata.organization_id
         );
+        localStorage.setItem("userEmail",formik.values.email)
+        localStorage.setItem("userPassword",formik.values.password)
         }
-        setIsActive(data.session.user.app_metadata.is_active);
+        const activeCheck = data.session.user.app_metadata.is_active;
+        console.log("activeCheck",activeCheck);
+        if(activeCheck != "false"){
+          setIsActive("true");
+        }else{
+          setIsActive("false");
+        }
+        // setIsActive();
         // localStorage.setItem("orgId",data.user.user_metadata.organization_id)
         const orgId = data.user.user_metadata.organization_id;
         const userId = data.session.user.id;
@@ -91,40 +109,12 @@ const LogIn = () => {
           cookies.remove("userEmail");
           cookies.remove("userPassword");
         }
-        successNotification("Login");
-        router.push(`/admin/uploadintegration`);
-
-        // if(role == "individual"){
-        //   const {status,subscriptionsStatus} = await subscriptionscheck(userId);
-        //   console.log("status",status);
-        //   console.log("subscriptionsStatus",subscriptionsStatus);
-        //   if(status){
-        //     if(subscriptionsStatus === "active"){
-        //       router.push(`/admin/uploadintegration`);
-        //     }else{
-        //       router.push(`/pricing`);
-        //     }
-        //   }
-        // }else{
-        //   // in the we will handle for org_admin & org_member
-        //   // fetching admin id from organizations using orgId
-        //   const {data,error} = await supabase.from("organizations").select("*").eq("id",orgId);
-        //   if(error){
-        //     errorNotification(error.message);
-        //   }else{
-        //     // we will get admin id and check subscription is active or not
-        //     const {status,subscriptionsStatus} = await subscriptionscheck(data[0].admin_id);
-        //     console.log("subscriptionsStatus-org",subscriptionsStatus);
-        //     if(status){
-        //       if(subscriptionsStatus === "active"){
-        //         router.push(`/admin/uploadintegration`);
-        //       }else{
-        //         // need to handle while member pop =>
-        //         router.push(`/pricing`);
-        //       }
-        //     }
-        //   }
-        // }
+        console.log("-2-2-22-2",isActive);
+        if(data.session.user.app_metadata.is_active != "false"){
+          successNotification("Login");
+          router.push(`/admin/uploadintegration`);
+        }
+        
       }
     } catch (error) {
       errorNotification(error.message || "Something went wrong");
@@ -261,8 +251,9 @@ const LogIn = () => {
                   // onClick={() => router.push(`/admin/uploadintegration`)}
                 />
               </Stack>
+              {console.log("isActive",isActive)}
               {
-                !isActive && 
+                isActive == "false" && 
                 <Stack padding={"0px 0 16px"}>
                   <Alert severity="error">
                     Your status is not active — check it out!

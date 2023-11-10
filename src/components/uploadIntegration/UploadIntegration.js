@@ -1,6 +1,6 @@
 "use client";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import UploadCard from "./UploadCard";
 import Image from "next/image";
 import {
@@ -12,6 +12,9 @@ import {
   Zendesk,
 } from "@/helper/constant";
 import Link from "next/link";
+import WithAuth from "../WithAuth";
+import { UPLOADINTEGRATION, checkFeatures } from "@/helper";
+import CommonModal from "../common/Modal";
 
 const uploadData = [
   {
@@ -42,7 +45,35 @@ const uploadData = [
   },
 ];
 
+
+
+
+
 const UploadIntegration = () => {
+  const [isModalOpen, setIsModalOpen] = useState({
+    open: false,
+    currentComponent: "",
+    data: null,
+  });
+
+  useEffect(() => {
+    checkHandler();
+  }, [])
+  
+  const checkHandler = async () => {
+    const { status, message } = await checkFeatures(UPLOADINTEGRATION);
+    console.log("status=CEHCk", status);
+    if (!status) {
+      setIsModalOpen({
+        open: true,
+        currentComponent: "checkFeature",
+        data:{
+          message,
+        }
+      })
+    }
+  };
+
   return (
     <>
       <Box
@@ -97,8 +128,18 @@ const UploadIntegration = () => {
           </Grid>
         </Box>
       </Box>
+      <CommonModal
+                modalOpen={isModalOpen}
+                handleClose={() =>
+                  setIsModalOpen({
+                    open: false,
+                    currentComponent: "",
+                    data: null,
+                  })
+                }
+              />
     </>
   );
 };
 
-export default UploadIntegration;
+export default WithAuth(UploadIntegration);

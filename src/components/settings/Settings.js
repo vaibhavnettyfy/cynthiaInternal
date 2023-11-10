@@ -8,6 +8,7 @@ import Usage from "./sections/Usage";
 import Members from "./sections/Members";
 import TermsService from "./sections/TermsService";
 import PrivacyPolicy from "./sections/PrivacyPolicy";
+import WithAuth from "../WithAuth";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -93,4 +94,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default WithAuth(Settings);

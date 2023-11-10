@@ -10,27 +10,25 @@ import PlanEnd from '../modal/PlanEnd';
 import { useRouter } from "next/navigation";
 import PaymenentPending from '../modal/PaymenentPending';
 import SubscriptionIssue from '../modal/SubscriptionIssue';
+import CheckFeature from '../modal/CheckFeature';
 
 export default function CommonModal({ handleClose, modalOpen }) {
     const router = useRouter();
-    const handleBackdropClick = () => {
-        // Check if the currentComponent is one of the specified values
-        if (
-            ['planEnd', 'subscriptionIssue', 'paymenentPending'].includes(
-                modalOpen.currentComponent
-            )
-        ) {
-            // Redirect to the login page
-            router.push('/'); // Update '/login' with the appropriate login page route
-        }
-    };
+    const notallowedRoutes = ['planEnd', 'subscriptionIssue', 'paymenentPending','checkFeature']
 
     return (
         <Dialog
-            onClose={handleClose}
-            onBackdropClick={handleBackdropClick}
+            onClose={!notallowedRoutes.includes(modalOpen.currentComponent) ? handleClose : null}
             aria-labelledby="Common_modal"
             open={modalOpen.open}
+            sx={{
+                "& .MuiDialog-container": {
+                    marginLeft: modalOpen.currentComponent == 'checkFeature' ? "80px !important" : '',
+                },
+                "& .MuiBackdrop-root ": {
+                    left: modalOpen.currentComponent == 'checkFeature' ? "80px" : '',
+                },
+            }}
         >
             {modalOpen.currentComponent === 'remove' && <Remove handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'editFile' && <EditFile handleClose={handleClose} modalOpen={modalOpen} />}
@@ -38,10 +36,11 @@ export default function CommonModal({ handleClose, modalOpen }) {
             {modalOpen.currentComponent === 'playstore' && <PlayStoreConnect handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'inviteMember' && <InviteMember handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'infoCynthia' && <InfoCynthia handleClose={handleClose} modalOpen={modalOpen} />}
-            
+
             {modalOpen.currentComponent === 'planEnd' && <PlanEnd handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'paymenentPending' && <PaymenentPending handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'subscriptionIssue' && <SubscriptionIssue handleClose={handleClose} modalOpen={modalOpen} />}
+            {modalOpen.currentComponent === 'checkFeature' && <CheckFeature handleClose={handleClose} modalOpen={modalOpen} />}
         </Dialog>
     );
 }

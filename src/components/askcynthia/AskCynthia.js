@@ -1,5 +1,5 @@
 "use client";
-import { Box, Menu, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { Box, Menu, MenuItem, Select, Skeleton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Image from "next/image";
@@ -17,8 +17,10 @@ import CommonModal from "../common/Modal";
 import { supabase } from "@/Client";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { searchQuerryHandle } from "@/service/askCynthia.service";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 import WithAuth from "../WithAuth";
+import { ASKCYNTHIA, EventEmitter, checkFeatures } from "@/helper";
+import AskCynthiaDetails from "./AskCynthiaDetails";
 
 const selectDateList = [
   { name: "19 Jul - 19 Aug 23", value: "1", sideList: "0 reviews" },
@@ -47,7 +49,18 @@ const AskCynthia = () => {
   const [selectSource, setSelectSource] = useState("CSV");
   const [fileId, setFileId] = useState(null);
 
+  const [loading, setLoading] = useState(false);
+
   const [fileName, setFileName] = useState(null);
+  const [detailsFlag,setDetailsFlag] = useState(false);
+  const [querryDetails,setQuerryDetails] = useState(null);
+  const [querryId,setQuerryId] = useState(null);
+  const [querryTopic,setQuerryTopic] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState({
+    open: false,
+    currentComponent: "",
+    data: null,
+  });
   const router = useRouter();
 
   const handleShowIcon = (e) => {
@@ -56,6 +69,24 @@ const AskCynthia = () => {
 
   const handleHideIcon = () => {
     setShowIcon(false);
+  };
+
+  useEffect(() => {
+    checkHandler();
+  }, [])
+
+  const checkHandler = async () => {
+    const { status, message } = await checkFeatures(ASKCYNTHIA);
+    console.log("status=CEHCk", status);
+    if (!status) {
+      setIsModalOpen({
+        open: true,
+        currentComponent: "checkFeature",
+        data:{
+          message,
+        }
+      })
+    }
   };
 
 
@@ -83,11 +114,12 @@ const AskCynthia = () => {
   const saveQuerryHandler = async (fileId) => {
     const { data, error } = await supabase
       .from("saved_queries")
-      .select("*").eq("file_id", fileId)
-      // .eq("file_id", fileId)
+      .select("*")
+      .eq("file_id", fileId)
       .order("created_at", { ascending: false })
       .limit(5);
     if (data) {
+      console.log("saved_queries-Data", data);
       setSavedQueries(data);
     }
     if (error) {
@@ -97,35 +129,56 @@ const AskCynthia = () => {
 
   // after select source user will select particular file
   const fileIdHandler = (fileNumber, child) => {
-    if (typeof window !== 'undefined') {
-    localStorage.setItem("fileNumber",fileNumber);
-    localStorage.setItem("fileName",child.props.orgFileName);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("fileNumber", fileNumber);
+      localStorage.setItem("fileName", child.props.orgFileName);
     }
     setFileId(fileNumber);
     setFileName(child.props.orgFileName);
     // based on select file we will fecth data saved_queries Table (fileid)
-    if (typeof window !== 'undefined') {
-    localStorage.setItem("fileId", fileNumber);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("fileId", fileNumber);
     }
     saveQuerryHandler(fileNumber);
   };
 
   const sourceDataHandler = async (source) => {
     try {
-      // we are doing fileId null because they selecting new source 
+      // we are doing fileId null because they selecting new source
       setFileId(null);
       const { data, error } = await supabase
         .from("csv_files")
         .select("*")
-        .eq("source", source);
+        .eq("source", source).order("upload_timestamp", { ascending: false });
       // we will store data of selected source
       if (error) {
         console.log("error", error);
-      }else{
-        if(data.length === 0){
-          router.push(`/admin/uploadintegration`)
-        }
+      } else {
         setSourceList(data);
+
+        if (!fileId && data.length > 0) {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("fileNumber", data[0].id)
+            localStorage.setItem("fileName", data[0].original_filename)
+            localStorage.setItem("fileId", data[0].id);
+            setFileId(data[0].id);
+            setFileName(data[0].original_filename);
+            saveQuerryHandler(data[0].id);
+          }
+        }
+
+        // if table & selected source have no data than redertic to admin 
+        if (data.length === 0) {
+          // need to check if they have no data than we have to redertic
+          const { data, error } = await supabase.from("csv_files").select("*");
+          console.log("data---TotalData", data);
+          if (data.length === 0) {
+            router.push(`/admin/uploadintegration`);
+          }
+        }
+
+        console.log("fileId", fileId);
+
       }
     } catch (e) {
       console.error("An error occurred:", e);
@@ -137,18 +190,7 @@ const AskCynthia = () => {
     setShowIcon(false);
   };
 
-  useEffect(()=>{
-    if(selectSource){
-      localStorage.setItem("selectSource",selectSource);
-      sourceDataHandler(selectSource);
-    }
-    if(localStorage.getItem("fileNumber")){
-      setFileId(localStorage.getItem("fileNumber"))
-    }
-    if(localStorage.getItem("fileName")){
-      setFileName(localStorage.getItem("fileName"));
-    }
-  },[])
+
 
   const handleShowResult = () => {
     setShowResult(true);
@@ -160,43 +202,111 @@ const AskCynthia = () => {
     event.preventDefault();
   };
 
-  const [isModalOpen, setIsModalOpen] = useState({
-    open: false,
-    currentComponent: "",
-    data: null,
-  });
+
+
+
+
+  useEffect(() => {
+    if (selectSource) {
+      localStorage.setItem("selectSource", selectSource);
+      sourceDataHandler(selectSource);
+    }
+    if (localStorage.getItem("fileNumber")) {
+      setFileId(localStorage.getItem("fileNumber"));
+      saveQuerryHandler(localStorage.getItem("fileNumber"));
+    }
+    if (localStorage.getItem("fileName")) {
+      setFileName(localStorage.getItem("fileName"));
+    }
+  }, [isModalOpen.open]);
+
+
 
   const onMouseUp = (res) => {
-    router.push(`/admin/askcynthia/details?id=${res.id}`);
+    console.log("res-----2",res);
+    const payload = {
+      status : true,
+      data : res,
+      id : res.id
+    }
+    setDetailsFlag(true);
+    // setQuerryDetails(res);
+    setQuerryId(res.id)
+    setQuerryTopic(res.query)
+    // router.push(`/admin/askcynthia/details`);
+    EventEmitter.dispatch('askCynthiaDetails',payload);
   };
 
   // when user Click on particular source
   const sourceHandler = (source) => {
     setSelectSource(source);
+    setSavedQueries([]);
     // we will get data of source which is selected
     sourceDataHandler(source);
   };
 
-  const handleSearchapiCall = async () =>{
-    if(fileId){
-      const payload = {
-        "query": search,
-        "file_id":fileId.toString()
-      }
-      const {data,message,success} = await searchQuerryHandle(payload);
-      if(success){
-        successNotification(message);
-      }else{
-        errorNotification(message);
-      }
-    }else{
-      errorNotification("Please Select Source and File First")
+  const searchKeyHandler = (keyCode) => {
+    if (keyCode === 13) {
+      handleSearchapiCall();
     }
+  };
+
+  const handleSearchapiCall = async () => {
+    if (fileId) {
+      if (search.trim() !== "") {
+        // setLoading(true);
+        setDetailsFlag(true);
+        const payload = {
+          query: search,
+          file_id: fileId.toString(),
+        };
+        setQuerryTopic(search)
+        try {
+          const { data, message, success } = await searchQuerryHandle(payload);
+          console.log("data-message", message);
+          if (success) {
+            // setDetailsFlag(true);
+            console.log("setQuerryDetails-data--->",data);
+            setQuerryDetails(data);
+            // setLoading(false);
+            saveQuerryHandler(fileId);
+          } else {
+            // setLoading(false);
+            setDetailsFlag(false);
+            errorNotification(message);
+          }
+        } catch (error) {
+          // setLoading(false);
+          errorNotification("An error occurred while making the search query.");
+          console.error(error); // Log the error for debugging purposes
+        }
+      }
+    } else {
+      errorNotification("Please Select Source and File First");
+    }
+  };
+
+  const backHandler = () =>{
+    setDetailsFlag(false);
+    saveQuerryHandler(localStorage.getItem("fileNumber"));
+  }
+
+  
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsSelectOpen(true);
+    document.body.classList.add('select_csv'); // Add your class to the body element
+  };
+
+  const handleClose = () => {
+    setIsSelectOpen(false);
+    document.body.classList.remove('select_csv'); // Remove your class from the body element
   };
 
   return (
     <Box>
-      {!ShowResult && (
+      {!detailsFlag && (
         <>
           <Stack
             padding={"24px 24px 0"}
@@ -228,6 +338,8 @@ const AskCynthia = () => {
                     },
                     getContentAnchorEl: null,
                   }}
+                  onOpen={handleOpen}
+                  onClose={handleClose}
                   onChange={(event, child) =>
                     fileIdHandler(event.target.value, child)
                   }
@@ -363,9 +475,14 @@ const AskCynthia = () => {
                   placeholder="Ask Cynthia..."
                   className="input_askcynthia"
                   onFocus={handleShowIcon}
-                  onBlur={handleSearchapiCall}
                   style={{
                     lineHeight: `${search == "" ? "55px" : "45px"}`,
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.keyCode === 13) {
+                      event.preventDefault(); // Prevent the default "Enter" key behavior
+                    }
+                    searchKeyHandler(event.keyCode);
                   }}
                   onChange={(e) => {
                     setSearch(e.target.value);
@@ -433,29 +550,49 @@ const AskCynthia = () => {
               flexDirection={"column"}
               marginLeft={8}
             >
-              <Typography
-                fontSize={"30px"}
-                fontWeight={"500"}
-                color={"#c2c2c2"}
-                sx={{ fontStyle: "italic" }}
-              >
-                Recently Explored.
-              </Typography>
+              {
+                savedQueries.length > 0 &&
+                <Typography
+                  fontSize={"30px"}
+                  fontWeight={"500"}
+                  color={"#c2c2c2"}
+                  sx={{ fontStyle: "italic" }}
+                >
+                  {loading ? <Skeleton animation="wave" width={'50%'} height={35} />
+                    : ' Recently Explored.'}
+                </Typography>
+              }
+              {
+                !savedQueries.length > 0 && loading &&
+                <>
+                  <Skeleton animation="wave" width={'50%'} height={35} />
+                  <Box marginTop={1} marginLeft={3}>
+                    <Skeleton animation="wave" width={'800px'} height={35} />
+                    <Skeleton animation="wave" width={'800px'} height={35} />
+                    <Skeleton animation="wave" width={'800px'} height={35} />
+                    <Skeleton animation="wave" width={'800px'} height={35} />
+                  </Box>
+                </>
+              }
               <Box marginTop={1} marginLeft={3}>
                 {savedQueries.map((res) => {
                   return (
                     <Box position={"relative"} width={"fit-content"}>
-                      <Typography
-                        onMouseUp={() => onMouseUp(res)}
-                        sx={{ cursor: "pointer", fontStyle: "italic" }}
-                        fontSize={"30px"}
-                        fontWeight={"500"}
-                        color={"#eeeeee"}
-                        lineHeight={"50px"}
-                        className="ask_cynthia_para"
-                      >
-                        {res.query}
-                      </Typography>
+                      {loading ?
+                        <>
+                          <Skeleton animation="wave" width={'800px'} height={35} />
+                        </> :
+                        <Typography
+                          onMouseUp={() => onMouseUp(res)}
+                          sx={{ cursor: "pointer", fontStyle: "italic" }}
+                          fontSize={"30px"}
+                          fontWeight={"500"}
+                          color={"#eeeeee"}
+                          lineHeight={"50px"}
+                          className="ask_cynthia_para"
+                        >
+                          {res.query}
+                        </Typography>}
                     </Box>
                   );
                 })}
@@ -464,9 +601,9 @@ const AskCynthia = () => {
           </Box>
         </>
       )}
-      {ShowResult && <Result />}
+      {detailsFlag && <AskCynthiaDetails querryId={querryId} detailFlag={backHandler} querryDetails={querryDetails} querryTopic={querryTopic}/>}
     </Box>
   );
 };
 
-export default WithAuth(AskCynthia);
+export default AskCynthia;

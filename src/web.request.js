@@ -1,5 +1,13 @@
 import axios from "axios";
 
+const TIMEOUT_DURATION = 180000;
+
+const createAxiosInstance = () => {
+  return axios.create({
+    timeout: TIMEOUT_DURATION,
+  });
+};
+
 
 export const post = async (url, data) => {
   try {
@@ -14,14 +22,15 @@ export const post = async (url, data) => {
         "api-key" : process.env.NEXT_PUBLIC_API_KEY,
         "Authorization":`Bearer ${accessToken}`
     };
-    const response = await axios.post(url, data,{
+    const response = await createAxiosInstance().post(url, data,{
         headers,
     });
+    console.log("resPONSE",response);
     if(response.status === 200){
         return {
             success: true,
-            data : response.data.data,
-            message : response.data.message
+            data : response.data,
+            message : "getting Data succesfully"
         }
     }else{
         return {
@@ -31,10 +40,11 @@ export const post = async (url, data) => {
         }
     }
   } catch (error) {
+    console.log("error---->",error);
     return {
       success: false,
       data : [],
-      message : 'something_Went_Wrong'
+      message : error.message||'Something_went_wrong_please_try_later'
     }
   }
 };
@@ -60,7 +70,7 @@ export const get = async (url) => {
     return {
       success: false,
       data : [],
-      message : 'something_Went_Wrong'
+      message : error.message||'Something_went_wrong_please_try_later'
     }
   }
 };

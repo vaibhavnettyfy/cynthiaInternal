@@ -21,8 +21,9 @@ import html2canvas from "html2canvas";
 import Sentiments from "./Sentiments";
 
 
-const Compliments = ({ complimentsList }) => {
-  let list = complimentsList || [];
+const ReportDetails = ({ data,name }) => {
+  console.log("name--",name);
+  let list = data || [];
 
   const progressValue = 80;
 
@@ -63,7 +64,7 @@ const Compliments = ({ complimentsList }) => {
             marginTop={1}
             marginLeft={2}
           >
-            Compliments
+            {name}
           </Typography>
           <Divider />
         </Box>
@@ -88,6 +89,17 @@ const Compliments = ({ complimentsList }) => {
         }}
       >
         {list.map((res) => {
+          console.log("res-Trends&Report",res);
+          const inputString = res?.summary_bullet
+          // representative_docs
+          const representative = res?.representative_docs;
+          let result = inputString.match(/"([^"]*)"/g);
+          let representativeResult = representative.match(/"([^"]*)"/g);
+          console.log("representativeResult",representativeResult);
+          console.log("result",result);
+          // result.forEach(item => {
+          //   console.log("item",item);
+          // });
           return (
             <>
               <Box padding={5}>
@@ -200,9 +212,13 @@ const Compliments = ({ complimentsList }) => {
                     Findings
                   </Typography>
                   <Stack padding={"20px 0 0 40px"} gap={2}>
-                    <div
-                      dangerouslySetInnerHTML={{ __html: res.summary_bullet }}
-                    />
+                    {
+                      result && result.length >0 && result?.map((res)=>{
+                        return(
+                          <Typography> - {res} </Typography>
+                        )
+                      })
+                    }
                   </Stack>
                   <Stack
                     maxWidth={"650px"}
@@ -228,7 +244,7 @@ const Compliments = ({ complimentsList }) => {
                       fontSize={"14px"}
                       color={"#7f7f7f"}
                     >
-                      <i style={{overflowWrap:"anywhere"}}>{res?.representative_docs}</i>
+                      <i style={{overflowWrap:"anywhere"}}>{representativeResult && representativeResult[0]}</i>
                     </Typography>
                     <Image
                       src={quoteright}
@@ -251,4 +267,4 @@ const Compliments = ({ complimentsList }) => {
   );
 };
 
-export default Compliments;
+export default ReportDetails;
