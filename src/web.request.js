@@ -25,7 +25,6 @@ export const post = async (url, data) => {
     const response = await createAxiosInstance().post(url, data,{
         headers,
     });
-    console.log("resPONSE",response);
     if(response.status === 200){
         return {
             success: true,
@@ -40,7 +39,6 @@ export const post = async (url, data) => {
         }
     }
   } catch (error) {
-    console.log("error---->",error);
     return {
       success: false,
       data : [],

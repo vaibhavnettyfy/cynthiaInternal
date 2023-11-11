@@ -75,9 +75,12 @@ const AskCynthia = () => {
     checkHandler();
   }, [])
 
+  EventEmitter.subscribe('askCynthia',res =>{
+    setDetailsFlag(false);
+  })
+
   const checkHandler = async () => {
     const { status, message } = await checkFeatures(ASKCYNTHIA);
-    console.log("status=CEHCk", status);
     if (!status) {
       setIsModalOpen({
         open: true,
@@ -119,7 +122,6 @@ const AskCynthia = () => {
       .order("created_at", { ascending: false })
       .limit(5);
     if (data) {
-      console.log("saved_queries-Data", data);
       setSavedQueries(data);
     }
     if (error) {
@@ -133,7 +135,6 @@ const AskCynthia = () => {
       localStorage.setItem("fileNumber", fileNumber);
       localStorage.setItem("fileName", child.props.orgFileName);
     }
-    console.log("1");
     setFileId(fileNumber);
     setFileName(child.props.orgFileName);
     // based on select file we will fecth data saved_queries Table (fileid)
@@ -146,7 +147,6 @@ const AskCynthia = () => {
   const sourceDataHandler = async (source) => {
     try {
       // we are doing fileId null because they selecting new source
-      console.log("2");
       // setFileId(null);
       const { data, error } = await supabase
         .from("csv_files")
@@ -157,14 +157,12 @@ const AskCynthia = () => {
         console.log("error", error);
       } else {
         setSourceList(data);
-        console.log("fileID===>fileID",fileId);
         const userFileId = localStorage.getItem("fileNumber")
         if (!userFileId && data.length > 0) {
           if (typeof window !== "undefined") {
             localStorage.setItem("fileNumber", data[0].id)
             localStorage.setItem("fileName", data[0].original_filename)
             localStorage.setItem("fileId", data[0].id);
-            console.log("3");
             setFileId(data[0].id);
             setFileName(data[0].original_filename);
             saveQuerryHandler(data[0].id);
@@ -175,14 +173,10 @@ const AskCynthia = () => {
         if (data.length === 0) {
           // need to check if they have no data than we have to redertic
           const { data, error } = await supabase.from("csv_files").select("*");
-          console.log("data---TotalData", data);
           if (data.length === 0) {
             router.push(`/admin/uploadintegration`);
           }
         }
-
-        console.log("fileId", fileId);
-
       }
     } catch (e) {
       console.error("An error occurred:", e);
@@ -216,7 +210,6 @@ const AskCynthia = () => {
       sourceDataHandler(selectSource);
     }
     if (localStorage.getItem("fileNumber")) {
-      console.log("4")
       setFileId(localStorage.getItem("fileNumber"));
       saveQuerryHandler(localStorage.getItem("fileNumber"));
     }
@@ -228,13 +221,13 @@ const AskCynthia = () => {
 
 
   const onMouseUp = (res) => {
-    console.log("res-----2",res);
     const payload = {
       status : true,
       data : res,
       id : res.id
     }
     setDetailsFlag(true);
+    setQuerryDetails(null);
     // setQuerryDetails(res);
     setQuerryId(res.id)
     setQuerryTopic(res.query)
@@ -267,11 +260,11 @@ const AskCynthia = () => {
         };
         setQuerryTopic(search)
         try {
+          setQuerryDetails(null);
+          setQuerryId(null);
           const { data, message, success } = await searchQuerryHandle(payload);
-          console.log("data-message", message);
           if (success) {
             // setDetailsFlag(true);
-            console.log("setQuerryDetails-data--->",data);
             setQuerryDetails(data);
             // setLoading(false);
             saveQuerryHandler(fileId);

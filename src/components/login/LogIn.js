@@ -63,7 +63,6 @@ const LogIn = () => {
   useEffect(()=>{
     let accessToken = "";
     accessToken = localStorage.getItem("accessToken");
-    console.log("-1-1-11-",isActive)
     if(accessToken && isActive === "true"){
       router.push(`/admin/uploadintegration`)
     }
@@ -91,7 +90,6 @@ const LogIn = () => {
         localStorage.setItem("userPassword",formik.values.password)
         }
         const activeCheck = data.session.user.app_metadata.is_active;
-        console.log("activeCheck",activeCheck);
         if(activeCheck != "false"){
           setIsActive("true");
         }else{
@@ -109,7 +107,6 @@ const LogIn = () => {
           cookies.remove("userEmail");
           cookies.remove("userPassword");
         }
-        console.log("-2-2-22-2",isActive);
         if(data.session.user.app_metadata.is_active != "false"){
           successNotification("Login");
           router.push(`/admin/uploadintegration`);
@@ -251,7 +248,6 @@ const LogIn = () => {
                   // onClick={() => router.push(`/admin/uploadintegration`)}
                 />
               </Stack>
-              {console.log("isActive",isActive)}
               {
                 isActive == "false" && 
                 <Stack padding={"0px 0 16px"}>

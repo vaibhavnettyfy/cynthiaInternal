@@ -13,6 +13,12 @@ import {
 } from "@/helper/constant";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { EventEmitter } from "@/helper";
+
+
+const askCynthiaHandler = () =>{
+  EventEmitter.dispatch('askCynthia',true);
+}
 
 export const SidebarList = [
   {
@@ -34,6 +40,7 @@ export const SidebarList = [
     activeIcon: (
       <Image
         src={QuestionAnswerActive}
+        onClick={()=>askCynthiaHandler()}
         alt=""
         style={{ width: "30px", height: "30px" }}
       />

@@ -26,7 +26,6 @@ import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 
 function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
-  console.log("querryId",querryId);
   const searchParams = useSearchParams();
   const router = useRouter();
   // const queryId = searchParams.get("id");
@@ -54,18 +53,15 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
   }
 
   const backHandler = () =>{
-    console.log("--------1111111");
     detailFlag();
   }
 
   useEffect(() => {
-    console.log("------>querryId",querryId);
     if (querryId) {
       getQuerryDataById(querryId);
     }
   }, []);
 
-  console.log("querryDetails",querryDetails);
 
   useEffect(()=>{
     if(querryDetails){
@@ -74,12 +70,10 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
   },[querryDetails]);
 
   const getQuerryDataById = async (id) => {
-    console.log("----Id--getQuerryDataById",id)
     const { data, error } = await supabase
       .from("saved_queries")
       .select("*")
       .eq("id", id);
-      console.log("data",data);
     setFileId( data[0].file_id);
     const response = data[0].response;
     const parsedData = JSON.parse(response);
@@ -104,7 +98,6 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
 
   const dataDisplay = (response) =>{
     const parsedData = JSON.parse(response);
-    console.log("ParsedData---->>>",parsedData);
     setJsonData({
       query: parsedData?.query,
       main_topic: parsedData?.main_topic,
@@ -131,7 +124,6 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
         .eq("query",querryTopic)
         .eq("file_id", fId)
     if (!error) {
-        console.log("data-----*",data);
         if(data && data.length > 0) {
           if(data[0].feedback) {
             if (data[0].feedback === "Dislike") {
@@ -141,7 +133,6 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
             }
           }
         }
-        // console.log("data[0].feedback",data[0].feedback);
     }
   };
 

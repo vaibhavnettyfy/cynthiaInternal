@@ -22,7 +22,6 @@ import Sentiments from "./Sentiments";
 
 
 const ReportDetails = ({ data,name }) => {
-  console.log("name--",name);
   let list = data || [];
 
   const progressValue = 80;
@@ -89,17 +88,11 @@ const ReportDetails = ({ data,name }) => {
         }}
       >
         {list.map((res) => {
-          console.log("res-Trends&Report",res);
           const inputString = res?.summary_bullet
           // representative_docs
           const representative = res?.representative_docs;
           let result = inputString.match(/"([^"]*)"/g);
           let representativeResult = representative.match(/"([^"]*)"/g);
-          console.log("representativeResult",representativeResult);
-          console.log("result",result);
-          // result.forEach(item => {
-          //   console.log("item",item);
-          // });
           return (
             <>
               <Box padding={5}>
@@ -155,7 +148,7 @@ const ReportDetails = ({ data,name }) => {
                           textAlign: "center",
                         }}
                       >
-                        {`${Math.round(res.neutral_percentage)}%`}
+                        {`${Math.round(res.percentage_count)}%`}
                       </Typography>
                     </div>
                     <Typography fontSize={"14px"} fontWeight={"500"}>

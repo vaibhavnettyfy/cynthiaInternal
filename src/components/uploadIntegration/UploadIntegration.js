@@ -62,7 +62,6 @@ const UploadIntegration = () => {
   
   const checkHandler = async () => {
     const { status, message } = await checkFeatures(UPLOADINTEGRATION);
-    console.log("status=CEHCk", status);
     if (!status) {
       setIsModalOpen({
         open: true,

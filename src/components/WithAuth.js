@@ -72,7 +72,6 @@ export default function WithAuth(Component) {
       };
       let accessToken = "";
         accessToken = localStorage.getItem("accessToken");
-        console.log(accessToken);
         if(accessToken){
           checkSubscription();
         }else{

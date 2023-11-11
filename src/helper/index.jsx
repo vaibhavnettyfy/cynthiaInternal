@@ -63,8 +63,6 @@ export const checkFeatures = async (name) => {
       console.error("Error while fetching data:", error);
       return null;
     }
-    console.log("data-checkFeatures",data);
-    console.log("error-error",error)
 
     if (data.length > 0) {
       const status = data[0].is_active;
@@ -74,7 +72,6 @@ export const checkFeatures = async (name) => {
         message,
       };
     } else {
-      console.log("No data found for the specified name.");
       return null;
     }
   } catch (e) {

@@ -68,7 +68,6 @@ const TrendsReport = () => {
 
   const checkHandler = async () => {
     const { status, message } = await checkFeatures(TRENDSREPORT);
-    console.log("status=CEHCk", status);
     if (!status) {
       setIsModalOpen({
         open: true,
@@ -107,7 +106,6 @@ const TrendsReport = () => {
   }
   
   const handleComplaintsClick = () => {
-    console.log("in this---1");
     complimentsListHandler(fileId);
     setCompliments(false);
     setTopFeedBack(false);
@@ -138,19 +136,12 @@ const TrendsReport = () => {
         .from("topics_summary")
         .select("*")
         .eq("file_id", fileId);
-        console.log("data-Data",data);
         setSelectedText("");
         const topFeedBackdata = data.filter((res)=>res.topic_type === TOPFEEDBACK);
         const complimentsData = data.filter((res)=>res.topic_type === COMPLIMENTS);
         const complaintData = data.filter((res)=> res.topic_type === COMPLAINTS);
         const requestData = data.filter((res) => res.topic_type === REQUESTS);
         const questionData = data.filter((res)=>res.topic_type === QUESTIONS);
-
-        console.log("topFeedBackdata",topFeedBackdata);
-        console.log("complimentsData",complimentsData);
-        console.log("complaintData",complaintData);
-        console.log("requestData",requestData);
-        console.log("questionData",questionData);
 
         // Top FeedBack 
         setTopFeedBackDetails(topFeedBackdata);
@@ -187,7 +178,6 @@ const TrendsReport = () => {
   };
 
   const renderTabContent = () => {
-    console.log("compliments", compliments);
     switch (selectedTab) {
       case 0:
         if(topFeedBack){

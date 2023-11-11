@@ -3,7 +3,6 @@ import { Box, DialogActions, DialogContent, Typography } from "@mui/material";
 import CommonButton from "../common/Button";
 
 const CheckFeature = ({ handleClose,modalOpen}) => {
-  console.log("modalOpen",modalOpen);
   return (
     <>
       <Box
