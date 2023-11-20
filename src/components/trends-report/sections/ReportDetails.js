@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -19,10 +19,6 @@ import { circularProgressClasses } from "@mui/material/CircularProgress";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Sentiments from "./Sentiments";
-import dynamic from "next/dynamic";
-// import html2pdf from 'html2pdf.js';
-
-const DynamicHtml2Pdf = dynamic(() => import("html2pdf.js"), { ssr: false });
 
 
 const ReportDetails = ({ data,name }) => {
@@ -33,30 +29,44 @@ const ReportDetails = ({ data,name }) => {
   const divRef = useRef(null);
   const [downloadInvoice, setDownloadInvoice] = useState(false);
 
-  const downloadPdf = () => {
-    const element = document.getElementById('pdfContent');
-
-    DynamicHtml2Pdf(element, {
-      margin: 10,
-      filename: 'exported-document.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  const downloadPdf = async () => {
+    const divToCapture = divRef.current;
+  
+    const canvas = await html2canvas(divToCapture, {
+      scale: 2, // Adjust the scale if necessary
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
     });
   
-    // const divToCapture = divRef.current;
-
-    // html2canvas(divToCapture).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const pdf = new jsPDF("p", "mm", "a4");
-    //   pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
-    //   pdf.save("downloaded-pdf.pdf");
-    // });
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const totalPages = Math.ceil(canvas.height / 297);
+  
+    for (let i = 0; i < totalPages; i++) {
+      const pageHeight = Math.min(297, canvas.height - i * 297);
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = pageHeight;
+  
+      const context = pageCanvas.getContext('2d');
+      context.drawImage(
+        canvas,
+        0,
+        i * 297,
+        canvas.width,
+        pageHeight,
+        0,
+        0,
+        canvas.width,
+        pageHeight
+      );
+  
+      const imgData = pageCanvas.toDataURL('image/png');
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+    }
+  
+    pdf.save('downloaded-pdf.pdf');
   };
-
-  useEffect(()=>{
-
-  },[]);
 
   if (list.length === 0) {
     //when data is length is zero.
@@ -99,12 +109,11 @@ const ReportDetails = ({ data,name }) => {
       </Stack>
       <div
         ref={divRef}
-        id="pdfContent"
-        // style={{
-        //   width: "100%", // Adjust to make it responsive
-        //   maxWidth: "210mm", // A4 width
-        //   // height: "100%",
-        // }}
+        style={{
+          width: "100%", // Adjust to make it responsive
+          maxWidth: "210mm", // A4 width
+          // height: "100%",
+        }}
       >
         {list.map((res) => {
           const inputString = res?.summary_bullet
