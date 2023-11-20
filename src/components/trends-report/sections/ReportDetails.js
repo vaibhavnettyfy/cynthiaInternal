@@ -16,8 +16,6 @@ import {
 } from "@/helper/constant";
 import Image from "next/image";
 import { circularProgressClasses } from "@mui/material/CircularProgress";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import Sentiments from "./Sentiments";
 import html2pdf from 'html2pdf.js';
 
@@ -84,11 +82,6 @@ const ReportDetails = ({ data,name }) => {
       <div
         ref={divRef}
         id="pdfContent"
-        // style={{
-        //   width: "100%", // Adjust to make it responsive
-        //   maxWidth: "210mm", // A4 width
-        //   // height: "100%",
-        // }}
       >
         {list.map((res) => {
           const inputString = res?.summary_bullet
