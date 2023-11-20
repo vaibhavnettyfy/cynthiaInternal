@@ -158,7 +158,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
-      pdf.save("downloaded-pdf.pdf");
+      pdf.save(`${querryTopic}.pdf`);
     });
   };
 

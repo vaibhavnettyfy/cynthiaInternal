@@ -19,6 +19,7 @@ import { circularProgressClasses } from "@mui/material/CircularProgress";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Sentiments from "./Sentiments";
+import html2pdf from 'html2pdf.js';
 
 
 const ReportDetails = ({ data,name }) => {
@@ -29,14 +30,15 @@ const ReportDetails = ({ data,name }) => {
   const divRef = useRef(null);
   const [downloadInvoice, setDownloadInvoice] = useState(false);
 
-  const downloadPdf = () => {
-    const divToCapture = divRef.current;
-
-    html2canvas(divToCapture).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
-      pdf.save("downloaded-pdf.pdf");
+ 
+  const exportToPDF = () =>{
+    const element = document.getElementById('pdfContent');
+    html2pdf(element, {
+      margin: 10,
+      filename: 'exported-document.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     });
   };
 
@@ -71,7 +73,8 @@ const ReportDetails = ({ data,name }) => {
           alignItems={"center"}
           gap={"3px"}
           sx={{ cursor: "pointer" }}
-          onClick={downloadPdf}
+          // onClick={downloadPdf}
+          onClick={exportToPDF}
         >
           <Image src={ios_share} />
           <Typography fontSize={"12px"} fontWeight={"500"} color={"#c1c1c1"}>
@@ -81,11 +84,12 @@ const ReportDetails = ({ data,name }) => {
       </Stack>
       <div
         ref={divRef}
-        style={{
-          width: "100%", // Adjust to make it responsive
-          maxWidth: "210mm", // A4 width
-          // height: "100%",
-        }}
+        id="pdfContent"
+        // style={{
+        //   width: "100%", // Adjust to make it responsive
+        //   maxWidth: "210mm", // A4 width
+        //   // height: "100%",
+        // }}
       >
         {list.map((res) => {
           const inputString = res?.summary_bullet

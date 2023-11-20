@@ -1,11 +1,10 @@
-import React from 'react'
+import React from "react";
+import PricingTable from "./PricingTable";
 
 function page() {
   return (
-    <div>
-        <h1> welcome to Pricing page</h1>
-    </div>
-  )
+    <PricingTable/>
+  );
 }
 
-export default page
+export default page;
