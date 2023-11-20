@@ -22,6 +22,7 @@ import Sentiments from "./Sentiments";
 
 
 const ReportDetails = ({ data,name }) => {
+
   let list = data || [];
 
   const progressValue = 80;
@@ -32,40 +33,37 @@ const ReportDetails = ({ data,name }) => {
   const downloadPdf = async () => {
     const divToCapture = divRef.current;
   
-    const canvas = await html2canvas(divToCapture, {
-      scale: 2, // Adjust the scale if necessary
-      windowWidth: document.documentElement.scrollWidth,
-      windowHeight: document.documentElement.scrollHeight,
-    });
+    // Use html2canvas to capture the content of the entire component
+    const canvas = await html2canvas(divToCapture);
   
+    // Calculate the total number of pages based on the content height
+    const totalPages = Math.ceil(canvas.height / 297); // Assuming A4 height
+  
+    // Create a new jsPDF instance
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const totalPages = Math.ceil(canvas.height / 297);
   
+    // Iterate over each page and add content to the PDF
     for (let i = 0; i < totalPages; i++) {
+      // Calculate the height for each page
       const pageHeight = Math.min(297, canvas.height - i * 297);
+  
+      // Create a new canvas for each page
       const pageCanvas = document.createElement('canvas');
       pageCanvas.width = canvas.width;
       pageCanvas.height = pageHeight;
   
+      // Draw the content for each page onto the new canvas
       const context = pageCanvas.getContext('2d');
-      context.drawImage(
-        canvas,
-        0,
-        i * 297,
-        canvas.width,
-        pageHeight,
-        0,
-        0,
-        canvas.width,
-        pageHeight
-      );
+      context.drawImage(canvas, 0, i * 297, canvas.width, pageHeight, 0, 0, canvas.width, pageHeight);
   
+      // Add the page to the PDF
       const imgData = pageCanvas.toDataURL('image/png');
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
     }
   
-    pdf.save('downloaded-pdf.pdf');
+    // Save the PDF
+    pdf.save(`${name}.pdf`);
   };
 
   if (list.length === 0) {
