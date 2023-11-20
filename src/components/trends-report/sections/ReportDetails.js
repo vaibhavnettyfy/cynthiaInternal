@@ -73,7 +73,6 @@ const ReportDetails = ({ data,name }) => {
           alignItems={"center"}
           gap={"3px"}
           sx={{ cursor: "pointer" }}
-          // onClick={downloadPdf}
           onClick={exportToPDF}
         >
           <Image src={ios_share} />
