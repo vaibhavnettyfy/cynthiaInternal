@@ -60,7 +60,7 @@ const SignUp = () => {
     }
     const {data,message,success} = await userRegister(payload);
     if(success){
-      successNotification(message);
+      successNotification("User Signed up successfully");
       router.push(`/login`);
     }else{
       errorNotification(message);

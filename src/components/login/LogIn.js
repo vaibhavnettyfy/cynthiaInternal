@@ -62,8 +62,11 @@ const LogIn = () => {
 
   useEffect(()=>{
     let accessToken = "";
+    let isActiveFlag = "";
     accessToken = localStorage.getItem("accessToken");
-    if(accessToken && isActive === "true"){
+    isActiveFlag = localStorage.getItem("activeCheck");
+    
+    if(accessToken && isActiveFlag === "true"){
       router.push(`/admin/uploadintegration`)
     }
   },[])
@@ -90,6 +93,8 @@ const LogIn = () => {
         localStorage.setItem("userPassword",formik.values.password)
         }
         const activeCheck = data.session.user.app_metadata.is_active;
+        console.log("activeCheck",activeCheck);
+        localStorage.setItem("activeCheck",activeCheck);
         if(activeCheck != "false"){
           setIsActive("true");
         }else{
@@ -229,7 +234,7 @@ const LogIn = () => {
                     </Grid>
                   </Grid>
                   <Grid item sx={6} className="login_para">
-                    <Link href="#">
+                    <Link href="/recoveryEmail">
                       <Typography
                         fontSize={"14px"}
                         fontWeight={500}
