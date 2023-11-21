@@ -2,18 +2,21 @@
 import { LoginBanner, Logo } from "@/helper/constant";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../signup/style.css";
 import CommonInput from "../common/Input";
 import CommonButton from "../common/Button";
 import Link from "next/link";
 import { makeStyles } from "@mui/styles";
 import { errorNotification, successNotification } from "@/helper/Notification";
-
+import { useSearchParams } from "next/navigation";
+import { supabase } from "@/Client";
 const RecoveryPassword = () => {
+
   const [newPassword, setNewPassword] = useState("");
   const [reEnterPassword, setReEnterPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [accessToken,setAccessToken] = useState("");
 
   const validatePassword = (password) => {
     if (password.trim() === "") {
@@ -24,6 +27,24 @@ const RecoveryPassword = () => {
       return "";
     }
   };
+
+
+
+    useEffect(()=>{
+      if (typeof window !== 'undefined') {
+        const hashParams = window.location.hash.substring(1).split('&');
+        const accessTokenParam = hashParams.find(param => param.startsWith('access_token='));
+  
+        if (accessTokenParam) {
+          const accessToken = accessTokenParam.split('=')[1];
+          console.log('Access Token-inside:', accessToken);
+          setAccessToken(accessToken);
+  
+          // Now you can use the access token as needed
+          // Make sure to handle token expiration and refresh logic if required
+        }
+      }
+    },[]);
 
   const passwordHandler = () => {
     console.log("newPassword", newPassword);
@@ -51,16 +72,38 @@ const RecoveryPassword = () => {
 
   const updatePasswordHandler = async (password) => {
     try {
+
+      // const { data: authData, error: authError } = await supabase.auth.api.getUser(accessToken);
+
+      // if (authError) {
+      //   console.error("Error validating access token:", authError);
+      //   errorNotification(authError.message || "Error validating access token");
+      //   return;
+      // }
+
       const { data, error } = await supabase.auth.updateUser({
         password: password,
       });
-  
+
       if (error) {
         console.error("Error updating password:", error);
         errorNotification(error.message || "Error changing password");
       } else {
         successNotification("User password updated successfully");
       }
+
+      // const {data,error} = await supabase.auth.getUser(accessToken);
+
+      // const { data, error } = await supabase.auth.updateUser({
+      //   password: password,
+      // });
+  
+      // if (error) {
+      //   console.error("Error updating password:", error);
+      //   errorNotification(error.message || "Error changing password");
+      // } else {
+      //   successNotification("User password updated successfully");
+      // }
     } catch (error) {
       console.error("An unexpected error occurred:", error);
     }
