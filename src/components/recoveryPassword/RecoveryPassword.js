@@ -8,11 +8,12 @@ import CommonInput from "../common/Input";
 import CommonButton from "../common/Button";
 import Link from "next/link";
 import { makeStyles } from "@mui/styles";
+import { useRouter } from "next/navigation";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/Client";
 const RecoveryPassword = () => {
-
+  const router = useRouter();
   const [newPassword, setNewPassword] = useState("");
   const [reEnterPassword, setReEnterPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -85,6 +86,7 @@ const RecoveryPassword = () => {
         errorNotification(error.message || "Error changing password");
       } else {
         successNotification("User password updated successfully");
+        router.push(`/`)
       }
 
       }else{
