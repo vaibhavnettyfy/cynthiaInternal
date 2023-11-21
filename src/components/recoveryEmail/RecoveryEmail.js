@@ -9,7 +9,7 @@ import CommonButton from "../common/Button";
 import Link from "next/link";
 import { makeStyles } from "@mui/styles";
 import { supabase } from "@/Client";
-import { successNotification } from "@/helper/Notification";
+import { errorNotification, successNotification } from "@/helper/Notification";
 
 const RecoveryEmail = () => {
   const [email, setEmail] = useState("");
@@ -45,7 +45,9 @@ const RecoveryEmail = () => {
         redirectTo: "https://cynthia-dev.vercel.app/recoveryPassword",
       });
       if(!error){
-        successNotification("")
+        successNotification("recovery password mail sent successfully")
+      }else{
+        errorNotification("something_went_wrong");
       }
       console.log("data", data);
       console.log("error", error);
