@@ -32,7 +32,7 @@ export default function WithAuth(Component) {
               });
             } else {
                 // i found this solution when we implement Hoc to redertic
-              window.location.href = "/pricing";
+              window.location.href = "/admin/pricing";
             }
           } else {
             if (response !== "trialing") {
