@@ -123,6 +123,11 @@ const LogIn = () => {
     }
   };
 
+  const resetPasswordHandler = () =>{
+    router.push(`/recoveryEmail`);
+    localStorage.clear();
+  }
+
   // to handle rember me
   const handleRememberMeChange = (event) => {
     setRememberMe(event.target.checked);
@@ -234,7 +239,7 @@ const LogIn = () => {
                     </Grid>
                   </Grid>
                   <Grid item sx={6} className="login_para">
-                    <Link href="/recoveryEmail">
+                    <Link href="/recoveryEmail" onClick={()=>resetPasswordHandler()}>
                       <Typography
                         fontSize={"14px"}
                         fontWeight={500}

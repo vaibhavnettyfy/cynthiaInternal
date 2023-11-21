@@ -7,7 +7,6 @@ import "../signup/style.css";
 import CommonInput from "../common/Input";
 import CommonButton from "../common/Button";
 import Link from "next/link";
-import { makeStyles } from "@mui/styles";
 import { supabase } from "@/Client";
 import { errorNotification, successNotification } from "@/helper/Notification";
 
@@ -22,18 +21,7 @@ const RecoveryEmail = () => {
   };
 
   const resetEmailHandler = async () => {
-    // if (!email.trim()) {
-    //   setError("Email cannot be blank");
-    // } else {
-    //   setError("");
-    // //   const {data,error} = await supabase.auth.resetPasswordForEmail(email,{
-    // //     redirectTo:'https://cynthia-dev.vercel.app/recoveryPassword'
-    // //   })
-    // //   console.log("data", data);
-    // //   console.log("error",error);
-    // console.log("email",email);
-    //   // Add logic for password reset here
-    // }
+    localStorage.clear();
     if (!email.trim()) {
       setError("Email cannot be blank");
     } else if (!validateEmail(email)) {
