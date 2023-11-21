@@ -42,6 +42,9 @@ const RecoveryPassword = () => {
   
           // Now you can use the access token as needed
           // Make sure to handle token expiration and refresh logic if required
+        }else{
+          setAccessToken("")
+          console.log("accessToken is not availiable")
         }
       }
     },[]);
@@ -72,15 +75,7 @@ const RecoveryPassword = () => {
 
   const updatePasswordHandler = async (password) => {
     try {
-
-      // const { data: authData, error: authError } = await supabase.auth.api.getUser(accessToken);
-
-      // if (authError) {
-      //   console.error("Error validating access token:", authError);
-      //   errorNotification(authError.message || "Error validating access token");
-      //   return;
-      // }
-
+      if(accessToken !== ""){
       const { data, error } = await supabase.auth.updateUser({
         password: password,
       });
@@ -92,18 +87,9 @@ const RecoveryPassword = () => {
         successNotification("User password updated successfully");
       }
 
-      // const {data,error} = await supabase.auth.getUser(accessToken);
-
-      // const { data, error } = await supabase.auth.updateUser({
-      //   password: password,
-      // });
-  
-      // if (error) {
-      //   console.error("Error updating password:", error);
-      //   errorNotification(error.message || "Error changing password");
-      // } else {
-      //   successNotification("User password updated successfully");
-      // }
+      }else{
+        errorNotification("accessToken is not available please try again")
+      }
     } catch (error) {
       console.error("An unexpected error occurred:", error);
     }
