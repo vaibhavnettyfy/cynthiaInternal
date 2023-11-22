@@ -10,7 +10,7 @@ import quoteleft from '../../public/assets/images/quote-left.svg'
 import quoteright from '../../public/assets/images/quote-right.svg'
 
 import good from '../../public/assets/images/good.png'
-import bad from '../../public/assets/images/bad.svg'
+import bad from '../../public/assets/images/bad.png'
 import ohk from '../../public/assets/images/ohk.png'
 
 import Appstore from '../../public/assets/images/upload/appstore.png'
