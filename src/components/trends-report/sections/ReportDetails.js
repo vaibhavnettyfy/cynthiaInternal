@@ -48,7 +48,7 @@ const ReportDetails = ({ data, name }) => {
   
 
   return (
-    <Box margin={"0 100px"}>
+    <Box margin={"0 70px"}>
       <Stack
         gap={4}
         flexDirection={"row"}
@@ -70,13 +70,7 @@ const ReportDetails = ({ data, name }) => {
           <Divider />
         </Box>
       </Stack>
-      <div
-        // style={{
-        //   width: "100%", // Adjust to make it responsive
-        //   maxWidth: "210mm", // A4 width
-        //   // height: "100%",
-        // }}
-      >
+   
         {list.map((res, index) => {
           const inputString = res?.summary_bullet;
           const representative = res?.representative_docs;
@@ -110,7 +104,6 @@ const ReportDetails = ({ data, name }) => {
             </React.Fragment>
           );
         })}
-      </div>
     </Box>
   );
 };
