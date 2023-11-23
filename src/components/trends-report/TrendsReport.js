@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import {
   Tabs,
   Tab,
@@ -61,6 +61,10 @@ const TrendsReport = () => {
     fileId = localStorage.getItem("fileId");
   }
 
+  const scrollToTop = () => {
+    const childComponent = document.getElementById('childComponent');
+    childComponent.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
     checkHandler();
@@ -186,22 +190,22 @@ const TrendsReport = () => {
         return null;
       case 1:
         if (compliments) {
-          return <ReportDetails data={complimentsDetails}  name="Compliments"/>;
+          return <ReportDetails  data={complimentsDetails}  name="Compliments"/>;
         }
         return null;
       case 2:
         if(complaints){
-          return <ReportDetails data={complaintsDetails}  name="Complaints"/>
+          return <ReportDetails  data={complaintsDetails}  name="Complaints"/>
         }
         return null;
       case 3:
         if(requests){
-          return <ReportDetails data={requestsDetails}  name="Requests"/>
+          return <ReportDetails  data={requestsDetails}  name="Requests"/>
         }
         return null;
       case 4:
         if(questions){
-          return <ReportDetails data={questionDetails} name="Questions"/>
+          return <ReportDetails  data={questionDetails} name="Questions"/>
         }
         return null;
       default:
@@ -265,6 +269,7 @@ const TrendsReport = () => {
                               onClick={()=> { 
                                 setSelectedText(data);
                                 setTopFeedBackDetails([data])
+                                scrollToTop()
                               }}
                             >
                               <i
@@ -336,6 +341,7 @@ const TrendsReport = () => {
                               onClick={()=> { 
                                 setSelectedText(data);
                                 setCompolimentDetails([data])
+                                scrollToTop()
                               }}
                             >
                               <i
@@ -406,6 +412,7 @@ const TrendsReport = () => {
                               onClick={()=> { 
                                 setSelectedText(data);
                                 setComplaintsDetails([data])
+                                scrollToTop()
                               }}
                             >
                               <i
@@ -478,6 +485,7 @@ const TrendsReport = () => {
                               onClick={()=> { 
                                 setSelectedText(data);
                                 setRequestDetails([data])
+                                scrollToTop()
                               }}
                             >
                               <i
@@ -549,6 +557,7 @@ const TrendsReport = () => {
                               onClick={()=> { 
                                 setSelectedText(data);
                                 setQuestionDetails([data])
+                                scrollToTop()
                               }}
                             >
                               <i
