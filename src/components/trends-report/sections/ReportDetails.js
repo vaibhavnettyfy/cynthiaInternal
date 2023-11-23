@@ -15,46 +15,37 @@ import {
   ohk,
 } from "@/helper/constant";
 import Image from "next/image";
+import ReactDOM from "react-dom";
 import { circularProgressClasses } from "@mui/material/CircularProgress";
 import Sentiments from "./Sentiments";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import PdfContent from "./PdfContent";
 
 const ReportDetails = ({ data, name }) => {
   let list = data || [];
 
   const progressValue = 80;
-  // const pdfHandlers = list.map(() => useRef());
-
   
-
-
   const [downloadInvoice, setDownloadInvoice] = useState(false);
 
-  
-  const pdfHandlers = useRef(list.map(() => React.createRef())); // Create a ref to store refs
-
-
-  useEffect(() => {
-    // Ensure that the refs are assigned after the component is mounted
-    pdfHandlers.current = list.map(() => React.createRef());
-  });
-
   const pdfHandler = (index,topic) => {
-    // const input = pdfHandlers.current[index].current;
-    // const input = componentRef.current;
-    
-    const input = pdfHandlers.current[index]?.current;
-    console.log("input", input);
-    
-    html2canvas(input).then((canvas) => {
+    const container = document.createElement("div"); // create a div element
+    document.body.appendChild(container); 
+    const pdfContentProps = { res: list[index] };
+
+    ReactDOM.render(<PdfContent {...pdfContentProps} />, container);
+
+    html2canvas(container).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
-      pdf.save(`${topic}.pdf`);
+      pdf.save(`${topic}-${index + 1}.pdf`); // use index in the file name
+      document.body.removeChild(container); // remove the dynamically created div
     });
-
   };
+
+  
 
   return (
     <Box margin={"0 100px"}>
@@ -80,14 +71,13 @@ const ReportDetails = ({ data, name }) => {
         </Box>
       </Stack>
       <div
-        style={{
-          width: "100%", // Adjust to make it responsive
-          maxWidth: "210mm", // A4 width
-          // height: "100%",
-        }}
+        // style={{
+        //   width: "100%", // Adjust to make it responsive
+        //   maxWidth: "210mm", // A4 width
+        //   // height: "100%",
+        // }}
       >
-        {console.log("ListFinal===>",list)}
-        {list.length > 0  && list.map((res, index) => {
+        {list.map((res, index) => {
           const inputString = res?.summary_bullet;
           const representative = res?.representative_docs;
           let result = inputString.match(/"([^"]*)"/g);
@@ -114,162 +104,7 @@ const ReportDetails = ({ data, name }) => {
                     </Typography>
                   </Box>
                 </Stack>
-                <Box padding={5} ref={pdfHandlers.current[index]}>
-                  <Stack flexDirection={"row"} alignItems={"start"} gap={3}>
-                    <Stack alignItems={"center"} gap={"5px"}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          position: "relative",
-                          width: "fit-content",
-                        }}
-                      >
-                        <Box sx={{ position: "relative", height: "90px" }}>
-                          <CircularProgress
-                            variant="determinate"
-                            sx={{
-                              color: (theme) =>
-                                theme.palette.grey[
-                                theme.palette.mode === "light" ? 200 : 800
-                                ],
-                            }}
-                            size={90}
-                            thickness={5}
-                            value={100}
-                          />
-                          <CircularProgress
-                            variant="determinate"
-                            disableShrink
-                            sx={{
-                              color: "#7a52f4",
-                              position: "absolute",
-                              left: 0,
-                              borderRadius: "50%",
-                              [`& .${circularProgressClasses.circle}`]: {
-                                strokeLinecap: "round",
-                              },
-                            }}
-                            size={90}
-                            thickness={5}
-                            value={res.percentage_count}
-                          />
-                        </Box>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          fontSize={"20px"}
-                          fontWeight={"600"}
-                          sx={{
-                            position: "absolute",
-                            left: "0",
-                            right: "0",
-                            textAlign: "center",
-                          }}
-                        >
-                          {`${Math.round(res.percentage_count)}%`}
-                        </Typography>
-                      </div>
-                      <Typography fontSize={"14px"} fontWeight={"500"}>
-                        {`Total Count : ${res.count}`}
-                      </Typography>
-                    </Stack>
-                    <Typography
-                      fontSize={"27px"}
-                      fontWeight={"600"}
-                      lineHeight={"35px"}
-                    >
-                      {`${res.topic}`}
-                    </Typography>
-                  </Stack>
-                  <Typography padding={"20px 10px"} fontWeight={"500"}>
-                    {res.summary}
-                  </Typography>
-
-                  <Box paddingY={3}>
-                    <Typography
-                      fontSize={"25px"}
-                      fontWeight={"600"}
-                      lineHeight={"30px"}
-                    >
-                      User Sentiment
-                    </Typography>
-                    <Stack flexDirection={"row"} gap={3} marginTop={2}>
-                      <Sentiments
-                        name={"Positive"}
-                        per={res.positive_percentage}
-                        img={good}
-                        color={"#7bc043"}
-                      />
-                      <Sentiments
-                        name={"Negative"}
-                        per={res.negative_percentage}
-                        img={bad}
-                        color={"#f44336"}
-                      />
-                      <Sentiments
-                        name={"Mixed"}
-                        per={res.mixed_percentage}
-                        img={ohk}
-                        color={"#ff7f50"}
-                      />
-                    </Stack>
-                  </Box>
-                  <Box paddingY={3}>
-                    <Typography
-                      fontSize={"25px"}
-                      fontWeight={"600"}
-                      lineHeight={"30px"}
-                    >
-                      Findings
-                    </Typography>
-                    <Stack padding={"20px 0 0 40px"} gap={2}>
-                      {result &&
-                        result.length > 0 &&
-                        result?.map((res) => {
-                          return <Typography> - {res} </Typography>;
-                        })}
-                    </Stack>
-                    <Stack
-                      maxWidth={"650px"}
-                      margin={"auto"}
-                      flexDirection={"row"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                      padding={"20px 50px 20px 60px"}
-                      gap={2}
-                    >
-                      <Image
-                        alt="quoteleft"
-                        src={quoteleft}
-                        style={{
-                          width: "25px",
-                          height: "25px",
-                          alignSelf: "flex-start",
-                        }}
-                      />
-                      <Typography
-                        paddingY={2}
-                        fontWeight={"400"}
-                        fontSize={"14px"}
-                        color={"#7f7f7f"}
-                      >
-                        <i style={{ overflowWrap: "anywhere" }}>
-                          {representativeResult && representativeResult[0]}
-                        </i>
-                      </Typography>
-                      <Image
-                        src={quoteright}
-                        alt="quoteright"
-                        style={{
-                          width: "25px",
-                          height: "25px",
-                          alignSelf: "flex-end",
-                        }}
-                      />
-                    </Stack>
-                  </Box>
-                </Box>
+                <PdfContent res={res}/>
               </Box>
               <Divider sx={{marginBottom:1}}/>
             </React.Fragment>
