@@ -19,6 +19,8 @@ import { circularProgressClasses } from "@mui/material/CircularProgress";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Sentiments from "./Sentiments";
+import { pdfGenerateHandler } from "@/service/trendsReport.service";
+import { errorNotification } from "@/helper/Notification";
 
 
 const ReportDetails = ({ data,name}) => {
@@ -27,6 +29,22 @@ const ReportDetails = ({ data,name}) => {
   if (list.length === 0) {
     //when data is length is zero.
     return <div>No data found.</div>;
+  }
+
+  const exportPdfHandler = async () =>{
+    const fileId = localStorage.getItem("fileId");
+    const {data,message,success} = await pdfGenerateHandler(fileId);
+    if(success){
+      const blob = new Blob([data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.download = "Trends & Reports.pdf";
+      link.href = window.URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }else{
+      errorNotification(message);
+    }
   }
 
 
@@ -56,10 +74,11 @@ const ReportDetails = ({ data,name}) => {
           alignItems={"center"}
           gap={"3px"}
           sx={{ cursor: "pointer" }}
+          onClick={()=>exportPdfHandler()}
         >
           <Image src={ios_share} />
           <Typography fontSize={"12px"} fontWeight={"500"} color={"#c1c1c1"}>
-            SHARE
+            Export
           </Typography>
         </Stack>
       </Stack>
