@@ -33,7 +33,10 @@ const ReportDetails = ({ data,name}) => {
 
   const exportPdfHandler = async () =>{
     const fileId = localStorage.getItem("fileId");
-    const {data,message,success} = await pdfGenerateHandler(fileId);
+    const payload = {
+      file_id: fileId
+    }
+    const {data,message,success} = await pdfGenerateHandler(payload);
     if(success){
       const blob = new Blob([data], { type: "application/pdf" });
       const link = document.createElement("a");
