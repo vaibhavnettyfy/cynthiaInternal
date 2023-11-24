@@ -24,8 +24,15 @@ import Skeleton from "@mui/material/Skeleton";
 import CommonButton from "../common/Button";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import { askCynthiaPdfHandler } from "@/service/askCynthia.service";
+import { errorNotification } from "@/helper/Notification";
 
-function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
+function AskCynthiaDetails({
+  querryId,
+  detailFlag,
+  querryDetails,
+  querryTopic,
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   // const queryId = searchParams.get("id");
@@ -35,26 +42,24 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [likeFlag, setLikeFlag] = useState(false);
   const [disLike, setDisLike] = useState(false);
-  const [likeShow,setLikeShow] = useState(false);
-
+  const [likeShow, setLikeShow] = useState(false);
+  const [querryResponse,setQuerryResponse] = useState(null);
 
   let userRole = "";
   let userId = "";
   let orgId = "";
-  let FILEID = ""
-
-  const divRef = useRef(null);
+  let FILEID = "";
 
   if (typeof window !== "undefined") {
     userRole = localStorage.getItem("userRole");
     userId = localStorage.getItem("userId");
     orgId = localStorage.getItem("orgId");
-    FILEID = localStorage.getItem("fileId")
+    FILEID = localStorage.getItem("fileId");
   }
 
-  const backHandler = () =>{
+  const backHandler = () => {
     detailFlag();
-  }
+  };
 
   useEffect(() => {
     if (querryId) {
@@ -62,20 +67,22 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     }
   }, []);
 
-
-  useEffect(()=>{
-    if(querryDetails){
+  useEffect(() => {
+    if (querryDetails) {
       dataDisplay(querryDetails);
     }
-  },[querryDetails]);
+  }, [querryDetails]);
 
   const getQuerryDataById = async (id) => {
     const { data, error } = await supabase
       .from("saved_queries")
       .select("*")
       .eq("id", id);
-    setFileId( data[0].file_id);
+    setFileId(data[0].file_id);
     const response = data[0].response;
+    // here we store data of response because we have to send response to pdf api 
+    setQuerryResponse(response);
+    console.log("response",response);
     const parsedData = JSON.parse(response);
     if (data && data.length > 0) {
       if (response) {
@@ -87,16 +94,15 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
           sub_topic_summary: parsedData?.sub_topic_summary,
         });
         subTopicHandler(parsedData?.sub_topic_summary);
-        likeDislikeCheckHandler(data[0].file_id,parsedData?.query);
-
+        likeDislikeCheckHandler(data[0].file_id, parsedData?.query);
       } else {
         setDataNotFound(true);
       }
     }
   };
 
-
-  const dataDisplay = (response) =>{
+  const dataDisplay = (response) => {
+    setQuerryResponse(response);
     const parsedData = JSON.parse(response);
     setJsonData({
       query: parsedData?.query,
@@ -106,33 +112,34 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
       sub_topic_summary: parsedData?.sub_topic_summary,
     });
     subTopicHandler(parsedData?.sub_topic_summary);
-    likeDislikeCheckHandler(FILEID,parsedData?.query)
-  }
+    likeDislikeCheckHandler(FILEID, parsedData?.query);
+  };
 
-  const likeDislikeCheckHandler = async (fId,text) => {
-    const { data, error } = userRole === "individual"
-      ? await supabase
-        .from("summary_feedback")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("query",querryTopic)
-        .eq("file_id", fId)
-      : await supabase
-        .from("summary_feedback")
-        .select("*")
-        .eq("organization_id", orgId)
-        .eq("query",querryTopic)
-        .eq("file_id", fId)
+  const likeDislikeCheckHandler = async (fId, text) => {
+    const { data, error } =
+      userRole === "individual"
+        ? await supabase
+            .from("summary_feedback")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("query", querryTopic)
+            .eq("file_id", fId)
+        : await supabase
+            .from("summary_feedback")
+            .select("*")
+            .eq("organization_id", orgId)
+            .eq("query", querryTopic)
+            .eq("file_id", fId);
     if (!error) {
-        if(data && data.length > 0) {
-          if(data[0].feedback) {
-            if (data[0].feedback === "Dislike") {
-              setDisLike(true);
-            } else {
-              setLikeFlag(true);
-            }
+      if (data && data.length > 0) {
+        if (data[0].feedback) {
+          if (data[0].feedback === "Dislike") {
+            setDisLike(true);
+          } else {
+            setLikeFlag(true);
           }
         }
+      }
     }
   };
 
@@ -152,21 +159,27 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     }
   };
 
-  const downloadPdf = () => {
-    const divToCapture = divRef.current;
-    html2canvas(divToCapture).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
-      pdf.save(`${querryTopic}.pdf`);
-    });
+  const downloadPdf = async () => {
+    console.log("querryDetails",querryResponse);
+    const {data,message,success} = await askCynthiaPdfHandler(querryResponse);
+    if(success){
+      const blob = new Blob([data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.download = `${querryTopic}.pdf`;
+      link.href = window.URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }else{
+      errorNotification(message);
+    }
   };
 
   const likeHandler = async (res) => {
     // setLikeFlag(!likeFlag);
     // setDisLike(!disLike);
-     setLikeFlag(true);
-     setDisLike(false);
+    setLikeFlag(true);
+    setDisLike(false);
     const payload = {
       user_id: userId,
       organization_id: null,
@@ -183,21 +196,20 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     const { data, error } =
       userRole === "individual"
         ? await supabase
-          .from("summary_feedback")
-          .select("*")
-          .eq("user_id", userId)
-          .eq("query",querryTopic)
-          .eq("file_id", FILEID)
+            .from("summary_feedback")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("query", querryTopic)
+            .eq("file_id", FILEID)
         : await supabase
-          .from("summary_feedback")
-          .select("*")
-          .eq("organization_id", orgId)
-          .eq("query",querryTopic)
-          .eq("file_id", FILEID)
-
+            .from("summary_feedback")
+            .select("*")
+            .eq("organization_id", orgId)
+            .eq("query", querryTopic)
+            .eq("file_id", FILEID);
 
     if (!error) {
-      const existingFeedback = data
+      const existingFeedback = data;
       if (existingFeedback.length > 0) {
         const { data, error } = await supabase
           .from("summary_feedback")
@@ -218,7 +230,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     const payload = {
       user_id: userId,
       organization_id: null,
-      file_id: fileId ||FILEID,
+      file_id: fileId || FILEID,
       query: response.query,
       feedback: "Dislike",
       summary_response: response.summary,
@@ -231,20 +243,20 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
     const { data, error } =
       userRole === "individual"
         ? await supabase
-          .from("summary_feedback")
-          .select("*")
-          .eq("user_id", userId)
-          .eq("query",querryTopic)
-          .eq("file_id", FILEID)
+            .from("summary_feedback")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("query", querryTopic)
+            .eq("file_id", FILEID)
         : await supabase
-          .from("summary_feedback")
-          .select("*")
-          .eq("organization_id", orgId)
-          .eq("query",querryTopic)
-          .eq("file_id", FILEID)
+            .from("summary_feedback")
+            .select("*")
+            .eq("organization_id", orgId)
+            .eq("query", querryTopic)
+            .eq("file_id", FILEID);
 
     if (!error) {
-      const existingFeedback = data
+      const existingFeedback = data;
       if (existingFeedback.length > 0) {
         const { data, error } = await supabase
           .from("summary_feedback")
@@ -275,10 +287,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
         >
           <Box sx={{ fontSize: "30px", fontWeight: "600" }}>Data Not Found</Box>
           <Box>
-            <CommonButton
-              buttonName="Back"
-              onClick={()=>backHandler()}
-            />
+            <CommonButton buttonName="Back" onClick={() => backHandler()} />
           </Box>
         </Box>
       ) : (
@@ -302,29 +311,30 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
             />
             <Box width={"100%"}>
               {/* {jsonData ? ( */}
-                <Typography
-                  fontSize={"35px"}
-                  fontWeight={"500"}
-                  lineHeight={"37px"}
-                >
-                  {querryTopic}
-                </Typography>
-              {/* ) : ( */}
-                {/* <Skeleton animation="wave" width={'80%'} height={50} /> */}
-              {/* )} */}
+              <Typography
+                fontSize={"35px"}
+                fontWeight={"500"}
+                lineHeight={"37px"}
+              >
+                {querryTopic}
+              </Typography>
             </Box>
             <Image
               src={close}
               onClick={() => backHandler()}
               style={{ width: "40px", height: "40px", cursor: "pointer" }}
             />
-            <Image
-              onClick={downloadPdf}
-              src={ios_share}
-              style={{ width: "40px", height: "40px", cursor: "pointer" }}
-            />
+            {jsonData && (
+              <>
+                <Image
+                  onClick={downloadPdf}
+                  src={ios_share}
+                  style={{ width: "40px", height: "40px", cursor: "pointer" }}
+                />
+              </>
+            )}
           </Stack>
-          <div ref={divRef}>
+          <div>
             <Box maxWidth={"950px"} margin={"auto"} paddingY={4}>
               <Stack flexDirection={"row"} gap={"3px"}>
                 <SouthEastIcon sx={{ color: "#7a52f4", marginTop: "2px" }} />
@@ -337,7 +347,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                     EXPLORING
                   </Typography>
                 ) : (
-                  <Skeleton animation="wave" width={'40%'} height={35} />
+                  <Skeleton animation="wave" width={"40%"} height={35} />
                 )}
               </Stack>
               {jsonData ? (
@@ -350,7 +360,7 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                   {jsonData.main_topic}
                 </Typography>
               ) : (
-                <Skeleton animation="wave" width={'50%'} height={40} />
+                <Skeleton animation="wave" width={"50%"} height={40} />
               )}
               {jsonData ? (
                 <Typography
@@ -363,10 +373,10 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                 </Typography>
               ) : (
                 <>
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
-                  <Skeleton animation="wave" width={'60%'} height={25} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
+                  <Skeleton animation="wave" width={"60%"} height={25} />
                 </>
               )}
               <Stack
@@ -375,7 +385,9 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                 justifyContent={"space-between"}
                 padding={"15px 100px 0 50px"}
               >
-                {!jsonData ? <Skeleton animation="wave" width={'100%'} height={40} /> :
+                {!jsonData ? (
+                  <Skeleton animation="wave" width={"100%"} height={40} />
+                ) : (
                   <>
                     <Typography
                       fontSize={"16px"}
@@ -407,11 +419,12 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                           onClick={() => likeHandler(jsonData)}
                         />
                       )}
-                    </Stack></>}
+                    </Stack>
+                  </>
+                )}
               </Stack>
             </Box>
 
-            
             {subTopics &&
               Object.keys(subTopics).map((res, index) => {
                 return (
@@ -441,10 +454,10 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                       </Typography>
                     ) : (
                       <>
-                        <Skeleton animation="wave" width={'80%'} height={25} />
-                        <Skeleton animation="wave" width={'100%'} height={25} />
-                        <Skeleton animation="wave" width={'100%'} height={25} />
-                        <Skeleton animation="wave" width={'60%'} height={25} />
+                        <Skeleton animation="wave" width={"80%"} height={25} />
+                        <Skeleton animation="wave" width={"100%"} height={25} />
+                        <Skeleton animation="wave" width={"100%"} height={25} />
+                        <Skeleton animation="wave" width={"60%"} height={25} />
                       </>
                     )}
                     <Stack
@@ -486,29 +499,29 @@ function AskCynthiaDetails({querryId,detailFlag,querryDetails,querryTopic}) {
                 );
               })}
             {/* Add a skeleton loader for the subtopics if subTopics is null */}
-            
-            {!jsonData &&  (
+
+            {!jsonData && (
               <>
                 <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
-                  <Skeleton animation="wave" width={'70%'} height={35} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={"70%"} height={35} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
                 </Box>
                 <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
-                  <Skeleton animation="wave" width={'70%'} height={35} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={"70%"} height={35} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
                 </Box>
                 <Box maxWidth={"1050px"} margin={"auto"} paddingY={3}>
-                  <Skeleton animation="wave" width={'70%'} height={35} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
-                  <Skeleton animation="wave" width={'80%'} height={25} />
-                  <Skeleton animation="wave" width={'100%'} height={25} />
+                  <Skeleton animation="wave" width={"70%"} height={35} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
+                  <Skeleton animation="wave" width={"80%"} height={25} />
+                  <Skeleton animation="wave" width={"100%"} height={25} />
                 </Box>
               </>
             )}
