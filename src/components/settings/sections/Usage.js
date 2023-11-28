@@ -1,3 +1,4 @@
+"use client"
 import CommonButton from "@/components/common/Button";
 import {
   Box,
@@ -32,6 +33,7 @@ import {
 import CommonInput from "@/components/common/Input";
 import { supabase } from "@/Client";
 import { errorNotification } from "@/helper/Notification";
+import moment from 'moment';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -100,14 +102,15 @@ const Usage = () => {
       .from("user_usage")
       .select("*")
       .eq("user_id", userId);
-
-    setUsageDetails(data[0]);
-    sethardUsageLimit(data[0]?.hard_usage_limit);
-    setExtraCurrentUsage(data[0]?.extra_current_usage);
-    setApprovedUsageLimit(data[0]?.approved_usage_limit);
-    // usage_based_pricing
-    setUsageBasedPricing(data[0]?.usage_based_pricing);
-    setReviewUsage(data[0]?.reviews_used);
+    if(!error){
+      setUsageDetails(data[0]);
+      sethardUsageLimit(data[0]?.hard_usage_limit);
+      setExtraCurrentUsage(data[0]?.extra_current_usage);
+      setApprovedUsageLimit(data[0]?.approved_usage_limit);
+      // usage_based_pricing
+      setUsageBasedPricing(data[0]?.usage_based_pricing);
+      setReviewUsage(data[0]?.reviews_used);
+    }
   };
 
   // Invoice Handler
@@ -253,7 +256,7 @@ const Usage = () => {
             $0.20 / feedback
           </Typography>
           <Typography fontSize={"13px"}>
-            Pricing as per Starter Plan. Upgrade for lower price.{" "}
+            {`Pricing as per ${planName} Upgrade for lower price.`}
             <Link href="#">Upgrade now</Link>{" "}
           </Typography>
         </Stack>
@@ -297,7 +300,7 @@ const Usage = () => {
               subsequent requests will be rejected.
             </Typography>
             <CommonInput
-              value={`$ ${hardUsageLimit}`}
+              value={`$ ${approvedUsageLimit !== undefined ? approvedUsageLimit : 0}`}
               style={{ width: "300px" }}
             />
           </Stack>
@@ -322,6 +325,7 @@ const Usage = () => {
             </TableHead>
             <TableBody>
               {invoiceData?.map((res) => {
+                console.log("res-->",res);
                 const paymentStatus = res.payment_status;
                 var status = getInvoiceStatus(
                   paymentStatus == "paid" ? true : false
@@ -349,7 +353,7 @@ const Usage = () => {
                       {`$ ${res.amount}`}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      5 June 2023, 09:30
+                    {moment(res?.created_at).format('D MMMM YYYY, HH:mm')}
                     </TableCell>
                     <TableCell
                       component="th"

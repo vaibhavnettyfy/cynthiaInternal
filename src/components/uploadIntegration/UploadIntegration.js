@@ -1,4 +1,4 @@
-"use client";
+"use Client";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import UploadCard from "./UploadCard";
@@ -15,6 +15,7 @@ import Link from "next/link";
 import WithAuth from "../WithAuth";
 import { UPLOADINTEGRATION, checkFeatures } from "@/helper";
 import CommonModal from "../common/Modal";
+import { supabase } from "@/Client";
 
 const uploadData = [
   {
@@ -45,10 +46,6 @@ const uploadData = [
   },
 ];
 
-
-
-
-
 const UploadIntegration = () => {
   const [isModalOpen, setIsModalOpen] = useState({
     open: false,
@@ -58,18 +55,18 @@ const UploadIntegration = () => {
 
   useEffect(() => {
     checkHandler();
-  }, [])
-  
+  }, []);
+
   const checkHandler = async () => {
     const { status, message } = await checkFeatures(UPLOADINTEGRATION);
     if (!status) {
       setIsModalOpen({
         open: true,
         currentComponent: "checkFeature",
-        data:{
+        data: {
           message,
-        }
-      })
+        },
+      });
     }
   };
 
@@ -128,15 +125,15 @@ const UploadIntegration = () => {
         </Box>
       </Box>
       <CommonModal
-                modalOpen={isModalOpen}
-                handleClose={() =>
-                  setIsModalOpen({
-                    open: false,
-                    currentComponent: "",
-                    data: null,
-                  })
-                }
-              />
+        modalOpen={isModalOpen}
+        handleClose={() =>
+          setIsModalOpen({
+            open: false,
+            currentComponent: "",
+            data: null,
+          })
+        }
+      />
     </>
   );
 };

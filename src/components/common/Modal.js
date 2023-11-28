@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import PaymenentPending from '../modal/PaymenentPending';
 import SubscriptionIssue from '../modal/SubscriptionIssue';
 import CheckFeature from '../modal/CheckFeature';
+import SwitchAccount from '../modal/SwitchAccount';
 
 export default function CommonModal({ handleClose, modalOpen }) {
     const router = useRouter();
@@ -41,6 +42,7 @@ export default function CommonModal({ handleClose, modalOpen }) {
             {modalOpen.currentComponent === 'paymenentPending' && <PaymenentPending handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'subscriptionIssue' && <SubscriptionIssue handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'checkFeature' && <CheckFeature handleClose={handleClose} modalOpen={modalOpen} />}
+            {modalOpen.currentComponent === 'switchAccount' && <SwitchAccount handleClose={handleClose} modalOpen={modalOpen} />}
         </Dialog>
     );
 }

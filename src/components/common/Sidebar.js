@@ -84,7 +84,7 @@ const Sidebar = ({ handleDrawerToggle }) => {
     >
       <Box>
         <List
-          sx={{ display: "flex", justifyContent: "center", cursor: "pointer" }}
+          sx={{ display: "flex", justifyContent: "center", cursor: "pointer",paddingBottom:'5px' }}
         >
           <Image
             src={Profileimage}

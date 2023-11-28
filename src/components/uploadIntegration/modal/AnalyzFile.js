@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useEffect } from "react";
 import {
   DialogActions,
   DialogContent,
@@ -14,7 +15,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import papa from "papaparse";
 
 
-const AnalyzFile = ({ handleClose, handleClickStep1 ,handleCsvData,selectedColumn}) => {
+const AnalyzFile = ({ handleClose, handleClickStep1 ,handleCsvData,selectedColumn,file}) => {
   const [progress, setProgress] = React.useState(0);
   const [processData,setProcessData] = React.useState([]);
   const [columnArray,setColumnArray] = React.useState([]);
@@ -26,18 +27,24 @@ const AnalyzFile = ({ handleClose, handleClickStep1 ,handleCsvData,selectedColum
         if (oldProgress === 100) {
           return 0;
         }
-        const diff = Math.random() * 10;
-        return Math.min(oldProgress + diff, 100);
+        // const diff = Math.random() * 10;
+        // return Math.min(oldProgress + diff, 100);
       });
-    }, 500);
+    },[]);
 
     return () => {
       clearInterval(timer);
     };
   }, []);
 
-  const handleChange = (event) =>{
-    papa.parse(event.target.files[0],{
+  useEffect(()=>{
+    if(file){
+      handleChange(file);
+    }
+  },[]);
+
+  const handleChange = (file) =>{
+    papa.parse(file,{
         header:true,
         skipEmptyLines : true,
         complete: function(result) {
@@ -52,9 +59,12 @@ const AnalyzFile = ({ handleClose, handleClickStep1 ,handleCsvData,selectedColum
             setColumnArray(columnArray[0]);
             setValues(valuesArray);
             handleCsvData(result.data,columnArray[0],valuesArray);
+            setProgress(100);
         }
     });
   }
+
+
 
   return (
     <>

@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import {
   DialogContent,
@@ -14,6 +15,8 @@ import CommonButton from "@/components/common/Button";
 import CommonInput from "@/components/common/Input";
 import CommonSelect from "@/components/common/Select";
 import { styled } from "@mui/system";
+import { inviteMemberHandler } from "@/service/setting.service";
+import { errorNotification, successNotification } from "@/helper/Notification";
 const selectList = [{ name: "US", value: "us" }];
 
 const StyledTextarea = styled(TextareaAutosize)(
@@ -46,7 +49,37 @@ const StyledTextarea = styled(TextareaAutosize)(
 );
 
 const InviteMember = ({ handleClose }) => {
-  const [emails,setEmails] = useState("");
+  const [emails, setEmails] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const emailHandler = async () => {
+    const trimmedEmails = emails.trim();
+
+    if (trimmedEmails.length === 0) {
+      setErrorMessage("Please enter at least one email address.");
+    } else {
+      const emailList = emails.split(",").map((email) => email.trim());
+      if (emailList.length > 10) {
+        setErrorMessage("You can enter up to 10 email addresses.");
+      } else {
+        setErrorMessage("");
+        const payload = {
+          emails: emailList,
+        };
+  
+        console.log("payload--", payload);
+        const { data, message, success } = await inviteMemberHandler(payload);
+  
+        if (success) {
+          successNotification(message);
+          handleClose();
+        } else {
+          errorNotification(message);
+        }
+      }
+    }
+  };
+
   return (
     <Box width={"480px"} sx={{ borderRadius: "10px" }}>
       <DialogContent>
@@ -67,9 +100,19 @@ const InviteMember = ({ handleClose }) => {
           marginTop={4}
           justifyContent={"center"}
         >
-          <StyledTextarea aria-label="minimum height" minRows={3} value={emails} onChange={(e)=>setEmails(e.target.value)} />
+          <StyledTextarea
+            aria-label="minimum height"
+            minRows={3}
+            value={emails}
+            onChange={(e) => setEmails(e.target.value)}
+          />
         </Stack>
       </DialogContent>
+      {errorMessage && (
+        <Typography color="error" textAlign="center" mt={2}>
+          {errorMessage}
+        </Typography>
+      )}
       <Stack
         flexDirection={"row"}
         padding={3}
@@ -78,7 +121,7 @@ const InviteMember = ({ handleClose }) => {
       >
         <CommonButton
           buttonName="Send Invites"
-          onClick={handleClose}
+          onClick={emailHandler}
           style={{ borderRadius: "5px" }}
         />
         <CommonButton

@@ -81,6 +81,7 @@ const LogIn = () => {
       if (error) {
         errorNotification(error.message || "Something went wrong");
       } else {
+        console.log("data-Data",data);
         if (typeof window !== 'undefined') {
         localStorage.setItem("accessToken", data.session.access_token);
         localStorage.setItem("userId", data.session.user.id);

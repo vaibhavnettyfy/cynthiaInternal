@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useState } from "react";
 import {
   DialogActions,
   DialogContent,
@@ -15,9 +16,8 @@ import NameCsv from "./NameCsv";
 import ColumnAnalyse from "./ColumnAnalyse";
 import LooksGood from "./LooksGood";
 import ProcessFile from "./ProcessFile";
-import UploadCsv from "./UploadCsv";
-import PlayStoreConnect from "./PlayStoreConnect";
-const UploadModal = ({ handleClose, modalOpen }) => {
+const UploadModal = ({ handleClose ,modalOpen}) => {
+  console.log("modalOpen",modalOpen);
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
@@ -29,31 +29,11 @@ const UploadModal = ({ handleClose, modalOpen }) => {
   const [columnArray, setColumnArray] = useState([]);
   const [value, setValues] = useState([]);
 
-  // selected Column Value
-  const [selectedColumn, setSelectedColumn] = useState("");
+  // selected Column Value 
+  const [selectedColumn,setSelectedColumn] = useState("");   
 
-  // File Name By User
-  const [fileName, setFileName] = useState("");
-
-  // file upload by user
-  const [file, setFile] = useState("");
-
-  // to handle csv upload modal
-  const [removeCsv, setRemoveCsv] = useState(false);
-
-  // googlePlay Store
-  const [playStorePopup, setPlayStorePopUp] = useState(false);
-
-  // to handle csv upload modal
-  useEffect(() => {
-    let modalName = modalOpen.name;
-    if (modalName === "Upload CSV File") {
-      setRemoveCsv(true);
-    }
-    if (modalName === "Connect Google Play Store") {
-      setPlayStorePopUp(true);
-    }
-  }, []);
+  // File Name 
+  const [fileName,setFileName] = useState("");
 
   const handleClickStep1 = () => {
     setStep1(false);
@@ -91,36 +71,27 @@ const UploadModal = ({ handleClose, modalOpen }) => {
   };
 
   const handleCsvData = (pData, columnData, valuesData) => {
+    console.log("called--->");
     setProcessData(pData);
     setColumnArray(columnData);
     setValues(valuesData);
   };
 
-  // to handle select column from step-3
-  const selectColumnHandler = (data) => {
+  // to handle select column from step-3 
+  const selectColumnHandler = (data) =>{
+    console.log("1111",data);
     setSelectedColumn(data);
-  };
+  }; 
 
-  // to handle csv upload modal
-  const removeCsvHandler = () => {
-    setRemoveCsv(false);
-    setStep1(true);
-  };
-  // to handle remove google upload
-  const removeGoogleHandler = () =>{
-    setPlayStorePopUp(false);
-    setStep1(true);
-  };
 
-  const fileNameHandler = (data) => {
+  const fileNameHandler = (data) =>{
+    console.log("daaata--name",data);
     setFileName(data);
-    setStep1(true);
   };
 
-
-  const csvFileHandler = (file) => {
-    setFile(file);
-  };
+  console.log("processData", processData);
+  console.log("columnArray", columnArray);
+  console.log("value", value);
 
   return (
     <Box
@@ -142,24 +113,16 @@ const UploadModal = ({ handleClose, modalOpen }) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      {step1 &&
-        (removeCsv ? (
-          <UploadCsv
-            handleClose={handleClose}
-            handleClickBack1={removeCsvHandler}
-            fileHandler={csvFileHandler}
-            handleCsvData={handleCsvData}
-          />
-        ) : playStorePopup ? (
-          <PlayStoreConnect handleClose={handleClose} handleClickBack1={removeGoogleHandler}/>
-        ) : (
-          <AnalyzFile
-            handleClose={handleClose}
-            handleClickStep1={handleClickStep1}
-            handleCsvData={handleCsvData}
-            selectedColumn={selectedColumn}
-          />
-        ))}
+      {step1 && (
+        <AnalyzFile
+          handleClose={handleClose}
+          handleClickStep1={handleClickStep1}
+          // we are passing File to this component which from user have selected 
+          file={modalOpen.data.file}
+          handleCsvData={handleCsvData}
+          selectedColumn={selectedColumn}
+        />
+      )}
       {step2 && (
         <NameCsv
           handleClickStep2={handleClickStep2}
@@ -182,15 +145,12 @@ const UploadModal = ({ handleClose, modalOpen }) => {
           handleClickBack3={handleClickBack3}
           handleClickStep4={handleClickStep4}
           processData={processData}
+          file={modalOpen.data.file}
           selectedColumn={selectedColumn}
         />
       )}
       {step5 && (
         <ProcessFile
-          // file which upload by user
-          file={file}
-          // column which selectd by User
-          selectedColumn={selectedColumn}
           handleClose={handleClose}
           handleClickBack4={handleClickBack4}
         />

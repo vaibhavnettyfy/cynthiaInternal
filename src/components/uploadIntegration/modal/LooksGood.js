@@ -10,10 +10,14 @@ import {
   Divider,
 } from "@mui/material";
 import CommonButton from "@/components/common/Button";
+import { uploadCsvHandler } from "@/service/upload.service";
+import { errorNotification, successNotification } from "@/helper/Notification";
+import { EventEmitter } from "@/helper";
 const LooksGood = ({
   handleClickStep4,
   handleClickBack3,
   processData,
+  file,
   selectedColumn,
 }) => {
   const [dataNotFound, setDataNotFound] = useState(false);
@@ -28,6 +32,25 @@ const LooksGood = ({
       setDataNotFound(true);
     }
   }, []);
+
+  const csvHandler = async () => {
+    const formData = new FormData();
+    formData.append("file", file); 
+    formData.append("source", "csv");
+    // console.log("Payload", payload);
+    const { data, message, success } = await uploadCsvHandler(formData);
+    if (success) {
+      successNotification(message);
+      console.log("data-Sucess", data);
+      localStorage.setItem("jobId",data.job_id)
+      handleClickStep4();
+      EventEmitter.dispatch('jobId',true);
+    } else {
+      errorNotification(message);
+      
+    }
+  };
+
   return (
     <>
       <Box>
@@ -102,10 +125,10 @@ const LooksGood = ({
         {!dataNotFound && (
           <Box height={"200px"} sx={{ overflowY: "auto" }}>
             {selectedColumnData.slice(0, 5).map((res, i) => {
-              let backgroundColor = "#eeeeee"; 
+              let backgroundColor = "#eeeeee";
 
               if (i === 1 || i === 3 || i === 5) {
-                backgroundColor = "#fff"; 
+                backgroundColor = "#fff";
               }
 
               return (
@@ -139,7 +162,7 @@ const LooksGood = ({
         <CommonButton
           buttonName="Continue"
           fullWidth
-          onClick={handleClickStep4}
+          onClick={() => csvHandler()}
         />
       </Stack>
     </>

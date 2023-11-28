@@ -10,14 +10,19 @@ import { personalValidation } from "@/helper/Formik/validation";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { supabase } from "@/Client";
 import { useRouter } from 'next/navigation';
+import CommonModal from "@/components/common/Modal";
 
 const PersonalInformation = () => {
   const router = useRouter();
   const [profilePicture, setProfilePicture] = useState(null);
   const [userDetails, setUserDetails] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState({
+    open: false,
+    currentComponent: "",
+  });
   let userId = ""
   if (typeof window !== 'undefined') {
-   userId = localStorage.getItem("userId");
+    userId = localStorage.getItem("userId");
   }
   useEffect(() => {
     userDetailsHandler();
@@ -30,8 +35,8 @@ const PersonalInformation = () => {
         .select("*")
         .eq("id", userId);
       setUserDetails(data[0]);
-      if(error) {
-        errorNotification(error.message|| "Something went wrong")
+      if (error) {
+        errorNotification(error.message || "Something went wrong")
       }
       formik.setValues({
         ...formik.values,
@@ -58,11 +63,11 @@ const PersonalInformation = () => {
 
     const { data, error, status, statusText } = await supabase
       .from("users")
-      .update(updatedUserData).eq("id",userId);
-    
-    if(error){
-      errorNotification(error.message||"Error updating user details")
-    }else{
+      .update(updatedUserData).eq("id", userId);
+
+    if (error) {
+      errorNotification(error.message || "Error updating user details")
+    } else {
       successNotification("User details updated:");
     }
   };
@@ -113,7 +118,7 @@ const PersonalInformation = () => {
         Personal Information
       </Typography>
       <Divider />
-      <Box padding={5}>
+      <Box paddingX={5} paddingBottom={5}>
         <Stack
           flexDirection={"row"}
           gap={2}
@@ -121,7 +126,7 @@ const PersonalInformation = () => {
           alignItems={"center"}
           marginBottom={2}
         >
-          <Image
+          {/* <Image
             src={profilePicture ? profilePicture : Profileimage}
             alt="Profile Picture"
             width={125}
@@ -132,25 +137,25 @@ const PersonalInformation = () => {
               borderRadius: "50%",
               marginRight: "20px",
             }}
-          />
-          <CommonButton
+          /> */}
+          {/* <CommonButton
             buttonName="Delete"
             onClick={() => removeProfilePictureHandler()}
             variant="outlined"
             style={{ borderRadius: "3px" }}
-          />
-          <Button variant="contained" style={{ borderRadius: "3px" }}>
+          /> */}
+          {/* <Button variant="contained" style={{ borderRadius: "3px" }}>
             <input
               type="file"
               className="input_upload_file"
               accept="image/*"
               onChange={profilePictureHandler}
             />
-            upload
+            uploads
           </Button>
           {formik.errors.profilePicture && (
             <h4> {formik.errors.profilePicture} </h4>
-          )}
+          )} */}
         </Stack>
         <Stack
           flexDirection={"row"}
@@ -299,6 +304,26 @@ const PersonalInformation = () => {
             name="organizationId"
             style={{ width: "280px" }}
           />
+          <CommonButton
+            buttonName="Switch to individual"
+            style={{ borderRadius: "3px", padding: '8px' }}
+            onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  currentComponent: "switchAccount",
+                })
+              }
+          />
+          <CommonButton
+            buttonName="Create Organization"
+            style={{ borderRadius: "3px", padding: '8px' }}
+            onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  currentComponent: "switchAccount",
+                })
+              }
+          />
         </Stack>
         <Box marginLeft={"150px"} marginTop={3}>
           <CommonButton
@@ -308,6 +333,12 @@ const PersonalInformation = () => {
           />
         </Box>
       </Box>
+      <CommonModal
+        modalOpen={isModalOpen}
+        handleClose={() =>
+          setIsModalOpen({ open: false, currentComponent: "" })
+        }
+      />
     </Box>
   );
 };

@@ -14,6 +14,8 @@ const Settings = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   const allowRoleUsage = ["individual", "org_admin"];
+  const memberRoleUsage = ["org_admin"];
+
   let userRole = ""
   if (typeof window !== 'undefined') {
      userRole = localStorage.getItem("userRole");
@@ -38,7 +40,11 @@ const Settings = () => {
           }
           return null; // Return null if the condition is not met.
         case 4:
-          return <Members />;
+          if(memberRoleUsage.includes(userRole && userRole)){
+            return <Members />;
+          }else{
+            return null;
+          }
         case 5:
           return <TermsService />;
         case 6:

@@ -58,7 +58,7 @@ const Password = () => {
       </Typography>
       <Divider />
       <Box padding={5}>
-        <Stack
+        {/* <Stack
           flexDirection={"row"}
           gap={3}
           alignItems={"center"}
@@ -80,8 +80,8 @@ const Password = () => {
             formik={formik}
             inputProps={{ maxLength: 16 }}
           />
-        </Stack>
-        <Divider />
+        </Stack> */}
+        {/* <Divider /> */}
         <Stack
           flexDirection={"row"}
           gap={3}
@@ -147,7 +147,7 @@ const Password = () => {
             onClick={() => formik.handleSubmit()}
           />
           <Typography fontWeight={"500"} fontSize={"13px"}>
-            <Link href="#" style={{ marginLeft: "10px" }}>
+            <Link href="/recoveryEmail" style={{ marginLeft: "10px" }}>
               I forgot my password!
             </Link>
           </Typography>

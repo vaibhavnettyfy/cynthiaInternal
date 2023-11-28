@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use Client";
+import React, { useEffect, useState } from "react";
 import {
   DialogContent,
   DialogTitle,
@@ -14,18 +15,75 @@ import CloseIcon from "@mui/icons-material/Close";
 import CommonButton from "@/components/common/Button";
 import CommonInput from "@/components/common/Input";
 import CommonSelect from "@/components/common/Select";
+import { supabase } from "@/Client";
+import { errorNotification, successNotification } from "@/helper/Notification";
 
-const selectList = [{ name: "US", value: "us" }];
+// const selectList = [{ name: "US", value: "us" }];
 
-const PlayStoreConnect = ({ handleClose, handleClickBack1 }) => {
+const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
+  console.log("modalOpen",modalOpen);
   const [appId, setAppId] = useState("");
   const [country, setCountry] = useState("");
+  const [countryList, setCountryList] = useState([]);
+
+  let userId = ""
+  let orgId = ""
+  let userRole = ""
+
+  if (typeof window !== "undefined") {
+    userRole = localStorage.getItem("userRole");
+    userId = localStorage.getItem("userId");
+    orgId = localStorage.getItem("orgId");
+  }
+
+  const getCountryListHandler = async () => {
+    const { data, error } = await supabase
+      .from("features")
+      .select("*")
+      .eq("name", "country_code");
+    if (error) {
+      console.log("error", error);
+    } else {
+      setCountryList(data[0].metadata);
+      console.log("data---", data);
+    }
+  };
+
+  useEffect(() => {
+    getCountryListHandler();
+  }, []);
+
+  const connectHandler = async () =>{
+    if(appId !==""&&country !==""){
+      const payload = {
+        integration_name : '',
+        token:'',
+        country_code:country,
+        app_id:appId,
+        integration_source:modalOpen.name === "Connect Google Play Store" ? "Play Store"  : "App Store"
+      }
+
+      if(userRole === "individual"){
+        payload.user_id = userId
+      }else{
+        payload.organization_id = orgId
+      }
+      console.log("payloaddddd",payload);
+      const {data,error} = await supabase.from('integrations').insert(payload);
+      if(error){
+        errorNotification(error.message);
+      }else{
+        successNotification("update Sucessfull");
+        handleClose();
+      }
+    }
+  };
 
   return (
     <Stack
       justifyContent={"space-between"}
       width={"100%"}
-      sx={{ borderRadius: "10px", height: "calc(100% - 50px)" }}
+      sx={{ borderRadius: "10px", height: "calc(100% - 50px)",padding:'30px 25px 10px' }}
     >
       <DialogContent sx={{ padding: "0px" }}>
         <Typography
@@ -42,9 +100,7 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 }) => {
               <CommonInput
                 placeholder="com.cynthia.com"
                 labelInput
-                onChange={(event) => [
-                  setAppId(event.target.value),
-                ]}
+                onChange={(event) => [setAppId(event.target.value)]}
                 labal="Add your app ID"
               />
             </Box>
@@ -60,23 +116,15 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 }) => {
               <Select
                 fullWidth
                 value={country}
-                selectList={selectList}
-                onChange={(event) => [
-                  setCountry(event.target.value),
-                ]}
+                selectList={countryList}
+                onChange={(event) => [setCountry(event.target.value)]}
               >
                 <MenuItem value="" disabled>
-                    {"None"}
+                  {"None"}
                 </MenuItem>
-                {
-                    selectList.map((res,i)=>{
-                        return (
-                        <MenuItem value={res.value}>
-                            {res.name}
-                        </MenuItem>
-                        )
-                    })
-                }
+                {countryList.map((res, i) => {
+                  return <MenuItem value={res}>{res}</MenuItem>;
+                })}
               </Select>
             </Box>
           </Stack>
@@ -91,7 +139,7 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 }) => {
         />
         <CommonButton
           buttonName="Connect"
-          onClick={handleClickBack1}
+          onClick={connectHandler}
           fullWidth
         />
       </Stack>
