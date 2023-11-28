@@ -16,43 +16,43 @@ const Settings = () => {
   const allowRoleUsage = ["individual", "org_admin"];
   const memberRoleUsage = ["org_admin"];
 
-  let userRole = ""
-  if (typeof window !== 'undefined') {
-     userRole = localStorage.getItem("userRole");
+  let userRole = "";
+  if (typeof window !== "undefined") {
+    userRole = localStorage.getItem("userRole");
   }
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
 
-  // render Componenet Here 
-  const renderComponents = () =>{
+  // render Componenet Here
+  const renderComponents = () => {
     switch (selectedTab) {
-        case 0:
-          return <PersonalInformation />;
-        case 1:
-          return <Password />;
-        case 2:
-          return <Plan />;
-        case 3:
-          if (allowRoleUsage.includes(userRole && userRole)) {
-            return <Usage />;
-          }
-          return null; // Return null if the condition is not met.
-        case 4:
-          if(memberRoleUsage.includes(userRole && userRole)){
-            return <Members />;
-          }else{
-            return null;
-          }
-        case 5:
-          return <TermsService />;
-        case 6:
-          return <PrivacyPolicy />;
-        default:
-          return null; // Return null if the selectedTab doesn't match any case.
-      }
-  }; 
+      case 0:
+        return <PersonalInformation />;
+      case 1:
+        return <Password />;
+      case 2:
+        return <Plan />;
+      case 3:
+        return allowRoleUsage.includes(userRole) ? <Usage /> : null;
+      // if (allowRoleUsage.includes(userRole && userRole)) {
+      //   return <Usage />;
+      // } // Return null if the condition is not met.
+      case 4:
+        return memberRoleUsage.includes(userRole && userRole) ? (
+          <Members />
+        ) : null;
+        // }
+        return null;
+      case 5:
+        return <TermsService />;
+      case 6:
+        return <PrivacyPolicy />;
+      default:
+        return null; // Return null if the selectedTab doesn't match any case.
+    }
+  };
 
   return (
     <Box height={"100vh"} display={"flex"} sx={{ overflow: "hidden" }}>
@@ -72,8 +72,12 @@ const Settings = () => {
           <Tab label="Personal Information" />
           <Tab label="Password" />
           <Tab label="Manage Your Plan" />
-          {allowRoleUsage.includes(userRole && userRole) && <Tab label="Usage" />}
-          <Tab label="Members" value={4}/>
+          {allowRoleUsage.includes(userRole && userRole) && (
+            <Tab label="Usage" />
+          )}
+          {memberRoleUsage.includes(userRole && userRole) && (
+            <Tab label="Members" value={4} />
+          )}
           <Tab label="Terms of Service" value={5} />
           <Tab label="Privacy Policy" value={6} />
         </Tabs>
@@ -86,15 +90,6 @@ const Settings = () => {
         className="inputbox"
       >
         {renderComponents()}
-        {/* {selectedTab === 0 && <PersonalInformation />}
-        {selectedTab === 1 && <Password />}
-        {selectedTab === 2 && <Plan />}
-        {
-            allowRoleUsage.includes(userRole) && selectedTab === 3 && <Usage />
-        }
-        {selectedTab === 4 && <Members />}
-        {selectedTab === 5 && <TermsService />}
-        {selectedTab === 6 && <PrivacyPolicy />} */}
       </Box>
     </Box>
   );

@@ -88,6 +88,7 @@ const Members = () => {
     if (typeof window !== "undefined") {
       try {
         console.log("orgId", orgId);
+       
         const { data, error } = await supabase
           .from("organization_members")
           .select("*")

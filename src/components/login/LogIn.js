@@ -84,8 +84,8 @@ const LogIn = () => {
         console.log("data-Data",data);
         if (typeof window !== 'undefined') {
         localStorage.setItem("accessToken", data.session.access_token);
-        localStorage.setItem("userId", data.session.user.id);
-        localStorage.setItem("userRole", data.user.user_metadata.role);
+        localStorage.setItem("userId",data.user.id);
+        localStorage.setItem("userRole", data.user.app_metadata.user_role);
         localStorage.setItem(
           "orgId",
           data.session.user.app_metadata.organization_id
@@ -103,9 +103,9 @@ const LogIn = () => {
         }
         // setIsActive();
         // localStorage.setItem("orgId",data.user.user_metadata.organization_id)
-        const orgId = data.user.user_metadata.organization_id;
-        const userId = data.session.user.id;
-        const role = data.user.user_metadata.role;
+        // const orgId = data.user.user_metadata.organization_id;
+        // const userId = data.session.user.id;
+        // const role = data.user.user_metadata.role;
         if (rememberMe) {
           cookies.set("userEmail", formik.values.email);
           cookies.set("userPassword", formik.values.password);
@@ -117,7 +117,6 @@ const LogIn = () => {
           successNotification("Login");
           router.push(`/admin/uploadintegration`);
         }
-        
       }
     } catch (error) {
       errorNotification(error.message || "Something went wrong");

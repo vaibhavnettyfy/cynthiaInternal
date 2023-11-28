@@ -189,11 +189,7 @@ a:hover {
   --text-shadow-colors: var(--orange-a7), var(--pink-a7), var(--violet-a7), var(--pink-a4) !important;
 } */
 
-.ask_cynthia_para:hover {
-  /* font-size: 35px !important; */
-  /* color: #fff; */
-  /* text-shadow: 2px 2px 2px #ed6c008c, 4px 4px 4px #b6006f53,6px 6px 6px #2d01dd4a, 8px 8px 8px #e2008b23; */
-}
+
 
 /* .ask_cynthia_para:hover::before {
     content: "";
@@ -223,7 +219,10 @@ a:hover {
     border-radius: inherit;
 } */
 
-
+.MuiFormHelperText-root {
+  position: absolute;
+  bottom: -20px;
+}
         
 html {
   scroll-behavior: smooth;

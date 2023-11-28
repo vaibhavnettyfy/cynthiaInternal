@@ -68,7 +68,6 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
       }else{
         payload.organization_id = orgId
       }
-      console.log("payloaddddd",payload);
       const {data,error} = await supabase.from('integrations').insert(payload);
       if(error){
         errorNotification(error.message);
