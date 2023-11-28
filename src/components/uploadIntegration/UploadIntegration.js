@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import UploadCard from "./UploadCard";
