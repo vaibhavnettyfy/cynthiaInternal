@@ -86,8 +86,7 @@ const Settings = () => {
         padding={3}
         width={"calc(100vw - 350px)"}
         height={"100%"}
-        sx={{ overflow: "auto" }}
-        className="inputbox"
+        sx={{ overflow: "auto" }}        
       >
         {renderComponents()}
       </Box>

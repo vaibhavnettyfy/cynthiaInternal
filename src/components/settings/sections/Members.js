@@ -71,7 +71,6 @@ const Members = () => {
 
 
   const removeUserHandler = async (id) =>{
-    console.log("id-->",id);
     const payload ={
       user_id : id
     }
@@ -87,8 +86,6 @@ const Members = () => {
   const memberList = async () => {
     if (typeof window !== "undefined") {
       try {
-        console.log("orgId", orgId);
-       
         const { data, error } = await supabase
           .from("organization_members")
           .select("*")
@@ -98,7 +95,6 @@ const Members = () => {
           console.error("Error fetching organization members:", error);
         } else {
           setMembers(data);
-          console.log("data-->data", data);
         }
       } catch (error) {
         console.error("An error occurred:", error);
@@ -166,7 +162,6 @@ const Members = () => {
                 {members &&
                   members.length > 0 &&
                   members.map((response) => {
-                    console.log("response", response);
                     return (
                       <StyledTableRow sx={{ cursor: "pointer" }}>
                         <TableCell component="th" scope="row">

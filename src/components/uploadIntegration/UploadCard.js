@@ -10,7 +10,6 @@ import { EventEmitter } from "@/helper";
 import { circularProgressClasses } from "@mui/material/CircularProgress";
 
 const UploadCard = ({ data }) => {
-  console.log("data->", data);
   const classes = useStyles();
 
   const [isModalOpen, setIsModalOpen] = useState({
@@ -76,7 +75,6 @@ const UploadCard = ({ data }) => {
           .from("jobs")
           .select("*")
           .eq("job_id", JOBID);
-        console.log("data-JobsId", data);
         if (!error) {
           if (data[0]) {
             setStatusDetails(data[0]);
@@ -84,7 +82,6 @@ const UploadCard = ({ data }) => {
             console.log("data not Found");
           }
         }
-        console.log("error", error);
       }
     } catch (err) {
       console.error("An error occurred:", err.message);
@@ -95,7 +92,6 @@ const UploadCard = ({ data }) => {
   const uploadCsvFileHandler = (event) => {
     // Handle the uploaded file here
     const file = event.target.files[0];
-    console.log("Uploaded file:", file);
     if (file) {
       setIsModalOpen({
         open: true,
@@ -112,7 +108,6 @@ const UploadCard = ({ data }) => {
   };
 
   const buttonHandler = (data) => {
-    console.log("data", data);
     if (data === "Upload CSV File") {
       document.getElementById("file-upload").click();
     } else {
@@ -136,7 +131,6 @@ const UploadCard = ({ data }) => {
         .eq("user_id", userId)
         .eq("integration_source", "Play Store");
       if (!error) {
-        console.log("data-playStoreHandler-individual", data);
         if (data && data.length > 0) {
           setPlayStoreDetails(data[0]);
         }
@@ -148,7 +142,6 @@ const UploadCard = ({ data }) => {
         .eq("organization_id", orgId)
         .eq("integration_source", "Play Store");
       if (!error) {
-        console.log("data-playStoreHandler-organization_id", data);
         if (data && data.length > 0) setPlayStoreDetails(data[0]);
       }
     }

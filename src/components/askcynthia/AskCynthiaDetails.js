@@ -82,7 +82,6 @@ function AskCynthiaDetails({
     const response = data[0].response;
     // here we store data of response because we have to send response to pdf api 
     setQuerryResponse(response);
-    console.log("response",response);
     const parsedData = JSON.parse(response);
     if (data && data.length > 0) {
       if (response) {
@@ -160,7 +159,6 @@ function AskCynthiaDetails({
   };
 
   const downloadPdf = async () => {
-    console.log("querryDetails",querryResponse);
     const {data,message,success} = await askCynthiaPdfHandler(querryResponse);
     if(success){
       const blob = new Blob([data], { type: "application/pdf" });

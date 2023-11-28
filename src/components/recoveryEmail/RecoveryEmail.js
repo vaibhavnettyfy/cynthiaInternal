@@ -28,7 +28,6 @@ const RecoveryEmail = () => {
       setError("Enter a valid email address");
     } else {
       setError("");
-      console.log("email", email);
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: "https://cynthia-dev.vercel.app/recoveryPassword",
       });
@@ -37,8 +36,6 @@ const RecoveryEmail = () => {
       }else{
         errorNotification("something_went_wrong");
       }
-      console.log("data", data);
-      console.log("error", error);
       // Add logic for password reset here
     }
   };

@@ -45,7 +45,6 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
       console.log("error", error);
     } else {
       setCountryList(data[0].metadata);
-      console.log("data---", data);
     }
   };
 

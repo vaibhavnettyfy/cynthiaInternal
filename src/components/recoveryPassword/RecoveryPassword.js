@@ -38,21 +38,17 @@ const RecoveryPassword = () => {
   
         if (accessTokenParam) {
           const accessToken = accessTokenParam.split('=')[1];
-          console.log('Access Token-inside:', accessToken);
           setAccessToken(accessToken);
   
           // Now you can use the access token as needed
           // Make sure to handle token expiration and refresh logic if required
         }else{
           setAccessToken("")
-          console.log("accessToken is not availiable")
         }
       }
     },[]);
 
   const passwordHandler = () => {
-    console.log("newPassword", newPassword);
-    console.log("reEnterPassword", reEnterPassword);
     const newPasswordError = validatePassword(newPassword);
     const reEnterPasswordError = validatePassword(reEnterPassword);
 
@@ -67,8 +63,6 @@ const RecoveryPassword = () => {
         setPasswordError("Password and  Re-enterpassword not match")
         // Handle mismatch error
       }else{
-        console.log("newPassword",newPassword);
-        console.log("reEnterPassword",reEnterPassword);
         updatePasswordHandler(newPassword)
       }
     }
@@ -82,7 +76,6 @@ const RecoveryPassword = () => {
       });
 
       if (error) {
-        console.error("Error updating password:", error);
         errorNotification(error.message || "Error changing password");
       } else {
         successNotification("User password updated successfully");

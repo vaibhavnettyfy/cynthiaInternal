@@ -81,7 +81,6 @@ const LogIn = () => {
       if (error) {
         errorNotification(error.message || "Something went wrong");
       } else {
-        console.log("data-Data",data);
         if (typeof window !== 'undefined') {
         localStorage.setItem("accessToken", data.session.access_token);
         localStorage.setItem("userId",data.user.id);
@@ -94,7 +93,6 @@ const LogIn = () => {
         localStorage.setItem("userPassword",formik.values.password)
         }
         const activeCheck = data.session.user.app_metadata.is_active;
-        console.log("activeCheck",activeCheck);
         localStorage.setItem("activeCheck",activeCheck);
         if(activeCheck != "false"){
           setIsActive("true");

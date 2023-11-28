@@ -325,7 +325,6 @@ const Usage = () => {
             </TableHead>
             <TableBody>
               {invoiceData?.map((res) => {
-                console.log("res-->",res);
                 const paymentStatus = res.payment_status;
                 var status = getInvoiceStatus(
                   paymentStatus == "paid" ? true : false

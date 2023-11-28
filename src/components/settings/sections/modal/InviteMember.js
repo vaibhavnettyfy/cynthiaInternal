@@ -66,8 +66,6 @@ const InviteMember = ({ handleClose }) => {
         const payload = {
           emails: emailList,
         };
-  
-        console.log("payload--", payload);
         const { data, message, success } = await inviteMemberHandler(payload);
   
         if (success) {

@@ -37,17 +37,14 @@ const LooksGood = ({
     const formData = new FormData();
     formData.append("file", file); 
     formData.append("source", "csv");
-    // console.log("Payload", payload);
     const { data, message, success } = await uploadCsvHandler(formData);
     if (success) {
       successNotification(message);
-      console.log("data-Sucess", data);
       localStorage.setItem("jobId",data.job_id)
       handleClickStep4();
       EventEmitter.dispatch('jobId',true);
     } else {
       errorNotification(message);
-      
     }
   };
 

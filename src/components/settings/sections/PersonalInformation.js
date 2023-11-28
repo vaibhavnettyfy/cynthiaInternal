@@ -9,7 +9,7 @@ import { personalInformationIv } from "@/helper/Formik/intialValues";
 import { personalValidation } from "@/helper/Formik/validation";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { supabase } from "@/Client";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import CommonModal from "@/components/common/Modal";
 
 const PersonalInformation = () => {
@@ -20,9 +20,13 @@ const PersonalInformation = () => {
     open: false,
     currentComponent: "",
   });
-  let userId = ""
-  if (typeof window !== 'undefined') {
+  let userId = "";
+  let userRole = "";
+  let orgId = "";
+  if (typeof window !== "undefined") {
     userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
   }
   useEffect(() => {
     userDetailsHandler();
@@ -36,7 +40,7 @@ const PersonalInformation = () => {
         .eq("id", userId);
       setUserDetails(data[0]);
       if (error) {
-        errorNotification(error.message || "Something went wrong")
+        errorNotification(error.message || "Something went wrong");
       }
       formik.setValues({
         ...formik.values,
@@ -48,7 +52,7 @@ const PersonalInformation = () => {
         // or
       });
     } else {
-      router.push(`/`)
+      router.push(`/`);
       // errorNotification(error.message || "Something went wrong");
     }
   };
@@ -63,10 +67,11 @@ const PersonalInformation = () => {
 
     const { data, error, status, statusText } = await supabase
       .from("users")
-      .update(updatedUserData).eq("id", userId);
+      .update(updatedUserData)
+      .eq("id", userId);
 
     if (error) {
-      errorNotification(error.message || "Error updating user details")
+      errorNotification(error.message || "Error updating user details");
     } else {
       successNotification("User details updated:");
     }
@@ -82,32 +87,8 @@ const PersonalInformation = () => {
     onSubmit: handleSubmit,
   });
 
-  const profilePictureHandler = (e) => {
-    // we have take 5 mb is max size
-    const maxUploadSize = process.env.NEXT_PUBLIC_MAX_UPLOAD_SIZE;
-    const file = e.target.files[0];
-    if (file.size <= maxUploadSize) {
-      formik.setValues({
-        ...formik.values,
-        profilePicture: e.target.files[0],
-      });
-      setProfilePicture(URL.createObjectURL(file));
-    } else {
-      // File exceeds the size limit, show an error message
-      errorNotification("File size exceeds the limit.");
-    }
-  };
-
-  const removeProfilePictureHandler = () => {
-    setProfilePicture(null);
-    formik.setValues({
-      ...formik.values,
-      profilePicture: "",
-    });
-  };
-
   return (
-    <Box>
+    <Box className="inputbox">
       <Typography
         fontSize={"30px"}
         fontWeight={"600"}
@@ -126,36 +107,6 @@ const PersonalInformation = () => {
           alignItems={"center"}
           marginBottom={2}
         >
-          {/* <Image
-            src={profilePicture ? profilePicture : Profileimage}
-            alt="Profile Picture"
-            width={125}
-            height={100}
-            layout="fixed"
-            objectFit="cover"
-            style={{
-              borderRadius: "50%",
-              marginRight: "20px",
-            }}
-          /> */}
-          {/* <CommonButton
-            buttonName="Delete"
-            onClick={() => removeProfilePictureHandler()}
-            variant="outlined"
-            style={{ borderRadius: "3px" }}
-          /> */}
-          {/* <Button variant="contained" style={{ borderRadius: "3px" }}>
-            <input
-              type="file"
-              className="input_upload_file"
-              accept="image/*"
-              onChange={profilePictureHandler}
-            />
-            uploads
-          </Button>
-          {formik.errors.profilePicture && (
-            <h4> {formik.errors.profilePicture} </h4>
-          )} */}
         </Stack>
         <Stack
           flexDirection={"row"}
@@ -173,7 +124,6 @@ const PersonalInformation = () => {
             First Name
           </Typography>
           <CommonInput
-            // value="Kate"
             name="firstName"
             formik={formik}
             style={{ width: "280px" }}
@@ -196,7 +146,6 @@ const PersonalInformation = () => {
             Last Name
           </Typography>
           <CommonInput
-            // value="Winslet"
             name="lastName"
             formik={formik}
             style={{ width: "280px" }}
@@ -219,7 +168,6 @@ const PersonalInformation = () => {
             Organisation{" "}
           </Typography>
           <CommonInput
-            // value="Apple"
             name="organisation"
             formik={formik}
             style={{ width: "280px" }}
@@ -242,9 +190,8 @@ const PersonalInformation = () => {
             Role{" "}
           </Typography>
           <CommonInput
-            // value="Product Manager"
+            value={userRole}
             name="role"
-            formik={formik}
             style={{ width: "280px" }}
           />
         </Stack>
@@ -275,7 +222,6 @@ const PersonalInformation = () => {
             </Typography>
           </Box>
           <CommonInput
-            // value="kate.winslet@apple.com"
             style={{ width: "280px" }}
             name="email"
             formik={formik}
@@ -298,32 +244,31 @@ const PersonalInformation = () => {
             Organization ID{" "}
           </Typography>
           <CommonInput
-            value="K1232edwasdweqe2ate"
+            value={orgId}
             disabled
-            // formik={formik}
             name="organizationId"
-            style={{ width: "280px" }}
+            style={{ width: "285px" }}
           />
-          <CommonButton
+          {/* <CommonButton
             buttonName="Switch to individual"
-            style={{ borderRadius: "3px", padding: '8px' }}
+            style={{ borderRadius: "3px", padding: "8px" }}
             onClick={() =>
-                setIsModalOpen({
-                  open: true,
-                  currentComponent: "switchAccount",
-                })
-              }
-          />
-          <CommonButton
+              setIsModalOpen({
+                open: true,
+                currentComponent: "switchAccount",
+              })
+            }
+          /> */}
+          {/* <CommonButton
             buttonName="Create Organization"
-            style={{ borderRadius: "3px", padding: '8px' }}
+            style={{ borderRadius: "3px", padding: "8px" }}
             onClick={() =>
-                setIsModalOpen({
-                  open: true,
-                  currentComponent: "switchAccount",
-                })
-              }
-          />
+              setIsModalOpen({
+                open: true,
+                currentComponent: "switchAccount",
+              })
+            }
+          /> */}
         </Stack>
         <Box marginLeft={"150px"} marginTop={3}>
           <CommonButton

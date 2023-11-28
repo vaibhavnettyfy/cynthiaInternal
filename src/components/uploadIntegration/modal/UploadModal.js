@@ -17,7 +17,6 @@ import ColumnAnalyse from "./ColumnAnalyse";
 import LooksGood from "./LooksGood";
 import ProcessFile from "./ProcessFile";
 const UploadModal = ({ handleClose ,modalOpen}) => {
-  console.log("modalOpen",modalOpen);
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
@@ -71,7 +70,6 @@ const UploadModal = ({ handleClose ,modalOpen}) => {
   };
 
   const handleCsvData = (pData, columnData, valuesData) => {
-    console.log("called--->");
     setProcessData(pData);
     setColumnArray(columnData);
     setValues(valuesData);
@@ -79,19 +77,15 @@ const UploadModal = ({ handleClose ,modalOpen}) => {
 
   // to handle select column from step-3 
   const selectColumnHandler = (data) =>{
-    console.log("1111",data);
     setSelectedColumn(data);
   }; 
 
 
   const fileNameHandler = (data) =>{
-    console.log("daaata--name",data);
     setFileName(data);
   };
 
-  console.log("processData", processData);
-  console.log("columnArray", columnArray);
-  console.log("value", value);
+  
 
   return (
     <Box
