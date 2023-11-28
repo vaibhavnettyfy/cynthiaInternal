@@ -17,6 +17,7 @@ import CommonInput from "@/components/common/Input";
 import CommonSelect from "@/components/common/Select";
 import { supabase } from "@/Client";
 import { errorNotification, successNotification } from "@/helper/Notification";
+import { EventEmitter } from "@/helper";
 
 // const selectList = [{ name: "US", value: "us" }];
 
@@ -71,6 +72,7 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
       if(error){
         errorNotification(error.message);
       }else{
+        EventEmitter.dispatch('appIntegrations',true);
         successNotification("update Sucessfull");
         handleClose();
       }
@@ -90,7 +92,7 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
           lineHeight={"50px"}
           marginBottom={2}
         >
-          Add your Android app
+          Add your app
         </Typography>
         <Box margin={"30px 0"}>
           <Stack gap={2} marginTop={4} justifyContent={"center"}>

@@ -47,6 +47,8 @@ const Members = () => {
     setAnchorEl(event.currentTarget);
   };
 
+  const [userDetails,setUserDetails] = React.useState({});
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -66,8 +68,34 @@ const Members = () => {
   useEffect(() => {
     if (orgId) {
       memberList();
+      orgNamehandler();
     }
   }, [orgId]);
+
+  
+
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
+  }
+
+  const orgNamehandler = async () =>{
+    if (userId) {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId);
+        console.log("data-orgNamehandler",data);
+        setUserDetails(data[0]);
+      if (error) {
+        errorNotification(error.message || "Something went wrong");
+      }
+    } else {
+      router.push(`/`);
+      // errorNotification(error.message || "Something went wrong");
+    }
+  };
 
 
   const removeUserHandler = async (id) =>{
@@ -124,7 +152,7 @@ const Members = () => {
           alignItems={"center"}
         >
           <Typography fontSize={"22px"} fontWeight={"700"} lineHeight={"30px"}>
-            Apple Inc
+            {userDetails?.organization_name}
           </Typography>
           <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
             <TextField

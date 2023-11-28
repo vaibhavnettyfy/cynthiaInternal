@@ -29,6 +29,11 @@ const UploadCard = ({ data }) => {
     getStatusByJobId();
   });
 
+  EventEmitter.subscribe('appIntegrations',(res)=>{
+    playStoreHandler();
+    appStoreHandler();
+  })
+
   let userId = "";
   let orgId = "";
   let userRole = "";
@@ -69,7 +74,6 @@ const UploadCard = ({ data }) => {
   const getStatusByJobId = async () => {
     try {
       const JOBID = localStorage.getItem("jobId");
-      // const JOBID = "e3505704-a79c-440e-9b5b-7d462629d1ab";
       if (JOBID) {
         const { data, error } = await supabase
           .from("jobs")
