@@ -54,7 +54,8 @@ const UploadCard = ({ data }) => {
         .channel("jobs").on('postgres_changes',{
           event:'UPDATE',
           schema: 'public',
-        },(payload)=>[console.log(payload),getStatusByJobId()])
+        },(payload)=>[
+          EventEmitter.dispatch("jobId",true)])
         .subscribe();
 
       // Cleanup subscription on component unmount
@@ -72,6 +73,7 @@ const UploadCard = ({ data }) => {
 
   const getStatusByJobId = async () => {
     try {
+      console.log("calledddd");
       const JOBID = localStorage.getItem("jobId");
       if (JOBID) {
         const { data, error } = await supabase
