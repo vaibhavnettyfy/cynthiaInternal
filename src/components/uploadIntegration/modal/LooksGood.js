@@ -22,6 +22,12 @@ const LooksGood = ({
 }) => {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [selectedColumnData, setSelectedColumnData] = useState([]);
+  console.log("processData",processData);
+  console.log("file",file);
+  console.log("selectedColumn",selectedColumn);
+  // file.name
+  console.log("file.name",file.name);
+
 
   // to show particular data selected
   useEffect(() => {
@@ -37,6 +43,8 @@ const LooksGood = ({
     const formData = new FormData();
     formData.append("file", file); 
     formData.append("source", "csv");
+    formData.append("filename",file.name);
+    formData.append("column_name",selectedColumn);
     const { data, message, success } = await uploadCsvHandler(formData);
     if (success) {
       successNotification(message);
