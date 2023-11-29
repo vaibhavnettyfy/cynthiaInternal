@@ -62,7 +62,7 @@ const PersonalInformation = () => {
     const updatedUserData = {
       first_name: updateData.firstName,
       last_name: updateData.lastName,
-      email: updateData.email,
+      // email: updateData.email,
     };
 
     const { data, error, status, statusText } = await supabase
@@ -70,14 +70,13 @@ const PersonalInformation = () => {
       .update(updatedUserData)
       .eq("id", userId);
 
-    // const {data:updatedAuthData,error:authError} = await supabase.auth.updateUser({
-    //   email: updateData.email
-    // })  
+    const {data:updatedAuthData,error:authError} = await supabase.auth.updateUser({
+      email: updateData.email
+    })  
 
     if (error) {
-      errorNotification(error?.message || "Error updating user details");
+      errorNotification(error?.message ||authError.message || "Error updating user details");
     } else {
-      console.log("datattata",data);
       successNotification("User details updated successfully:");
     }
   };

@@ -73,7 +73,6 @@ const UploadCard = ({ data }) => {
 
   const getStatusByJobId = async () => {
     try {
-      console.log("calledddd");
       const JOBID = localStorage.getItem("jobId");
       if (JOBID) {
         const { data, error } = await supabase

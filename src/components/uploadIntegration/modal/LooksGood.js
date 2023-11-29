@@ -22,13 +22,7 @@ const LooksGood = ({
 }) => {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [selectedColumnData, setSelectedColumnData] = useState([]);
-  console.log("processData",processData);
-  console.log("file",file);
-  console.log("selectedColumn",selectedColumn);
-  // file.name
-  console.log("file.name",file.name);
-
-
+  
   // to show particular data selected
   useEffect(() => {
     if (selectedColumn && processData[0][selectedColumn]) {

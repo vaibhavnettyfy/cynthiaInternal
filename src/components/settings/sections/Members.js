@@ -47,7 +47,7 @@ const Members = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const [userDetails,setUserDetails] = React.useState({});
+  const [userDetails, setUserDetails] = React.useState({});
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -72,22 +72,19 @@ const Members = () => {
     }
   }, [orgId]);
 
-  
-
   if (typeof window !== "undefined") {
     userId = localStorage.getItem("userId");
     userRole = localStorage.getItem("userRole");
     orgId = localStorage.getItem("orgId");
   }
 
-  const orgNamehandler = async () =>{
+  const orgNamehandler = async () => {
     if (userId) {
       const { data, error } = await supabase
         .from("users")
         .select("*")
         .eq("id", userId);
-        console.log("data-orgNamehandler",data);
-        setUserDetails(data[0]);
+      setUserDetails(data[0]);
       if (error) {
         errorNotification(error.message || "Something went wrong");
       }
@@ -97,19 +94,41 @@ const Members = () => {
     }
   };
 
-
-  const removeUserHandler = async (id) =>{
-    const payload ={
-      user_id : id
-    }
-    const {data,message,success} = await setIndividualHandler("member",payload);
-    if(success){
+  const removeUserHandler = async (id) => {
+    const payload = {
+      user_id: id,
+    };
+    const { data, message, success } = await setIndividualHandler(
+      "member",
+      payload
+    );
+    if (success) {
       successNotification(message);
       memberList();
-    }else{
+    } else {
       errorNotification(message);
     }
-  }
+  };
+
+  const searchDataHandler = async (value) => {
+    const { data, error } = await supabase
+      .from("organization_members")
+      .select("*")
+      .eq("organization_id", orgId)
+      .textSearch("name", value);
+    if (!error) {
+      setMembers(data || []);
+    }
+  };
+
+  const searchHandler = (value) => {
+    const trimmedValue = value.trim();
+    if (trimmedValue.length >= 2) {
+      searchDataHandler(trimmedValue);
+    } else {
+      memberList();
+    }
+  };
 
   const memberList = async () => {
     if (typeof window !== "undefined") {
@@ -118,7 +137,7 @@ const Members = () => {
           .from("organization_members")
           .select("*")
           .eq("organization_id", orgId);
-  
+
         if (error) {
           console.error("Error fetching organization members:", error);
         } else {
@@ -159,6 +178,7 @@ const Members = () => {
               hiddenLabel
               className="search_field"
               placeholder="Search"
+              onChange={(event) => searchHandler(event.target.value)}
               sx={{ width: { xs: "100%", sm: "unset" } }}
             />
             <CommonButton
@@ -247,7 +267,11 @@ const Members = () => {
                           </Stack>
                         </TableCell>
                         <TableCell component="th" scope="row">
-                          {response.usage === 0 ? "N/A" : response.usage}
+                          {response.usage
+                            ? response.usage === 0
+                              ? "N/A"
+                              : response.usage
+                            : "N/A"}
                         </TableCell>
                         <TableCell
                           component="th"
@@ -288,7 +312,9 @@ const Members = () => {
                                 borderRadius: "5px",
                                 padding: "7px 15px",
                               }}
-                              onClick={()=>removeUserHandler(response.user_id)}
+                              onClick={() =>
+                                removeUserHandler(response.user_id)
+                              }
                             />
                           </Stack>
                         </TableCell>

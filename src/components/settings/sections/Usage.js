@@ -103,12 +103,10 @@ const Usage = () => {
       .from("user_usage")
       .select("*")
       .eq("user_id", userId);
-      console.log("---->",data);
     if(!error){
       setUsageDetails(data[0]);
       sethardUsageLimit(data[0]?.hard_usage_limit);
       setExtraCurrentUsage(data[0]?.extra_current_usage);
-      console.log("data",data[0]);
       setApprovedUsageLimit(data[0]?.approved_usage_limit);
       // usage_based_pricing
       setUsageBasedPricing(data[0]?.usage_based_pricing);
@@ -155,7 +153,6 @@ const Usage = () => {
           .from("products")
           .select("*")
           .eq("id", pId);
-        console.log("data==>products",data)
         if (error) {
           errorNotification(error.message);
         } else {
@@ -261,7 +258,7 @@ const Usage = () => {
           </Typography>
           <Typography fontSize={"13px"} sx={{whiteSpace:"nowrap"}}>
             {`Pricing as per ${planName} Upgrade for lower price.`} {" "}
-            <span style={{color:"#700f70"}} onClick={()=>managePlanHandler()}>Upgrade now</span>
+            <span style={{color:"#700f70",cursor:"pointer"}} onClick={()=>managePlanHandler()}>Upgrade now</span>
           </Typography>
         </Stack>
       </Box>
@@ -288,8 +285,6 @@ const Usage = () => {
               your monthly credits.
             </Typography>
             <Typography fontSize={"15px"} fontWeight={600}>
-              {console.log("extraCurrentUsage-->",extraCurrentUsage)}
-              {console.log("extraCreditCost--->",extraCreditCost)}
               {extraCurrentUsage !== undefined && extraCreditCost !== undefined && !isNaN(extraCurrentUsage) && !isNaN(extraCreditCost) ? (
     `$ ${extraCurrentUsage * extraCreditCost}`
   ) : (
