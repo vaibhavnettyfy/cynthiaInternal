@@ -70,10 +70,15 @@ const PersonalInformation = () => {
       .update(updatedUserData)
       .eq("id", userId);
 
+    // const {data:updatedAuthData,error:authError} = await supabase.auth.updateUser({
+    //   email: updateData.email
+    // })  
+
     if (error) {
-      errorNotification(error.message || "Error updating user details");
+      errorNotification(error?.message || "Error updating user details");
     } else {
-      successNotification("User details updated:");
+      console.log("datattata",data);
+      successNotification("User details updated successfully:");
     }
   };
 
@@ -169,6 +174,7 @@ const PersonalInformation = () => {
           </Typography>
           <CommonInput
             name="organisation"
+            disabled
             formik={formik}
             style={{ width: "280px" }}
           />
@@ -190,7 +196,7 @@ const PersonalInformation = () => {
             Role{" "}
           </Typography>
           <CommonInput
-            value={userRole}
+            value={userRole === "org_admin" ? "Admin" :userRole}
             name="role"
             style={{ width: "280px" }}
           />

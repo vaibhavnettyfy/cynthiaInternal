@@ -34,6 +34,7 @@ import CommonInput from "@/components/common/Input";
 import { supabase } from "@/Client";
 import { errorNotification } from "@/helper/Notification";
 import moment from 'moment';
+import { managePlanHandler } from "@/helper";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -102,10 +103,12 @@ const Usage = () => {
       .from("user_usage")
       .select("*")
       .eq("user_id", userId);
+      console.log("---->",data);
     if(!error){
       setUsageDetails(data[0]);
       sethardUsageLimit(data[0]?.hard_usage_limit);
       setExtraCurrentUsage(data[0]?.extra_current_usage);
+      console.log("data",data[0]);
       setApprovedUsageLimit(data[0]?.approved_usage_limit);
       // usage_based_pricing
       setUsageBasedPricing(data[0]?.usage_based_pricing);
@@ -152,7 +155,7 @@ const Usage = () => {
           .from("products")
           .select("*")
           .eq("id", pId);
-
+        console.log("data==>products",data)
         if (error) {
           errorNotification(error.message);
         } else {
@@ -219,6 +222,7 @@ const Usage = () => {
             } on ${planName}`}</Typography>
             <CommonButton
               buttonName="Upgrade"
+              onClick={()=>managePlanHandler()}
               style={{
                 borderRadius: "6px",
                 padding: "5px 15px",
@@ -253,11 +257,11 @@ const Usage = () => {
         </Typography>
         <Stack flexDirection={"row"} gap={1} alignItems={"center"}>
           <Typography fontSize={"15px"} fontWeight={600}>
-            $0.20 / feedback
+          {`$${extraCreditCost ? extraCreditCost :0} / feedback`}
           </Typography>
-          <Typography fontSize={"13px"}>
-            {`Pricing as per ${planName} Upgrade for lower price.`}
-            <Link href="#">Upgrade now</Link>{" "}
+          <Typography fontSize={"13px"} sx={{whiteSpace:"nowrap"}}>
+            {`Pricing as per ${planName} Upgrade for lower price.`} {" "}
+            <span style={{color:"#700f70"}} onClick={()=>managePlanHandler()}>Upgrade now</span>
           </Typography>
         </Stack>
       </Box>
@@ -284,7 +288,13 @@ const Usage = () => {
               your monthly credits.
             </Typography>
             <Typography fontSize={"15px"} fontWeight={600}>
-              {` $ ${extraCurrentUsage * extraCreditCost}`}
+              {console.log("extraCurrentUsage-->",extraCurrentUsage)}
+              {console.log("extraCreditCost--->",extraCreditCost)}
+              {extraCurrentUsage !== undefined && extraCreditCost !== undefined && !isNaN(extraCurrentUsage) && !isNaN(extraCreditCost) ? (
+    `$ ${extraCurrentUsage * extraCreditCost}`
+  ) : (
+    "Invalid values"
+  )}
             </Typography>
             <Typography fontSize={"15px"} fontWeight={500}>
               (<Link href="#">{extraCurrentUsage}</Link> feedbacks analyzed so

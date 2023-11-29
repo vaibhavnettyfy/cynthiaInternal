@@ -3,6 +3,7 @@
 import { supabase } from "@/Client";
 import { errorNotification } from "./Notification";
 import { subscriptionscheck } from "./Subscription";
+import { upgradePlanHandler } from "@/service/plan.service";
 
 export const subscriptionsStatus = async () => {
   let userId = "";
@@ -78,6 +79,12 @@ export const checkFeatures = async (name) => {
     console.error("An unexpected error occurred:", e);
     return null;
   }
+};
+
+
+export const managePlanHandler = async () =>{
+  const {data,message,success} = await upgradePlanHandler();
+  window.location.replace(data.url);
 };
 
 // For the Check Fetures 

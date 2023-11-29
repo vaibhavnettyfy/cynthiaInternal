@@ -48,18 +48,17 @@ const UploadCard = ({ data }) => {
     if (typeof window !== "undefined") {
       getStatusByJobId();
     }
-    // For the real Time
-    // const subscription = supabase
-    //     .from("jobs")
-    //     .on("UPDATE", payload => {
-    //       console.log("payload--",payload);
-    //       // Handle real-time update
-    //       getStatusByJobId();
-    //     })
-    //     .subscribe();
 
-    //   // Cleanup subscription on component unmount
-    //   return () => subscription.unsubscribe();
+    // For the real Time
+    const subscription = supabase
+        .channel("jobs").on('postgres_changes',{
+          event:'UPDATE',
+          schema: 'public',
+        },(payload)=>[console.log(payload),getStatusByJobId()])
+        .subscribe();
+
+      // Cleanup subscription on component unmount
+      return () => subscription.unsubscribe();
   }, []);
 
   // for the app store and playStore

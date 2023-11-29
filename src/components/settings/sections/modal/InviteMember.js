@@ -105,6 +105,9 @@ const InviteMember = ({ handleClose }) => {
             onChange={(e) => setEmails(e.target.value)}
           />
         </Stack>
+        <Typography fontSize={"14px"} mt={1} ml={2} fontWeight={"400"} lineHeight={"20px"}>
+          User must be already have account not be organization admin.
+        </Typography>
       </DialogContent>
       {errorMessage && (
         <Typography color="error" textAlign="center" mt={2}>

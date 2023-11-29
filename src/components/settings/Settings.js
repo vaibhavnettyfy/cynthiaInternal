@@ -9,6 +9,9 @@ import Members from "./sections/Members";
 import TermsService from "./sections/TermsService";
 import PrivacyPolicy from "./sections/PrivacyPolicy";
 import WithAuth from "../WithAuth";
+import { supabase } from "@/Client";
+import { upgradePlanHandler } from "@/service/plan.service";
+import { managePlanHandler } from "@/helper";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -21,9 +24,14 @@ const Settings = () => {
     userRole = localStorage.getItem("userRole");
   }
 
-  const handleChange = (event, newValue) => {
+  const handleChange = async (event, newValue) => {
+    if(newValue ===2){
+      managePlanHandler();
+    }
     setSelectedTab(newValue);
   };
+
+  
 
   // render Componenet Here
   const renderComponents = () => {
@@ -33,7 +41,7 @@ const Settings = () => {
       case 1:
         return <Password />;
       case 2:
-        return <Plan />;
+        return allowRoleUsage.includes(userRole)  ? <Plan /> :null;
       case 3:
         return allowRoleUsage.includes(userRole) ? <Usage /> : null;
       // if (allowRoleUsage.includes(userRole && userRole)) {
@@ -43,8 +51,6 @@ const Settings = () => {
         return memberRoleUsage.includes(userRole && userRole) ? (
           <Members />
         ) : null;
-        // }
-        return null;
       case 5:
         return <TermsService />;
       case 6:
@@ -71,7 +77,11 @@ const Settings = () => {
         >
           <Tab label="Personal Information" />
           <Tab label="Password" />
-          <Tab label="Manage Your Plan" />
+          {
+            allowRoleUsage.includes(userRole && userRole) && (
+              <Tab label="Manage Your Plan" />
+            )
+          }
           {allowRoleUsage.includes(userRole && userRole) && (
             <Tab label="Usage" />
           )}
