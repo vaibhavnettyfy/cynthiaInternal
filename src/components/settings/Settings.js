@@ -98,7 +98,7 @@ const Settings = () => {
         height={"100%"}
         sx={{ overflow: "auto" }}        
       >
-        {renderComponents()}
+        {selectedTab === 2 ? null : renderComponents()}
       </Box>
     </Box>
   );

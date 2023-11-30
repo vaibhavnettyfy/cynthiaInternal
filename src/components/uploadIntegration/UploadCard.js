@@ -29,7 +29,7 @@ const UploadCard = ({ data }) => {
     getStatusByJobId();
   });
 
-  EventEmitter.subscribe('appIntegrations',(res)=>{
+  EventEmitter.subscribe('appIntegrations', (res) => {
     playStoreHandler();
     appStoreHandler();
   })
@@ -51,15 +51,15 @@ const UploadCard = ({ data }) => {
 
     // For the real Time
     const subscription = supabase
-        .channel("jobs").on('postgres_changes',{
-          event:'UPDATE',
-          schema: 'public',
-        },(payload)=>[
-          EventEmitter.dispatch("jobId",true)])
-        .subscribe();
+      .channel("jobs").on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+      }, (payload) => [
+        EventEmitter.dispatch("jobId", true)])
+      .subscribe();
 
-      // Cleanup subscription on component unmount
-      return () => subscription.unsubscribe();
+    // Cleanup subscription on component unmount
+    return () => subscription.unsubscribe();
   }, []);
 
   // for the app store and playStore
@@ -173,10 +173,10 @@ const UploadCard = ({ data }) => {
 
   return (
     <>
-      <Box className={classes.cardContainer}>
-        <Stack sx={{ padding: 3 }} alignItems={"center"} gap={2}>
+      <Box className={classes.cardContainer} sx={{ height: '240px' }}>
+        <Stack sx={{ padding: 3, height: '100%' }} alignItems={"center"} gap={2} justifyContent={'center'}>
           {data.button === "Upload CSV File" &&
-          statusDetails.status === "processing" ? (
+            statusDetails.status === "processing" ? (
             <CircularProgress size={90} thickness={5} value={100} />
           ) : (
             <>
@@ -191,13 +191,13 @@ const UploadCard = ({ data }) => {
               {(data.button === "Connect Google Play Store" &&
                 playStoreDetails &&
                 playStoreDetails.app_id) ||
-              (data.button === "Connect App Store app" &&
-                appStoreDetails &&
-                appStoreDetails.app_id) ? (
+                (data.button === "Connect App Store app" &&
+                  appStoreDetails &&
+                  appStoreDetails.app_id) ? (
                 <CommonButton
                   variant="outlined"
                   buttonName="Disconnect"
-                  // onClick={() => /* Add your disconnect logic here */}
+                // onClick={() => /* Add your disconnect logic here */}
                 />
               ) : (
                 <CommonButton
@@ -215,7 +215,7 @@ const UploadCard = ({ data }) => {
 
           {statusDetails.status === "processing" && (
             <>
-              <h3>
+              <h3 style={{ fontSize: '12px', marginTop: '10px' }}>
                 {data.button === "Upload CSV File" && statusDetails.job_name}
               </h3>
               <h3>

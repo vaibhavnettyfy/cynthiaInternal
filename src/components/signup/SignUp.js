@@ -137,8 +137,8 @@ const SignUp = () => {
               <Stack gap={1} marginBottom={1}>
                 <Box>
                   <Stack gap={1} flexDirection={"row"}>
-                    <CommonInput placeholder="First Name" name="firstName" formik={formik} inputProps={{ maxLength: 15 }}/>
-                    <CommonInput placeholder="Last Name" name="lastName" formik={formik} inputProps={{ maxLength: 15 }}/>
+                    <CommonInput placeholder="First Name" name="firstName" formik={formik} inputProps={{ maxLength: 25 }}/>
+                    <CommonInput placeholder="Last Name" name="lastName" formik={formik} inputProps={{ maxLength: 25 }}/>
                   </Stack>
                 </Box>
                 <Stack gap={1} marginY={"0"}>
@@ -178,7 +178,7 @@ const SignUp = () => {
                     placeholder="Password"
                     passwordInput
                     name="password"
-                    inputProps={{ maxLength: 16 }}
+                    inputProps={{ maxLength: 30 }}
                     formik={formik}
                   />
                 </Box>
