@@ -35,6 +35,7 @@ import { supabase } from "@/Client";
 import { errorNotification } from "@/helper/Notification";
 import moment from 'moment';
 import { managePlanHandler } from "@/helper";
+import CommonModal from "@/components/common/Modal";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -64,6 +65,11 @@ const Usage = () => {
   const [extraCurrentUsage, setExtraCurrentUsage] = useState("");
   const [hardUsageLimit, sethardUsageLimit] = useState("");
 
+  const [isModalOpen, setIsModalOpen] = useState({
+    open: false,
+    currentComponent: "",
+  });
+
   // Invoice
   const [invoiceData, setInvoiceData] = useState([]);
 
@@ -78,6 +84,12 @@ const Usage = () => {
     const subscriptionsStatus = localStorage.getItem("subscriptionsStatus");
     if(subscriptionsStatus !== "trialing"){
       setUsageBasedPricing(!usageBasedPricing);
+    }else{
+      // Usage
+      setIsModalOpen({
+        open: true,
+        currentComponent: "Usage",
+      });
     }
   };
 
@@ -400,6 +412,12 @@ const Usage = () => {
           </Table>
         </TableContainer>
       </Box>
+      <CommonModal
+          modalOpen={isModalOpen}
+          handleClose={() =>
+            setIsModalOpen({ open: false, currentComponent: "", name: "" })
+          }
+        />
     </Box>
   );
 };

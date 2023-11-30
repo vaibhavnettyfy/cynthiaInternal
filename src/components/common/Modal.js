@@ -12,6 +12,7 @@ import PaymenentPending from '../modal/PaymenentPending';
 import SubscriptionIssue from '../modal/SubscriptionIssue';
 import CheckFeature from '../modal/CheckFeature';
 import SwitchAccount from '../modal/SwitchAccount';
+import Usage from '../modal/Usage';
 
 export default function CommonModal({ handleClose, modalOpen }) {
     const router = useRouter();
@@ -32,6 +33,7 @@ export default function CommonModal({ handleClose, modalOpen }) {
             }}
         >
             {modalOpen.currentComponent === 'remove' && <Remove handleClose={handleClose} modalOpen={modalOpen} />}
+            {modalOpen.currentComponent === 'Usage' && <Usage handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'editFile' && <EditFile handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'uploadFile' && <UploadModal handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'playstore' && <PlayStoreConnect handleClose={handleClose} modalOpen={modalOpen} />}

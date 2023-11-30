@@ -1,6 +1,6 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -27,7 +27,7 @@ const CommonInput = (props) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   return (
-    <>
+    <div>
       {labelInput && (
         <Typography
           fontSize={"12px"}
@@ -53,7 +53,7 @@ const CommonInput = (props) => {
             onChange={onChange}
             inputProps={inputProps}
             error={error}
-            helperText={props?.formik?.errors[props.name]}
+            // helperText={props?.formik?.errors[props.name]}
             {...props?.formik?.getFieldProps(props.name)}
             {...props}
             type={showPassword ? "text" : "password"}
@@ -93,7 +93,7 @@ const CommonInput = (props) => {
             inputProps={inputProps}
             error={error}
             type={type || "email"}
-            helperText={props?.formik?.errors[props.name]}
+            // helperText={props?.formik?.errors[props.name]}
             {...props?.formik?.getFieldProps(props.name)}
             {...props}
           />
@@ -121,12 +121,13 @@ const CommonInput = (props) => {
           inputProps={inputProps}
           error={error}
           type={type || "text"}
-          helperText={props?.formik?.errors[props.name]}
+          // helperText={props?.formik?.errors[props.name]}
           {...props?.formik?.getFieldProps(props.name)}
           {...props}
         />
       )}
-    </>
+      <Box fontSize={'0.75rem'} fontWeight={'400'} mx={'14px'} color={'rgba(0, 0, 0, 0.5)'} mt={'3px'}>{props?.formik?.errors[props.name]}</Box>
+    </div>
   );
 };
 

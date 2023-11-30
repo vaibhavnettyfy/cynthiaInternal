@@ -9,7 +9,9 @@
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif !important;
 }
-
+.Montserrat {
+  font-family: 'Montserrat', sans-serif !important;
+}
 .Raleway {
   font-family: 'Raleway', sans-serif !important;
 }
@@ -219,10 +221,10 @@ a:hover {
     border-radius: inherit;
 } */
 
-.MuiFormHelperText-root {
+/* .MuiFormHelperText-root {
   position: absolute;
   bottom: -20px;
-}
+} */
         
 html {
   scroll-behavior: smooth;
