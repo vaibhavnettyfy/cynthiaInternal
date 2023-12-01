@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import CommonButton from "@/components/common/Button";
 import {
   Box,
@@ -33,7 +33,7 @@ import {
 import CommonInput from "@/components/common/Input";
 import { supabase } from "@/Client";
 import { errorNotification } from "@/helper/Notification";
-import moment from 'moment';
+import moment from "moment";
 import { managePlanHandler } from "@/helper";
 import CommonModal from "@/components/common/Modal";
 
@@ -61,9 +61,11 @@ const Usage = () => {
   const [reviewUsage, setReviewUsage] = useState("");
 
   const [usageBasedPricing, setUsageBasedPricing] = useState(false);
-  const [approvedUsageLimit, setApprovedUsageLimit] = useState("");
+  const [approvedUsageLimit, setApprovedUsageLimit] = useState(0);
   const [extraCurrentUsage, setExtraCurrentUsage] = useState("");
-  const [hardUsageLimit, sethardUsageLimit] = useState("");
+  const [hardUsageLimit, sethardUsageLimit] = useState(0);
+  const [error, setError] = useState('');
+  // const [usageLimit,setUsageLimit] = useState(0);
 
   const [isModalOpen, setIsModalOpen] = useState({
     open: false,
@@ -79,12 +81,39 @@ const Usage = () => {
   const [baseReview, setBaseReview] = useState("");
   const [extraCreditCost, setExtraCreditCost] = useState("");
 
+
+  const usageBasedPricingHandler = async (value) =>{
+    if(userRole === "individual"){
+      const payload = {
+        usage_based_pricing:value
+      }
+      const {data,error} = await supabase.from("user_usage").update(payload).eq("user_id",userId);
+      console.log("data--->",data);
+      console.log("error-",error);
+    }else{
+      const payload = {
+        usage_based_pricing:value
+      }
+      const {data,error} = await supabase.from("user_usage").update(payload).eq("organization_id",orgId);
+      console.log("data--->",data);
+      console.log("error-",error);
+    }
+  };
+
   // Handler function to update the state when the Switch is toggled
   const handleSwitchChange = () => {
     const subscriptionsStatus = localStorage.getItem("subscriptionsStatus");
-    if(subscriptionsStatus !== "trialing"){
+    if (subscriptionsStatus !== "trialing") {
+      console.log("usageBasedPricing",usageBasedPricing);
+      if(usageBasedPricing){
+        // FALSE
+        usageBasedPricingHandler("FALSE");
+      }else{
+        usageBasedPricingHandler("TRUE");
+        // TRUE
+      }
       setUsageBasedPricing(!usageBasedPricing);
-    }else{
+    } else {
       // Usage
       setIsModalOpen({
         open: true,
@@ -93,12 +122,54 @@ const Usage = () => {
     }
   };
 
+  const isValidNumber = (value) => {
+    // Your custom validation logic here
+    // For example, you can use regex to check if it's a valid number
+    const regex = /^[0-9]*$/;
+    return regex.test(value);
+  };
+
+  const hardUsageHandler = async () =>{
+    console.log("hard--->",hardUsageLimit);
+    if(userRole === "individual"){
+      const payload = {
+        hard_usage_limit:hardUsageLimit
+      }
+      const {data,error} = await supabase.from("user_usage").update(payload).eq("user_id",userId);
+      console.log("data--->",data);
+      console.log("error-",error);
+    }else{
+      const payload = {
+        hard_usage_limit:hardUsageLimit
+      }
+      const {data,error} = await supabase.from("user_usage").update(payload).eq("organization_id",orgId);
+      console.log("data--->",data);
+      console.log("error-",error);
+    }
+  }
+
+  const handleInputChange = (event) => {
+    const inputValue = event.target.value;
+    // Check if the input is a valid number
+    if (!isValidNumber(inputValue)) {
+      setError('Please enter a valid number');
+    } else {
+      setError('');
+      sethardUsageLimit(inputValue);
+    }
+  }; 
+  
+
   // we will get userId from loacalStorage
 
-  let userId = ""
+  let userId = "";
+  let orgId = "";
+  let userRole = "";
 
-  if (typeof window !== 'undefined') {
-  userId = localStorage.getItem("userId");
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
   }
 
   useEffect(() => {
@@ -109,20 +180,37 @@ const Usage = () => {
     }
   }, []);
 
+  
+
   // get user usageDetails by userId
   const usageByuserHandler = async () => {
-    const { data, error } = await supabase
+    const { data, error } = userRole === "individual" ? await supabase
       .from("user_usage")
       .select("*")
-      .eq("user_id", userId);
-    if(!error){
-      setUsageDetails(data[0]);
-      sethardUsageLimit(data[0]?.hard_usage_limit);
-      setExtraCurrentUsage(data[0]?.extra_current_usage);
-      setApprovedUsageLimit(data[0]?.approved_usage_limit);
-      // usage_based_pricing
-      setUsageBasedPricing(data[0]?.usage_based_pricing);
-      setReviewUsage(data[0]?.reviews_used);
+      .eq("user_id", userId) : await supabase
+      .from("user_usage")
+      .select("*")
+      .eq("organization_id", orgId);
+      console.log("datatatata",data);
+    if (!error) {
+      if(data.length){
+        setUsageDetails(data[0]);
+        sethardUsageLimit(data[0]?.hard_usage_limit);
+        setExtraCurrentUsage(data[0]?.extra_current_usage);
+        setApprovedUsageLimit(data[0]?.approved_usage_limit);
+        sethardUsageLimit(data[0].hard_usage_limit);
+        // usage_based_pricing
+        setUsageBasedPricing(data[0]?.usage_based_pricing);
+        setReviewUsage(data[0]?.reviews_used);
+      }else{
+        setUsageDetails(0);
+        sethardUsageLimit(0);
+        setExtraCurrentUsage(0);
+        setApprovedUsageLimit(0);
+        // usage_based_pricing
+        setUsageBasedPricing(false);
+        setReviewUsage(0);
+      }
     }
   };
 
@@ -231,7 +319,7 @@ const Usage = () => {
             } on ${planName}`}</Typography>
             <CommonButton
               buttonName="Upgrade"
-              onClick={()=>managePlanHandler()}
+              onClick={() => managePlanHandler()}
               style={{
                 borderRadius: "6px",
                 padding: "5px 15px",
@@ -266,11 +354,16 @@ const Usage = () => {
         </Typography>
         <Stack flexDirection={"row"} gap={1} alignItems={"center"}>
           <Typography fontSize={"15px"} fontWeight={600}>
-          {`$${extraCreditCost ? extraCreditCost :0} / feedback`}
+            {`$${extraCreditCost ? extraCreditCost : 0} / feedback`}
           </Typography>
-          <Typography fontSize={"13px"} sx={{whiteSpace:"nowrap"}}>
-            {`Pricing as per ${planName} Upgrade for lower price.`} {" "}
-            <span style={{color:"#700f70",cursor:"pointer"}} onClick={()=>managePlanHandler()}>Upgrade now</span>
+          <Typography fontSize={"13px"} sx={{ whiteSpace: "nowrap" }}>
+            {`Pricing as per ${planName} Upgrade for lower price.`}{" "}
+            <span
+              style={{ color: "#700f70", cursor: "pointer" }}
+              onClick={() => managePlanHandler()}
+            >
+              Upgrade now
+            </span>
           </Typography>
         </Stack>
       </Box>
@@ -297,11 +390,14 @@ const Usage = () => {
               your monthly credits.
             </Typography>
             <Typography fontSize={"15px"} fontWeight={600}>
-              {extraCurrentUsage !== undefined && extraCreditCost !== undefined && !isNaN(extraCurrentUsage) && !isNaN(extraCreditCost) ? (
-    `$ ${extraCurrentUsage * extraCreditCost}`
-  ) : (
-    "Invalid values"
-  )}
+              {console.log("extraCurrentUsage", extraCurrentUsage)}
+              {console.log("extraCreditCost", extraCreditCost)}
+              {extraCurrentUsage !== undefined &&
+              extraCreditCost !== undefined &&
+              !isNaN(extraCurrentUsage) &&
+              !isNaN(extraCreditCost)
+                ? `$ ${extraCurrentUsage * extraCreditCost}`
+                : "Invalid values"}
             </Typography>
             <Typography fontSize={"15px"} fontWeight={500}>
               (<Link href="#">{extraCurrentUsage}</Link> feedbacks analyzed so
@@ -317,10 +413,18 @@ const Usage = () => {
               subsequent requests will be rejected.
             </Typography>
             <CommonInput
-              value={`$ ${approvedUsageLimit !== undefined ? approvedUsageLimit : 0}`}
+              value={`${
+                hardUsageLimit !== undefined ? hardUsageLimit : 0
+              }`}
+              // type="number"
+              onBlur={()=>hardUsageHandler()}
+              onChange={(event)=>handleInputChange(event)}
+              // onChange={(event)=>setUsageLimit(event.target.value)}
               style={{ width: "300px" }}
             />
           </Stack>
+          {error && <div style={{ color: 'red' }}>{error}</div>}
+            {/* <CommonButton buttonName="save" onClick={()=>hardUsageHandler()}/> */}
         </Box>
       )}
       <Box marginTop={5} marginBottom={3} marginLeft={4}>
@@ -369,7 +473,7 @@ const Usage = () => {
                       {`$ ${res.amount}`}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                    {moment(res?.created_at).format('D MMMM YYYY, HH:mm')}
+                      {moment(res?.created_at).format("D MMMM YYYY, HH:mm")}
                     </TableCell>
                     <TableCell
                       component="th"
@@ -413,11 +517,11 @@ const Usage = () => {
         </TableContainer>
       </Box>
       <CommonModal
-          modalOpen={isModalOpen}
-          handleClose={() =>
-            setIsModalOpen({ open: false, currentComponent: "", name: "" })
-          }
-        />
+        modalOpen={isModalOpen}
+        handleClose={() =>
+          setIsModalOpen({ open: false, currentComponent: "", name: "" })
+        }
+      />
     </Box>
   );
 };

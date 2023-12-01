@@ -83,8 +83,14 @@ export const checkFeatures = async (name) => {
 
 
 export const managePlanHandler = async () =>{
-  const {data,message,success} = await upgradePlanHandler();
-  window.location.replace(data.url);
+  try {
+    const { data, message, success } = await upgradePlanHandler();
+    window.history.replaceState({}, document.title, window.location.href); // Save the current state in the browser history
+    window.location.replace(data.url);
+  } catch (error) {
+    console.error('Error handling plan:', error);
+    // Handle errors if needed
+  }
 };
 
 // For the Check Fetures 

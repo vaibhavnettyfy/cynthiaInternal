@@ -156,6 +156,7 @@ const UploadCard = ({ data }) => {
       const { data, error } = await supabase
         .from("integrations")
         .select("*")
+        .eq("user_id", userId)
         .eq("integration_source", "App Store");
       if (!error) {
         if (data && data.length > 0) setAppStoreDetails(data[0]);
@@ -164,6 +165,7 @@ const UploadCard = ({ data }) => {
       const { data, error } = await supabase
         .from("integrations")
         .select("*")
+        .eq("organization_id", orgId)
         .eq("integration_source", "App Store");
       if (!error) {
         if (data && data.length > 0) setAppStoreDetails(data[0]);
