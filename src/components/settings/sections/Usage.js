@@ -217,10 +217,13 @@ const Usage = () => {
   // Invoice Handler
   const invoiceDataHandler = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = userRole === "individual" ? await supabase
         .from("invoices")
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", userId) : await supabase
+        .from("invoices")
+        .select("*")
+        .eq("organization_id", orgId);
       setInvoiceData(data);
     } catch (err) {
       console.error("An error occurred while fetching invoice data:", err);
@@ -299,7 +302,7 @@ const Usage = () => {
           <Stack flexDirection={"row"} gap={2} alignItems={"center"}>
             <BorderLinearProgress
               variant="determinate"
-              value={50}
+              value={reviewUsage && baseReview ? (reviewUsage / baseReview) * 100 : 0}
               sx={{ width: "100%", color: "#7a52f4" }}
             />
             <Typography width={"25%"} textAlign={"end"}>

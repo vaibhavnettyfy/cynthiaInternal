@@ -4,7 +4,7 @@ import { useStyles } from "@/helper/theme";
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import CommonButton from "../common/Button";
 import CommonModal from "../common/Modal";
-import { errorNotification } from "@/helper/Notification";
+import { errorNotification, successNotification } from "@/helper/Notification";
 import { supabase } from "@/Client";
 import { EventEmitter } from "@/helper";
 import { circularProgressClasses } from "@mui/material/CircularProgress";
@@ -79,7 +79,14 @@ const UploadCard = ({ data }) => {
           .from("jobs")
           .select("*")
           .eq("job_id", JOBID);
+          console.log("data-job_id",data);
         if (!error) {
+          // if(data[0].status === "failed"){
+          //   errorNotification("failed")
+          // }
+          // if(data[0].status === "complete"){
+          //   successNotification("complete")
+          // }
           if (data[0]) {
             setStatusDetails(data[0]);
           } else {
