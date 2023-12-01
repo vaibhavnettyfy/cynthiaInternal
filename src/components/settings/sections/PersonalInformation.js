@@ -32,6 +32,8 @@ const PersonalInformation = () => {
     userDetailsHandler();
   }, []);
 
+  const allowRoleorgId = ["member", "org_admin"];
+
   const userDetailsHandler = async () => {
     if (userId) {
       const { data, error } = await supabase
@@ -233,48 +235,51 @@ const PersonalInformation = () => {
           />
         </Stack>
         <Divider />
-        <Stack
-          flexDirection={"row"}
-          gap={3}
-          alignItems={"center"}
-          paddingY={3}
-          marginLeft={2}
-        >
-          <Typography
-            fontSize={"15px"}
-            fontWeight={"600"}
-            lineHeight={"25px"}
-            width={"200px"}
+        {
+          allowRoleorgId.includes(userRole) && 
+          <Stack
+            flexDirection={"row"}
+            gap={3}
+            alignItems={"center"}
+            paddingY={3}
+            marginLeft={2}
           >
-            Organization ID{" "}
-          </Typography>
-          <CommonInput
-            value={orgId}
-            disabled
-            name="organizationId"
-            style={{ width: "285px" }}
-          />
-          {/* <CommonButton
-            buttonName="Switch to individual"
-            style={{ borderRadius: "3px", padding: "8px" }}
-            onClick={() =>
-              setIsModalOpen({
-                open: true,
-                currentComponent: "switchAccount",
-              })
-            }
-          /> */}
-          {/* <CommonButton
-            buttonName="Create Organization"
-            style={{ borderRadius: "3px", padding: "8px" }}
-            onClick={() =>
-              setIsModalOpen({
-                open: true,
-                currentComponent: "switchAccount",
-              })
-            }
-          /> */}
-        </Stack>
+            <Typography
+              fontSize={"15px"}
+              fontWeight={"600"}
+              lineHeight={"25px"}
+              width={"200px"}
+            >
+              Organization ID{" "}
+            </Typography>
+            <CommonInput
+              value={orgId}
+              disabled
+              name="organizationId"
+              style={{ width: "285px" }}
+            />
+            {/* <CommonButton
+              buttonName="Switch to individual"
+              style={{ borderRadius: "3px", padding: "8px" }}
+              onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  currentComponent: "switchAccount",
+                })
+              }
+            /> */}
+            {/* <CommonButton
+              buttonName="Create Organization"
+              style={{ borderRadius: "3px", padding: "8px" }}
+              onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  currentComponent: "switchAccount",
+                })
+              }
+            /> */}
+          </Stack>
+        }
         <Box marginLeft={"150px"} marginTop={3}>
           <CommonButton
             buttonName="Save Changes"
