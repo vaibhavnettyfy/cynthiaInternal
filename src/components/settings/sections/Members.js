@@ -210,6 +210,7 @@ const Members = () => {
                 {members &&
                   members.length > 0 &&
                   members.map((response) => {
+                    console.log("response",response);
                     return (
                       <StyledTableRow sx={{ cursor: "pointer" }}>
                         <TableCell component="th" scope="row">
@@ -218,14 +219,30 @@ const Members = () => {
                             gap={1}
                             alignItems={"center"}
                           >
-                            <Image
+                            {/* <Image
                               src={Profileimage}
                               style={{
                                 width: "40px",
                                 height: "40px",
                                 borderRadius: "5px",
                               }}
-                            ></Image>
+                            ></Image> */}
+                            <Box
+                              sx={{
+                                background: "#7a52f4",
+                                color: "#fff",
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                fontWeight:'700',
+                                marginRight:'5px'
+                              }}
+                            >
+                              {response.name.charAt(0)}
+                            </Box>
                             <Stack>
                               <Typography
                                 fontSize={"18px"}
@@ -234,9 +251,9 @@ const Members = () => {
                               >
                                 {response.name}
                               </Typography>
-                              <Typography fontSize={"14px"} lineHeight={"15px"}>
+                              {/* <Typography fontSize={"14px"} lineHeight={"15px"}>
                                 Product Manager
-                              </Typography>
+                              </Typography> */}
                             </Stack>
                           </Stack>
                         </TableCell>

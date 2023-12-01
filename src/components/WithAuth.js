@@ -1,21 +1,29 @@
-import { subscriptionsStatus } from "@/helper";
+import { EventEmitter, subscriptionsStatus } from "@/helper";
 import { useEffect, useState } from "react";
 import CommonModal from "./common/Modal";
 
 
-
 export default function WithAuth(Component) {
+  
   const WithAuthComponent = (props) => {
     const [isModalOpen, setIsModalOpen] = useState({
       open: false,
       currentComponent: "",
     });
 
+    
+    
+
     useEffect(() => {
       const checkHandler = async () => {
         const response = await subscriptionsStatus();
         return response;
       };
+
+      EventEmitter.subscribe('subscriptions',async(res)=>{
+        console.log("----->recievddddd");
+        checkSubscription();
+      },[]);
 
       const checkSubscription = async () => {
         let userRole = ""

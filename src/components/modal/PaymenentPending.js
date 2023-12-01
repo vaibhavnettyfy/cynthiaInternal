@@ -2,6 +2,7 @@ import React from "react";
 import { Box, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
 import CommonButton from "../common/Button";
 import { useRouter } from "next/navigation";
+import { managePlanHandler } from "@/helper";
 
 const PaymenentPending = ({ handleClose }) => {
   const router = useRouter();
@@ -11,9 +12,7 @@ const PaymenentPending = ({ handleClose }) => {
     localStorage.clear();
   };
 
-  const managePlanHandler = () => {
-    router.push(`/admin/settings`);
-  };
+  
 
   return (
     <>

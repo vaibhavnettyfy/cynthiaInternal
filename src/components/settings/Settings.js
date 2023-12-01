@@ -25,13 +25,11 @@ const Settings = () => {
   }
 
   const handleChange = async (event, newValue) => {
-    if(newValue ===2){
+    if (newValue === 2) {
       managePlanHandler();
     }
     setSelectedTab(newValue);
   };
-
-  
 
   // render Componenet Here
   const renderComponents = () => {
@@ -41,7 +39,7 @@ const Settings = () => {
       case 1:
         return <Password />;
       case 2:
-        return allowRoleUsage.includes(userRole)  ? <Plan /> :null;
+        return allowRoleUsage.includes(userRole) ? <Plan /> : null;
       case 3:
         return allowRoleUsage.includes(userRole) ? <Usage /> : null;
       // if (allowRoleUsage.includes(userRole && userRole)) {
@@ -77,11 +75,24 @@ const Settings = () => {
         >
           <Tab label="Personal Information" />
           <Tab label="Password" />
-          {
-            allowRoleUsage.includes(userRole && userRole) && (
-              <Tab label="Manage Your Plan" />
-            )
-          }
+          {allowRoleUsage.includes(userRole && userRole) && (
+            <Box
+              onClick={() => managePlanHandler()}
+              sx={{
+                fontSize: "0.875rem",
+                padding: "10px 25px !important",
+                minHeight: "48px",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                color: "rgba(0, 0, 0, 0.6)",
+                fontWeight: "500",
+                cursor: "pointer",
+              }}
+            >
+              Manage Your Plan
+            </Box>
+          )}
           {allowRoleUsage.includes(userRole && userRole) && (
             <Tab label="Usage" />
           )}
@@ -96,7 +107,7 @@ const Settings = () => {
         padding={3}
         width={"calc(100vw - 350px)"}
         height={"100%"}
-        sx={{ overflow: "auto" }}        
+        sx={{ overflow: "auto" }}
       >
         {selectedTab === 2 ? null : renderComponents()}
       </Box>

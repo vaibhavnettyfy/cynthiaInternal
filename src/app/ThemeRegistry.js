@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { supabase } from "@/Client";
+import { EventEmitter } from "@/helper";
 // import { subScriptionHandler } from "@/helper/Subscription";
 
 export default function ThemeRegistry(props) {
@@ -55,6 +57,20 @@ export default function ThemeRegistry(props) {
     );
   });
   
+  useEffect(()=>{
+    const subscription = supabase.channel("subscriptions").on('postgres_changes',{
+      event:'UPDATE',
+      schema: 'public',
+    },(payload) => [
+      console.log("-------11111--->",payload),
+      EventEmitter.dispatch('subscriptions',true)
+    ]).subscribe();
+
+    return () => subscription.unsubscribe();
+  },[]);
+
+  
+
 
   return (
     // <CacheProvider value={cache}>
