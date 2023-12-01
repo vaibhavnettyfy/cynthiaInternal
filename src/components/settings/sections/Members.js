@@ -210,7 +210,14 @@ const Members = () => {
                 {members &&
                   members.length > 0 &&
                   members.map((response) => {
-                    console.log("response",response);
+                    console.log("response", response);
+                    const nameParts = response.name.split(" ");
+                    const firstNameInitial = nameParts[0]
+                      ? nameParts[0][0]
+                      : "";
+                    const lastNameInitial = nameParts[1] ? nameParts[1][0] : "";
+                    console.log("firstNameInitial", firstNameInitial);
+                    console.log("lastNameInitial", lastNameInitial);
                     return (
                       <StyledTableRow sx={{ cursor: "pointer" }}>
                         <TableCell component="th" scope="row">
@@ -237,11 +244,12 @@ const Members = () => {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                fontWeight:'700',
-                                marginRight:'5px'
+                                fontWeight: "700",
+                                marginRight: "5px",
                               }}
                             >
-                              {response.name.charAt(0)}
+                              {firstNameInitial}
+                              {lastNameInitial}
                             </Box>
                             <Stack>
                               <Typography
@@ -251,9 +259,13 @@ const Members = () => {
                               >
                                 {response.name}
                               </Typography>
-                              {/* <Typography fontSize={"14px"} lineHeight={"15px"}>
-                                Product Manager
-                              </Typography> */}
+                              <Typography fontSize={"14px"} lineHeight={"15px"}>
+                                {response.role === "org_admin"
+                                  ? "Admin"
+                                  : response.role === "member"
+                                  ? "Member"
+                                  : response.role === "individual" && userRole}
+                              </Typography>
                             </Stack>
                           </Stack>
                         </TableCell>
