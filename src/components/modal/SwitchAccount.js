@@ -1,10 +1,93 @@
-import { Box, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  DialogActions,
+  DialogContent,
+  Stack,
+  Typography,
+} from "@mui/material";
 import CommonButton from "../common/Button";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CommonModal from "../common/Modal";
+import { setIndividualHandler } from "@/service/comman.service";
+import { errorNotification, successNotification } from "@/helper/Notification";
+import { supabase } from "@/Client";
 
 const SwitchAccount = ({ handleClose }) => {
+  const router = useRouter();
+  let userId = "";
+  let userRole = "";
+  let orgId = "";
+
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
+  }
+
+  const [members, setMembers] = useState([]);
+  const [memberFlag,setMemberFlag] = useState(false);
+
+  useEffect(() => {
+    checkMemeber();
+  }, []);
+
+  const checkMemeber = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("organization_members")
+        .select("*")
+        .eq("organization_id", orgId);
+
+      if (error) {
+        console.error("Error fetching organization members:", error);
+        setMemberFlag(false);
+      } else {
+        setMemberFlag(true);
+        setMembers(data);
+      }
+    } catch (error) {
+      setMemberFlag(false);
+      console.error("An error occurred:", error);
+    }
+  };
+
+  const switchToindividualHandler = async () => {
+    const payload = {
+      user_id: userId,
+    };
+    if (userRole === "org_admin") {
+      console.log("members.length",members);
+      if (memberFlag && members.length === 0) {
+        const { data, message, success } = await setIndividualHandler(
+          "org_admin",
+          payload
+        );
+        if (success) {
+          successNotification(message);
+          localStorage.clear();
+          router.push(`/`);
+        } else {
+          errorNotification(message);
+        }
+      }else{
+        errorNotification("before swicth to individual you have to remove member");
+      }
+    } else {
+      const { data, message, success } = await setIndividualHandler(
+        "individual",
+        payload
+      );
+      if (success) {
+        successNotification(message);
+        localStorage.clear();
+        router.push(`/`);
+      } else {
+        errorNotification(message);
+      }
+    }
+  };
+
   return (
     <>
       <Box
@@ -31,11 +114,12 @@ const SwitchAccount = ({ handleClose }) => {
             lineHeight={"25px"}
             marginBottom={2}
           >
-            Your account type will switch to individual and you will have to
-            relogin.
+            {userRole === "org_admin"
+              ? "Your account type will switch to individual and your organization will be deleted. please ensure you have no members. you will have to relogin for changes to take effect."
+              : "Your account type will switch to individual and you will have to relogin"}
           </Typography>
           <Stack flexDirection={"row"} gap={"10px"}>
-            <CommonButton buttonName="Confirm" onClick={handleClose} />
+            <CommonButton buttonName="Confirm" onClick={()=>switchToindividualHandler()} />
             <CommonButton buttonName="Cancel" onClick={handleClose} />
           </Stack>
         </DialogContent>

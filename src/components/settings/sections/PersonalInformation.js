@@ -23,11 +23,13 @@ const PersonalInformation = () => {
   let userId = "";
   let userRole = "";
   let orgId = "";
+
   if (typeof window !== "undefined") {
     userId = localStorage.getItem("userId");
     userRole = localStorage.getItem("userRole");
     orgId = localStorage.getItem("orgId");
   }
+
   useEffect(() => {
     userDetailsHandler();
   }, []);
@@ -72,12 +74,15 @@ const PersonalInformation = () => {
       .update(updatedUserData)
       .eq("id", userId);
 
-    const {data:updatedAuthData,error:authError} = await supabase.auth.updateUser({
-      email: updateData.email
-    })  
+    const { data: updatedAuthData, error: authError } =
+      await supabase.auth.updateUser({
+        email: updateData.email,
+      });
 
     if (error) {
-      errorNotification(error?.message ||authError.message || "Error updating user details");
+      errorNotification(
+        error?.message || authError.message || "Error updating user details"
+      );
     } else {
       successNotification("User details updated successfully:");
     }
@@ -112,8 +117,7 @@ const PersonalInformation = () => {
           marginLeft={"70px"}
           alignItems={"center"}
           marginBottom={2}
-        >
-        </Stack>
+        ></Stack>
         <Stack
           flexDirection={"row"}
           gap={3}
@@ -197,7 +201,7 @@ const PersonalInformation = () => {
             Role{" "}
           </Typography>
           <CommonInput
-            value={userRole === "org_admin" ? "Admin" :userRole}
+            value={userRole === "org_admin" ? "Admin" : userRole}
             name="role"
             style={{ width: "280px" }}
           />
@@ -235,8 +239,7 @@ const PersonalInformation = () => {
           />
         </Stack>
         <Divider />
-        {
-          allowRoleorgId.includes(userRole) && 
+        {allowRoleorgId.includes(userRole) && (
           <Stack
             flexDirection={"row"}
             gap={3}
@@ -258,28 +261,40 @@ const PersonalInformation = () => {
               name="organizationId"
               style={{ width: "285px" }}
             />
-            {/* <CommonButton
-              buttonName="Switch to individual"
-              style={{ borderRadius: "3px", padding: "8px" }}
-              onClick={() =>
-                setIsModalOpen({
-                  open: true,
-                  currentComponent: "switchAccount",
-                })
-              }
-            /> */}
-            {/* <CommonButton
+            {userRole !== "individual" && (
+              <CommonButton
+                buttonName="Switch to individual"
+                style={{ borderRadius: "3px", padding: "8px" }}
+                onClick={() =>
+                  setIsModalOpen({
+                    open: true,
+                    currentComponent: "switchAccount",
+                  })
+                }
+              />
+            )}
+          </Stack>
+        )}
+        <Stack
+          flexDirection={"row"}
+          gap={3}
+          alignItems={"center"}
+          paddingY={3}
+          marginLeft={2}
+        >
+          {userRole === "individual" && (
+            <CommonButton
               buttonName="Create Organization"
               style={{ borderRadius: "3px", padding: "8px" }}
               onClick={() =>
                 setIsModalOpen({
                   open: true,
-                  currentComponent: "switchAccount",
+                  currentComponent: "createOrg",
                 })
               }
-            /> */}
-          </Stack>
-        }
+            />
+          )}
+        </Stack>
         <Box marginLeft={"150px"} marginTop={3}>
           <CommonButton
             buttonName="Save Changes"

@@ -29,10 +29,16 @@ const UploadCard = ({ data }) => {
     getStatusByJobId();
   });
 
-  EventEmitter.subscribe('appIntegrations', (res) => {
+  EventEmitter.subscribe("appIntegrations", (res) => {
     playStoreHandler();
     appStoreHandler();
-  })
+  });
+
+  EventEmitter.subscribe('disconnected',(res) => {
+    console.log("recevied--->");
+    playStoreHandler();
+    appStoreHandler();
+  });
 
   let userId = "";
   let orgId = "";
@@ -51,11 +57,15 @@ const UploadCard = ({ data }) => {
 
     // For the real Time
     const subscription = supabase
-      .channel("jobs").on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-      }, (payload) => [
-        EventEmitter.dispatch("jobId", true)])
+      .channel("jobs")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+        },
+        (payload) => [EventEmitter.dispatch("jobId", true)]
+      )
       .subscribe();
 
     // Cleanup subscription on component unmount
@@ -79,7 +89,7 @@ const UploadCard = ({ data }) => {
           .from("jobs")
           .select("*")
           .eq("job_id", JOBID);
-          console.log("data-job_id",data);
+        console.log("data-job_id", data);
         if (!error) {
           // if(data[0].status === "failed"){
           //   errorNotification("failed")
@@ -144,6 +154,8 @@ const UploadCard = ({ data }) => {
       if (!error) {
         if (data && data.length > 0) {
           setPlayStoreDetails(data[0]);
+        }else{
+          setPlayStoreDetails({});
         }
       }
     } else {
@@ -153,7 +165,11 @@ const UploadCard = ({ data }) => {
         .eq("organization_id", orgId)
         .eq("integration_source", "Play Store");
       if (!error) {
-        if (data && data.length > 0) setPlayStoreDetails(data[0]);
+        if (data && data.length > 0) {
+          setPlayStoreDetails(data[0]);
+        }else{
+          setPlayStoreDetails({});
+        }
       }
     }
   };
@@ -166,7 +182,12 @@ const UploadCard = ({ data }) => {
         .eq("user_id", userId)
         .eq("integration_source", "App Store");
       if (!error) {
-        if (data && data.length > 0) setAppStoreDetails(data[0]);
+        console.log("data.length",data.length);
+        if (data && data.length > 0) {
+          setAppStoreDetails(data[0]);
+        }else{
+          setAppStoreDetails({});
+        }
       }
     } else {
       const { data, error } = await supabase
@@ -175,17 +196,117 @@ const UploadCard = ({ data }) => {
         .eq("organization_id", orgId)
         .eq("integration_source", "App Store");
       if (!error) {
-        if (data && data.length > 0) setAppStoreDetails(data[0]);
+        if (data && data.length > 0){
+          setAppStoreDetails(data[0]);
+        }else{
+          setAppStoreDetails({});
+        }
+          
       }
     }
   };
 
+  // const playStoreDisconnectHandler = async (text,id) => {
+  //   if (userRole === "individual") {
+  //     const { data, error } = await supabase
+  //       .from("integrations")
+  //       .delete()
+  //       .eq("id",id);
+  //       // .eq("user_id", userId)
+  //       // .eq("app_id", text)
+  //       // .eq("integration_source", "Play Store")
+
+  //     if (!error) {
+  //       if (data && data.length > 0) {
+  //         playStoreHandler();
+  //       }
+  //     }else{
+  //       errorNotification(error.message)
+  //     }
+  //   } else {
+  //     const { data, error } = await supabase
+  //       .from("integrations")
+  //       .delete()
+  //       .eq("id",id);
+  //       // .eq("organization_id", orgId)
+  //       // .eq("app_id", text)
+  //       // .eq("integration_source", "Play Store");
+  //     console.log("data-->",data);
+  //     console.log("error---",error);
+  //     if (!error) {
+  //       if (data && data.length > 0) playStoreHandler();
+  //     }else{
+  //       errorNotification(error.message)
+  //     }
+  //   }
+  //   // const {} = await supabase.from("integrations").select("*")
+  // };
+
+  // const appStoreDisconnectHandler = async (text) => {
+  //   if (userRole === "individual") {
+  //     const { data, error } = await supabase
+  //       .from("integrations")
+  //       .delete()
+  //       .eq("user_id", userId)
+  //       .eq("app_id", text)
+  //       .eq("integration_source", "App Store");
+  //     // .eq("integration_source", "Play Store");
+  //     if (!error) {
+  //       if (data && data.length > 0) {
+  //         appStoreHandler();
+  //       }
+  //     }else{
+  //       errorNotification(error.message)
+  //     }
+  //   } else {
+  //     const { data, error } = await supabase
+  //       .from("integrations")
+  //       .delete()
+  //       .eq("organization_id", orgId)
+  //       .eq("app_id", text)
+  //       .eq("integration_source", "App Store")
+  //     if (!error) {
+  //       if (data && data.length > 0) appStoreHandler();
+  //     }else{
+  //       errorNotification(error.message)
+  //     }
+  //   }
+  // };
+
+  const disconnectHandler = (type, text,id) => {
+    console.log("type", type);
+    console.log("text", text);
+    console.log("id",id);
+    setIsModalOpen({
+      open: true,
+      currentComponent: "disconnect",
+      name: `${data.button}`,
+      data: {
+        type: type,
+        text: text,
+        id:id
+      },
+    });
+    // if (type === "Connect Google Play Store") {
+    //   console.log("inside");
+    //   playStoreDisconnectHandler(text,id);
+    // } else {
+    //   console.log("inside-else");
+    //   appStoreDisconnectHandler(text,id);
+    // }
+  };
+
   return (
     <>
-      <Box className={classes.cardContainer} sx={{ height: '240px' }}>
-        <Stack sx={{ padding: 3, height: '100%' }} alignItems={"center"} gap={2} justifyContent={'center'}>
+      <Box className={classes.cardContainer} sx={{ height: "240px" }}>
+        <Stack
+          sx={{ padding: 3, height: "100%" }}
+          alignItems={"center"}
+          gap={2}
+          justifyContent={"center"}
+        >
           {data.button === "Upload CSV File" &&
-            statusDetails.status === "processing" ? (
+          statusDetails.status === "processing" ? (
             <CircularProgress size={90} thickness={5} value={100} />
           ) : (
             <>
@@ -200,13 +321,19 @@ const UploadCard = ({ data }) => {
               {(data.button === "Connect Google Play Store" &&
                 playStoreDetails &&
                 playStoreDetails.app_id) ||
-                (data.button === "Connect App Store app" &&
-                  appStoreDetails &&
-                  appStoreDetails.app_id) ? (
+              (data.button === "Connect App Store app" &&
+                appStoreDetails &&
+                appStoreDetails.app_id) ? (
                 <CommonButton
                   variant="outlined"
                   buttonName="Disconnect"
-                // onClick={() => /* Add your disconnect logic here */}
+                  onClick={() =>
+                    disconnectHandler(
+                      data.button,
+                      playStoreDetails?.app_id || appStoreDetails?.app_id,
+                      playStoreDetails?.id || appStoreDetails?.id
+                    )
+                  }
                 />
               ) : (
                 <CommonButton
@@ -224,7 +351,7 @@ const UploadCard = ({ data }) => {
 
           {statusDetails.status === "processing" && (
             <>
-              <h3 style={{ fontSize: '12px', marginTop: '10px' }}>
+              <h3 style={{ fontSize: "12px", marginTop: "10px" }}>
                 {data.button === "Upload CSV File" && statusDetails.job_name}
               </h3>
               <h3>

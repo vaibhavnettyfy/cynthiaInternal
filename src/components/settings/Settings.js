@@ -21,7 +21,7 @@ const Settings = () => {
 
   let userRole = "";
   if (typeof window !== "undefined") {
-    userRole = localStorage.getItem("userRole");
+    userRole = localStorage.getItem("userRole")||"";
   }
 
   const handleChange = async (event, newValue) => {
