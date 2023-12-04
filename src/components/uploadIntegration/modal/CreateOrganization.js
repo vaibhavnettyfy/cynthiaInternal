@@ -36,7 +36,7 @@ const CreateOrganization = ({ handleClose }) => {
     <>
       <Box
         width={"450px"}
-        height={"220px"}
+        height={"265px"}
         sx={{ borderRadius: "24px", padding: "30px" }}
       >
         <DialogContent

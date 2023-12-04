@@ -109,6 +109,10 @@ a:hover {
   background-color: #fff !important;
 }
 
+.MuiLinearProgress-bar {
+background-color: #7a52f4 !important;
+}
+
 .inputbox .input_upload_file {
   position: absolute;
   opacity: 0;

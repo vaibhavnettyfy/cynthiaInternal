@@ -24,6 +24,7 @@ const UploadCard = ({ data }) => {
   const [statusDetails, setStatusDetails] = useState({});
   const [playStoreDetails, setPlayStoreDetails] = useState({});
   const [appStoreDetails, setAppStoreDetails] = useState({});
+  const [uploadCsvStatus,setUploadCsvStatus] = useState("");
 
   EventEmitter.subscribe("jobId", (res) => {
     getStatusByJobId();
@@ -91,12 +92,12 @@ const UploadCard = ({ data }) => {
           .eq("job_id", JOBID);
         console.log("data-job_id", data);
         if (!error) {
-          // if(data[0].status === "failed"){
-          //   errorNotification("failed")
-          // }
-          // if(data[0].status === "complete"){
-          //   successNotification("complete")
-          // }
+          if(data[0].status === "failed"){
+            setUploadCsvStatus("Your file processing has failed")
+          }
+          if(data[0].status === "complete"){
+            setUploadCsvStatus("Your file processing is successfully completed")
+          }
           if (data[0]) {
             setStatusDetails(data[0]);
           } else {
@@ -306,9 +307,10 @@ const UploadCard = ({ data }) => {
           justifyContent={"center"}
         >
           {data.button === "Upload CSV File" &&
-          statusDetails.status === "processing" ? (
+            statusDetails.status === "processing" ? (
             <CircularProgress size={90} thickness={5} value={100} />
-          ) : (
+          )
+          : (
             <>
               {data.image}
               {data.button === "Connect Google Play Store" &&
@@ -360,6 +362,12 @@ const UploadCard = ({ data }) => {
               </h3>
             </>
           )}
+          {
+            uploadCsvStatus && (
+              data.button === "Upload CSV File" &&  <span> 
+               {`File status : ${uploadCsvStatus}`}</span>
+              )
+          }
           <input
             id="file-upload"
             type="file"

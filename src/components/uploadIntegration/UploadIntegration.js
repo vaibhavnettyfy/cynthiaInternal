@@ -16,6 +16,7 @@ import WithAuth from "../WithAuth";
 import { UPLOADINTEGRATION, checkFeatures } from "@/helper";
 import CommonModal from "../common/Modal";
 import { supabase } from "@/Client";
+import { errorNotification } from "@/helper/Notification";
 
 const uploadData = [
   {
@@ -53,8 +54,24 @@ const UploadIntegration = () => {
     data: null,
   });
 
+  let userId = "";
+  let orgId = "";
+  let userRole = "";
+
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
+  }
+
+  const [reviewUsed, setReviewUsed] = useState(0);
+  const [baseReview, setBaseReview] = useState(0);
+  const [queryUsage, setQueryUsage] = useState(0);
+  const [baseQueries, setBaseQueries] = useState(0);
+
   useEffect(() => {
     checkHandler();
+    notificationHandler();
   }, []);
 
   const checkHandler = async () => {
@@ -67,6 +84,65 @@ const UploadIntegration = () => {
           message,
         },
       });
+    }
+  };
+
+  const notificationHandler = () => {
+    userUsageHandler();
+    subscriptionsDataHandler();
+  };
+
+  const userUsageHandler = async () => {
+    const { data, error } =
+      userRole === "individual"
+        ? await supabase.from("user_usage").select("*").eq("user_id", userId)
+        : await supabase
+            .from("user_usage")
+            .select("*")
+            .eq("organization_id", orgId);
+
+    setReviewUsed(data[0].reviews_used);
+    setQueryUsage(data[0].query_usage);
+    console.log("data---->", data);
+    console.log("error", error);
+  };
+
+  const productDataHandler = async (pId) => {
+    try {
+      if (userId) {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", pId);
+        if (error) {
+          errorNotification(error.message);
+        } else {
+          console.log("data-data-product", data);
+          // setPlanName(data[0]?.name);
+          setBaseQueries(data[0]?.metadata.base_queries);
+          setBaseReview(data[0]?.metadata.base_reviews);
+          // setExtraCreditCost(data[0]?.metadata.extra_credit_cost);
+        }
+      }
+    } catch (error) {
+      errorNotification(error.message || "Something_went_wrong");
+    }
+  };
+
+  const subscriptionsDataHandler = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", userId);
+      console.log("subscriptions-data", data);
+      if (error) {
+      } else {
+        // setProductId(data[0]?.product_id);
+        productDataHandler(data[0]?.product_id);
+      }
+    } catch (error) {
+      // errorNotification(error.message || "something_Went_Wrong");
     }
   };
 
@@ -88,9 +164,20 @@ const UploadIntegration = () => {
             color: "#000",
           }}
         >
-          You have 2300 credits left of 3000 to analyse. Additional usage will
-          be charged as per your plan.
-          <Link href="#"> Usage-based pricing.</Link>
+          {`You have used ${reviewUsed} of ${baseReview} credits. You have used ${queryUsage} of ${baseQueries} free queries`}
+          <span
+            style={{ color: "#7a52f4", cursor: "pointer" }}
+            onClick={() =>
+              setIsModalOpen({
+                open: true,
+                currentComponent: "ExtraUsage",
+                data: null,
+              })
+            }
+          >
+            {" "}
+            Please enable usage-based pricing for extra usage.
+          </span>
         </Typography>
       </Box>
       <Box padding={3}>

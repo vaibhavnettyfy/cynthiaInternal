@@ -15,6 +15,7 @@ import SwitchAccount from '../modal/SwitchAccount';
 import Usage from '../modal/Usage';
 import CreateOrganization from '../uploadIntegration/modal/CreateOrganization';
 import Disconnect from '../modal/Disconnect';
+import ExtraUsage from '../modal/ExtraUsage';
 
 export default function CommonModal({ handleClose, modalOpen }) {
     const router = useRouter();
@@ -49,6 +50,7 @@ export default function CommonModal({ handleClose, modalOpen }) {
             {modalOpen.currentComponent === 'switchAccount' && <SwitchAccount handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'createOrg' && <CreateOrganization handleClose={handleClose} modalOpen={modalOpen} />}
             {modalOpen.currentComponent === 'disconnect' && <Disconnect handleClose={handleClose} modalOpen={modalOpen} />}
+            {modalOpen.currentComponent === "ExtraUsage" && <ExtraUsage handleClose={handleClose} modalOpen={modalOpen} />}
         </Dialog>
     );
 }

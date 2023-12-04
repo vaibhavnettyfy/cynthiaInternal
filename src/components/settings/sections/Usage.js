@@ -303,7 +303,7 @@ const Usage = () => {
             <BorderLinearProgress
               variant="determinate"
               value={reviewUsage && baseReview ? (reviewUsage / baseReview) * 100 : 0}
-              sx={{ width: "100%", color: "#7a52f4" }}
+              sx={{ width: "100%", backgroundColor: "#7a52f4" }}
             />
             <Typography width={"25%"} textAlign={"end"}>
               {`${reviewUsage ? reviewUsage : 0} / ${
