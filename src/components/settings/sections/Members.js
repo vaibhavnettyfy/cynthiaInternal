@@ -81,9 +81,10 @@ const Members = () => {
   const orgNamehandler = async () => {
     if (userId) {
       const { data, error } = await supabase
-        .from("users")
+        .from("organizations")
         .select("*")
-        .eq("id", userId);
+        .eq("admin_id", userId);
+        console.log("datadatadata",data);
       setUserDetails(data[0]);
       if (error) {
         errorNotification(error.message || "Something went wrong");
@@ -171,7 +172,7 @@ const Members = () => {
           alignItems={"center"}
         >
           <Typography fontSize={"22px"} fontWeight={"700"} lineHeight={"30px"}>
-            {userDetails?.organization_name}
+            {userDetails?.name}
           </Typography>
           <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
             <TextField

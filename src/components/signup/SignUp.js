@@ -168,7 +168,7 @@ const SignUp = () => {
                       placeholder="Work Email"
                       iconsInput
                       name="workEmail"
-                      inputProps={{ maxLength: 50 }}
+                      inputProps={{ maxLength: 100 }}
                       formik={formik}
                     />
                   </Box>
@@ -178,7 +178,7 @@ const SignUp = () => {
                     placeholder="Password"
                     passwordInput
                     name="password"
-                    inputProps={{ maxLength: 30 }}
+                    inputProps={{ maxLength: 50 }}
                     formik={formik}
                   />
                 </Box>

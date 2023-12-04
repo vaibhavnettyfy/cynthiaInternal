@@ -25,6 +25,8 @@ const UploadCard = ({ data }) => {
   const [playStoreDetails, setPlayStoreDetails] = useState({});
   const [appStoreDetails, setAppStoreDetails] = useState({});
   const [uploadCsvStatus,setUploadCsvStatus] = useState("");
+  const [notificationDisplayed, setNotificationDisplayed] = useState(false);
+
 
   EventEmitter.subscribe("jobId", (res) => {
     getStatusByJobId();
@@ -36,7 +38,6 @@ const UploadCard = ({ data }) => {
   });
 
   EventEmitter.subscribe('disconnected',(res) => {
-    console.log("recevied--->");
     playStoreHandler();
     appStoreHandler();
   });
@@ -93,10 +94,22 @@ const UploadCard = ({ data }) => {
         console.log("data-job_id", data);
         if (!error) {
           if(data[0].status === "failed"){
+            localStorage.removeItem("jobId")
+            // if (!notificationDisplayed) {
+            //   errorNotification("Your file processing has failed");
+            //   setNotificationDisplayed(true);
+            // }
             setUploadCsvStatus("Your file processing has failed")
+            // errorNotification("Your file processing has failed");
           }
           if(data[0].status === "complete"){
+            localStorage.removeItem("jobId")
+            // if (!notificationDisplayed) {
+            //   successNotification("Your file processing is successfully completed");
+            //   setNotificationDisplayed(true);
+            // }
             setUploadCsvStatus("Your file processing is successfully completed")
+            // successNotification("Your file processing is successfully completed");
           }
           if (data[0]) {
             setStatusDetails(data[0]);
@@ -207,72 +220,7 @@ const UploadCard = ({ data }) => {
     }
   };
 
-  // const playStoreDisconnectHandler = async (text,id) => {
-  //   if (userRole === "individual") {
-  //     const { data, error } = await supabase
-  //       .from("integrations")
-  //       .delete()
-  //       .eq("id",id);
-  //       // .eq("user_id", userId)
-  //       // .eq("app_id", text)
-  //       // .eq("integration_source", "Play Store")
-
-  //     if (!error) {
-  //       if (data && data.length > 0) {
-  //         playStoreHandler();
-  //       }
-  //     }else{
-  //       errorNotification(error.message)
-  //     }
-  //   } else {
-  //     const { data, error } = await supabase
-  //       .from("integrations")
-  //       .delete()
-  //       .eq("id",id);
-  //       // .eq("organization_id", orgId)
-  //       // .eq("app_id", text)
-  //       // .eq("integration_source", "Play Store");
-  //     console.log("data-->",data);
-  //     console.log("error---",error);
-  //     if (!error) {
-  //       if (data && data.length > 0) playStoreHandler();
-  //     }else{
-  //       errorNotification(error.message)
-  //     }
-  //   }
-  //   // const {} = await supabase.from("integrations").select("*")
-  // };
-
-  // const appStoreDisconnectHandler = async (text) => {
-  //   if (userRole === "individual") {
-  //     const { data, error } = await supabase
-  //       .from("integrations")
-  //       .delete()
-  //       .eq("user_id", userId)
-  //       .eq("app_id", text)
-  //       .eq("integration_source", "App Store");
-  //     // .eq("integration_source", "Play Store");
-  //     if (!error) {
-  //       if (data && data.length > 0) {
-  //         appStoreHandler();
-  //       }
-  //     }else{
-  //       errorNotification(error.message)
-  //     }
-  //   } else {
-  //     const { data, error } = await supabase
-  //       .from("integrations")
-  //       .delete()
-  //       .eq("organization_id", orgId)
-  //       .eq("app_id", text)
-  //       .eq("integration_source", "App Store")
-  //     if (!error) {
-  //       if (data && data.length > 0) appStoreHandler();
-  //     }else{
-  //       errorNotification(error.message)
-  //     }
-  //   }
-  // };
+  
 
   const disconnectHandler = (type, text,id) => {
     console.log("type", type);
@@ -288,13 +236,7 @@ const UploadCard = ({ data }) => {
         id:id
       },
     });
-    // if (type === "Connect Google Play Store") {
-    //   console.log("inside");
-    //   playStoreDisconnectHandler(text,id);
-    // } else {
-    //   console.log("inside-else");
-    //   appStoreDisconnectHandler(text,id);
-    // }
+   
   };
 
   return (

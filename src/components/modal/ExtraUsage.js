@@ -6,10 +6,53 @@ import {
   Typography,
 } from "@mui/material";
 import CommonButton from "../common/Button";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { errorNotification } from "@/helper/Notification";
+import { supabase } from "@/Client";
+import { EventEmitter } from "@/helper";
 
 const ExtraUsage = ({ handleClose }) => {
+  let userId = "";
+  let orgId = "";
+  let userRole = "";
+
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("userId");
+    userRole = localStorage.getItem("userRole");
+    orgId = localStorage.getItem("orgId");
+  }
+
+  const enabledUsageHandler = async () => {
+    if (userRole === "individual") {
+      const payload = {
+        usage_based_pricing: "TRUE",
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("user_id", userId);
+      if (!error) {
+        handleClose();
+        EventEmitter.dispatch('usageUpgrade',true);
+      }
+      console.log("data--->", data);
+      console.log("error-", error);
+    } else {
+      const payload = {
+        usage_based_pricing: "TRUE",
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("organization_id", orgId);
+      if (!error) {
+        handleClose();
+      }
+      console.log("data--->", data);
+      console.log("error-", error);
+    }
+  };
+
   return (
     <>
       <Box
@@ -40,11 +83,7 @@ const ExtraUsage = ({ handleClose }) => {
             <CommonButton buttonName="cancel" onClick={handleClose} />
             <CommonButton
               buttonName="ENABLE"
-              onClick={() =>
-                errorNotification(
-                  "Usage-based pricing is enabled. You will be charged additionally for extra usage based on your plan. You may disable it in the usage settings"
-                )
-              }
+              onClick={() => enabledUsageHandler()}
             />
           </Stack>
         </DialogContent>

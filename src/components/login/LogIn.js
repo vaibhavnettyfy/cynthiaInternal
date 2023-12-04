@@ -190,7 +190,7 @@ const LogIn = () => {
                     name="email"
                     labal="Enter your email"
                     formik={formik}
-                    inputProps={{ maxLength: 50 }}
+                    inputProps={{ maxLength: 100 }}
                     iconsInput
                   />
                 </Box>
@@ -201,7 +201,7 @@ const LogIn = () => {
                     name="password"
                     labal="Enter your password"
                     formik={formik}
-                    inputProps={{ maxLength: 30 }}
+                    inputProps={{ maxLength: 50 }}
                     passwordInput
                   />
                 </Box>
