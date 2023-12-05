@@ -76,7 +76,6 @@ const Sidebar = ({ handleDrawerToggle }) => {
     const eventpayload = {
       logged_in_at:Math.floor(Date.now() / 1000) 
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Logged Out",eventpayload)
   };
 

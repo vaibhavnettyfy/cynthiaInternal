@@ -62,7 +62,6 @@ export default function ThemeRegistry(props) {
       event:'UPDATE',
       schema: 'public',
     },(payload) => [
-      console.log("-------11111--->",payload),
       EventEmitter.dispatch('subscriptions',true)
     ]).subscribe();
 

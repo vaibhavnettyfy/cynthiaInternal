@@ -84,7 +84,6 @@ const Members = () => {
         .from("organizations")
         .select("*")
         .eq("admin_id", userId);
-        console.log("datadatadata",data);
       setUserDetails(data[0]);
       if (error) {
         errorNotification(error.message || "Something went wrong");
@@ -211,14 +210,11 @@ const Members = () => {
                 {members &&
                   members.length > 0 &&
                   members.map((response) => {
-                    console.log("response", response);
                     const nameParts = response.name.split(" ");
                     const firstNameInitial = nameParts[0]
                       ? nameParts[0][0]
                       : "";
                     const lastNameInitial = nameParts[1] ? nameParts[1][0] : "";
-                    console.log("firstNameInitial", firstNameInitial);
-                    console.log("lastNameInitial", lastNameInitial);
                     return (
                       <StyledTableRow sx={{ cursor: "pointer" }}>
                         <TableCell component="th" scope="row">

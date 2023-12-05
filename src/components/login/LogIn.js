@@ -49,7 +49,6 @@ const LogIn = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isActive, setIsActive] = useState("Not Defiend");
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  console.log("amplitudekey",amplitudekey);
   amplitude.init(amplitudekey);
 
   // to fetch data from cookie while login screen
@@ -107,7 +106,6 @@ const LogIn = () => {
           login_method:"Email",
           logged_in_at:Math.floor(Date.now() / 1000) 
         }
-        console.log("eventpayload",eventpayload);
         amplitude.track("Logged In",eventpayload)
         if(activeCheck != "false"){
           setIsActive("true");

@@ -91,7 +91,6 @@ const UploadCard = ({ data }) => {
           .from("jobs")
           .select("*")
           .eq("job_id", JOBID);
-        console.log("data-job_id", data);
         if (!error) {
           if(data[0].status === "failed"){
             localStorage.removeItem("jobId")
@@ -143,7 +142,6 @@ const UploadCard = ({ data }) => {
   };
 
   const buttonHandler = (data) => {
-    console.log(data,"datatata");
     if (data === "Upload CSV File") {
       document.getElementById("file-upload").click();
     } else if(data === "Connect Google Play Store" || data === "Connect App Store app") {
@@ -207,7 +205,6 @@ const UploadCard = ({ data }) => {
         .eq("user_id", userId)
         .eq("integration_source", "App Store");
       if (!error) {
-        console.log("data.length",data.length);
         if (data && data.length > 0) {
           setAppStoreDetails(data[0]);
         }else{
@@ -234,9 +231,6 @@ const UploadCard = ({ data }) => {
   
 
   const disconnectHandler = (type, text,id) => {
-    console.log("type", type);
-    console.log("text", text);
-    console.log("id",id);
     setIsModalOpen({
       open: true,
       currentComponent: "disconnect",

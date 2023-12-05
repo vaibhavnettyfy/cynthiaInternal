@@ -23,7 +23,6 @@ import * as amplitude from '@amplitude/analytics-browser';
 // const selectList = [{ name: "US", value: "us" }];
 
 const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
-  console.log("modalOpen",modalOpen);
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
   amplitude.init(amplitudekey);
   const [appId, setAppId] = useState("");
@@ -71,7 +70,6 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
         integration_timestamp:Math.floor(Date.now() / 1000),
         integration_name:appId
       }
-      console.log("eventpayload",eventpayload);
       amplitude.track("Integration Made",eventpayload)
 
       if(userRole === "individual"){

@@ -107,13 +107,10 @@ const UploadIntegration = () => {
             .from("user_usage")
             .select("*")
             .eq("organization_id", orgId);
-    console.log("user_usage-",data);
 
     setReviewUsed(data[0]?.reviews_used);
     setQueryUsage(data[0]?.query_usage);
-    setUsageBased(data[0]?.usage_based_pricing)
-    console.log("data---->", data);
-    console.log("error", error);
+    setUsageBased(data[0]?.usage_based_pricing);
   };
 
   const productDataHandler = async (pId) => {
@@ -126,7 +123,6 @@ const UploadIntegration = () => {
         if (error) {
           errorNotification(error.message);
         } else {
-          console.log("data-data-product", data);
           // setPlanName(data[0]?.name);
           setBaseQueries(data[0]?.metadata.base_queries);
           setBaseReview(data[0]?.metadata.base_reviews);
@@ -144,7 +140,6 @@ const UploadIntegration = () => {
         .from("subscriptions")
         .select("*")
         .eq("user_id", userId);
-      console.log("subscriptions-data", data);
       if (error) {
       } else {
         // setProductId(data[0]?.product_id);

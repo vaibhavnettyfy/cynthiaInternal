@@ -36,8 +36,7 @@ import { errorNotification } from "@/helper/Notification";
 import moment from "moment";
 import { managePlanHandler } from "@/helper";
 import CommonModal from "@/components/common/Modal";
-import * as amplitude from '@amplitude/analytics-browser';
-
+import * as amplitude from "@amplitude/analytics-browser";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -56,7 +55,7 @@ const Usage = () => {
   const classes = useStyles();
 
   var status = getInvoiceStatus(true);
-  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
   amplitude.init(amplitudekey);
 
   const [switchState, setSwitchState] = useState(false);
@@ -68,7 +67,7 @@ const Usage = () => {
   const [approvedUsageLimit, setApprovedUsageLimit] = useState(0);
   const [extraCurrentUsage, setExtraCurrentUsage] = useState("");
   const [hardUsageLimit, sethardUsageLimit] = useState(0);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   // const [usageLimit,setUsageLimit] = useState(0);
 
   const [isModalOpen, setIsModalOpen] = useState({
@@ -85,31 +84,31 @@ const Usage = () => {
   const [baseReview, setBaseReview] = useState("");
   const [extraCreditCost, setExtraCreditCost] = useState("");
 
-
-  const usageBasedPricingHandler = async (value) =>{
-    if(userRole === "individual"){
+  const usageBasedPricingHandler = async (value) => {
+    if (userRole === "individual") {
       const payload = {
-        usage_based_pricing:value
-      }
-      const {data,error} = await supabase.from("user_usage").update(payload).eq("user_id",userId);
-      console.log("data--->",data);
-      console.log("error-",error);
-      if(!error){
+        usage_based_pricing: value,
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("user_id", userId);
+      if (!error) {
         const eventpayload = {
-          usage:value,
-          setting_timestamp:Math.floor(Date.now() / 1000),
-          current_usage:'' 
-        }
-        console.log("eventpayload",eventpayload);
-        amplitude.track("Usage-Based Pricing Set",eventpayload)
+          usage: value,
+          setting_timestamp: Math.floor(Date.now() / 1000),
+          current_usage: "",
+        };
+        amplitude.track("Usage-Based Pricing Set", eventpayload);
       }
-    }else{
+    } else {
       const payload = {
-        usage_based_pricing:value
-      }
-      const {data,error} = await supabase.from("user_usage").update(payload).eq("organization_id",orgId);
-      console.log("data--->",data);
-      console.log("error-",error);
+        usage_based_pricing: value,
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("organization_id", orgId);
     }
   };
 
@@ -117,11 +116,10 @@ const Usage = () => {
   const handleSwitchChange = () => {
     const subscriptionsStatus = localStorage.getItem("subscriptionsStatus");
     if (subscriptionsStatus !== "trialing") {
-      console.log("usageBasedPricing",usageBasedPricing);
-      if(usageBasedPricing){
+      if (usageBasedPricing) {
         // FALSE
         usageBasedPricingHandler("FALSE");
-      }else{
+      } else {
         usageBasedPricingHandler("TRUE");
         // TRUE
       }
@@ -142,36 +140,36 @@ const Usage = () => {
     return regex.test(value);
   };
 
-  const hardUsageHandler = async () =>{
-    console.log("hard--->",hardUsageLimit);
-    if(userRole === "individual"){
+  const hardUsageHandler = async () => {
+    if (userRole === "individual") {
       const payload = {
-        hard_usage_limit:hardUsageLimit
-      }
-      const {data,error} = await supabase.from("user_usage").update(payload).eq("user_id",userId);
-      console.log("data--->",data);
-      console.log("error-",error);
-    }else{
+        hard_usage_limit: hardUsageLimit,
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("user_id", userId);
+    } else {
       const payload = {
-        hard_usage_limit:hardUsageLimit
-      }
-      const {data,error} = await supabase.from("user_usage").update(payload).eq("organization_id",orgId);
-      console.log("data--->",data);
-      console.log("error-",error);
+        hard_usage_limit: hardUsageLimit,
+      };
+      const { data, error } = await supabase
+        .from("user_usage")
+        .update(payload)
+        .eq("organization_id", orgId);
     }
-  }
+  };
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
     // Check if the input is a valid number
     if (!isValidNumber(inputValue)) {
-      setError('Please enter a valid number');
+      setError("Please enter a valid number");
     } else {
-      setError('');
+      setError("");
       sethardUsageLimit(inputValue);
     }
-  }; 
-  
+  };
 
   // we will get userId from loacalStorage
 
@@ -193,20 +191,17 @@ const Usage = () => {
     }
   }, []);
 
-  
-
   // get user usageDetails by userId
   const usageByuserHandler = async () => {
-    const { data, error } = userRole === "individual" ? await supabase
-      .from("user_usage")
-      .select("*")
-      .eq("user_id", userId) : await supabase
-      .from("user_usage")
-      .select("*")
-      .eq("organization_id", orgId);
-      console.log("datatatata",data);
+    const { data, error } =
+      userRole === "individual"
+        ? await supabase.from("user_usage").select("*").eq("user_id", userId)
+        : await supabase
+            .from("user_usage")
+            .select("*")
+            .eq("organization_id", orgId);
     if (!error) {
-      if(data.length){
+      if (data.length) {
         setUsageDetails(data[0]);
         sethardUsageLimit(data[0]?.hard_usage_limit);
         setExtraCurrentUsage(data[0]?.extra_current_usage);
@@ -215,7 +210,7 @@ const Usage = () => {
         // usage_based_pricing
         setUsageBasedPricing(data[0]?.usage_based_pricing);
         setReviewUsage(data[0]?.reviews_used);
-      }else{
+      } else {
         setUsageDetails(0);
         sethardUsageLimit(0);
         setExtraCurrentUsage(0);
@@ -230,13 +225,13 @@ const Usage = () => {
   // Invoice Handler
   const invoiceDataHandler = async () => {
     try {
-      const { data, error } = userRole === "individual" ? await supabase
-        .from("invoices")
-        .select("*")
-        .eq("user_id", userId) : await supabase
-        .from("invoices")
-        .select("*")
-        .eq("organization_id", orgId);
+      const { data, error } =
+        userRole === "individual"
+          ? await supabase.from("invoices").select("*").eq("user_id", userId)
+          : await supabase
+              .from("invoices")
+              .select("*")
+              .eq("organization_id", orgId);
       setInvoiceData(data);
     } catch (err) {
       console.error("An error occurred while fetching invoice data:", err);
@@ -315,7 +310,9 @@ const Usage = () => {
           <Stack flexDirection={"row"} gap={2} alignItems={"center"}>
             <BorderLinearProgress
               variant="determinate"
-              value={reviewUsage && baseReview ? (reviewUsage / baseReview) * 100 : 0}
+              value={
+                reviewUsage && baseReview ? (reviewUsage / baseReview) * 100 : 0
+              }
               sx={{ width: "100%", backgroundColor: "#7a52f4" }}
             />
             <Typography width={"25%"} textAlign={"end"}>
@@ -406,8 +403,6 @@ const Usage = () => {
               your monthly credits.
             </Typography>
             <Typography fontSize={"15px"} fontWeight={600}>
-              {console.log("extraCurrentUsage", extraCurrentUsage)}
-              {console.log("extraCreditCost", extraCreditCost)}
               {extraCurrentUsage !== undefined &&
               extraCreditCost !== undefined &&
               !isNaN(extraCurrentUsage) &&
@@ -429,18 +424,16 @@ const Usage = () => {
               subsequent requests will be rejected.
             </Typography>
             <CommonInput
-              value={`${
-                hardUsageLimit !== undefined ? hardUsageLimit : 0
-              }`}
+              value={`${hardUsageLimit !== undefined ? hardUsageLimit : 0}`}
               // type="number"
-              onBlur={()=>hardUsageHandler()}
-              onChange={(event)=>handleInputChange(event)}
+              onBlur={() => hardUsageHandler()}
+              onChange={(event) => handleInputChange(event)}
               // onChange={(event)=>setUsageLimit(event.target.value)}
               style={{ width: "300px" }}
             />
           </Stack>
-          {error && <div style={{ color: 'red' }}>{error}</div>}
-            {/* <CommonButton buttonName="save" onClick={()=>hardUsageHandler()}/> */}
+          {error && <div style={{ color: "red" }}>{error}</div>}
+          {/* <CommonButton buttonName="save" onClick={()=>hardUsageHandler()}/> */}
         </Box>
       )}
       <Box marginTop={5} marginBottom={3} marginLeft={4}>

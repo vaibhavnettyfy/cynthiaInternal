@@ -21,7 +21,6 @@ export default function WithAuth(Component) {
       };
 
       EventEmitter.subscribe('subscriptions',async(res)=>{
-        console.log("----->recievddddd");
         checkSubscription();
       },[]);
 

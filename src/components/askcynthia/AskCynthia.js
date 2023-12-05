@@ -244,7 +244,6 @@ const AskCynthia = () => {
     const eventpayload = {
       source_name : source
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Source Changed",eventpayload)
     setSavedQueries([]);
     // we will get data of source which is selected

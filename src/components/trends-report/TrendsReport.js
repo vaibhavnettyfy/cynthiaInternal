@@ -98,7 +98,6 @@ const TrendsReport = () => {
     const eventpayload = {
       source_name : "Compliments"
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments((show) => !show);
@@ -112,7 +111,6 @@ const TrendsReport = () => {
     const eventpayload = {
       source_name : "Top Feedbacks"
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments(false);
@@ -126,7 +124,6 @@ const TrendsReport = () => {
     const eventpayload = {
       source_name : "Complaints"
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments(false);
@@ -140,7 +137,6 @@ const TrendsReport = () => {
     const eventpayload = {
       source_name : "Requests"
     }
-    console.log("eventpayload",eventpayload);
     amplitude.track("Report Filtered",eventpayload)
     setCompliments(false);
     setTopFeedBack(false);

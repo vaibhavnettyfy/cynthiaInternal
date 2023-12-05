@@ -15,8 +15,6 @@ import { EventEmitter } from "@/helper";
 const Disconnect = ({ handleClose, modalOpen }) => {
   const { data } = modalOpen;
 
-  console.log("data", data);
-
   const disconnectHandler = async () => {
     try {
         const { data, error } = await supabase

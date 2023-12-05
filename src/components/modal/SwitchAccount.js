@@ -57,7 +57,6 @@ const SwitchAccount = ({ handleClose }) => {
       user_id: userId,
     };
     if (userRole === "org_admin") {
-      console.log("members.length",members);
       if (memberFlag && members.length === 0) {
         const { data, message, success } = await setIndividualHandler(
           "org_admin",
