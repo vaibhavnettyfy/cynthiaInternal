@@ -93,11 +93,19 @@ const Usage = () => {
         .from("user_usage")
         .update(payload)
         .eq("user_id", userId);
+        const eventpayload = {
+          usage: value,
+          setting_timestamp: Math.floor(Date.now() / 1000),
+          current_usage: reviewUsage,
+          extra_current_usage :extraCurrentUsage 
+        };
+        amplitude.track("Usage-Based Pricing Set", eventpayload);
       if (!error) {
         const eventpayload = {
           usage: value,
           setting_timestamp: Math.floor(Date.now() / 1000),
-          current_usage: "",
+          current_usage: reviewUsage,
+          extra_current_usage :extraCurrentUsage 
         };
         amplitude.track("Usage-Based Pricing Set", eventpayload);
       }
@@ -109,6 +117,17 @@ const Usage = () => {
         .from("user_usage")
         .update(payload)
         .eq("organization_id", orgId);
+      
+        if (!error) {
+          const eventpayload = {
+            usage: value,
+            setting_timestamp: Math.floor(Date.now() / 1000),
+            current_usage: reviewUsage,
+            extra_current_usage :extraCurrentUsage 
+          };
+          amplitude.track("Usage-Based Pricing Set", eventpayload);
+          // console.log("eventpayload",eventpayload);
+        }
     }
   };
 
@@ -359,7 +378,7 @@ const Usage = () => {
               />
             }
           />
-          <Typography>Disabled</Typography>
+          <Typography>{usageBasedPricing ? "Enabled": "Disabled"}</Typography>
         </Stack>
         <Typography fontSize={"13px"} marginY={1}>
           This will enable usage based pricing that will be utilised after all

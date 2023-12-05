@@ -12,7 +12,7 @@ import { supabase } from "@/Client";
 import { EventEmitter } from "@/helper";
 import * as amplitude from '@amplitude/analytics-browser';
 
-const ExtraUsage = ({ handleClose }) => {
+const ExtraUsage = ({ handleClose ,modalOpen}) => {
   let userId = "";
   let orgId = "";
   let userRole = "";
@@ -40,15 +40,13 @@ const ExtraUsage = ({ handleClose }) => {
         const eventpayload = {
           usage:value,
           setting_timestamp:Math.floor(Date.now() / 1000),
-          current_usage:'' 
+          current_usage:modalOpen?.data?.reviewUsed,
+          extra_current_usage:modalOpen?.data?.extra_current_usage
         }
-        console.log("eventpayload",eventpayload);
         amplitude.track("Usage-Based Pricing Set",eventpayload)
         handleClose();
         EventEmitter.dispatch('usageUpgrade',true);
       }
-      console.log("data--->", data);
-      console.log("error-", error);
     } else {
       const payload = {
         usage_based_pricing: "TRUE",
@@ -58,7 +56,15 @@ const ExtraUsage = ({ handleClose }) => {
         .update(payload)
         .eq("organization_id", orgId);
       if (!error) {
+        const eventpayload = {
+          usage:value,
+          setting_timestamp:Math.floor(Date.now() / 1000),
+          current_usage:modalOpen?.data?.reviewUsed,
+          extra_current_usage:modalOpen?.data?.extra_current_usage
+        }
+        amplitude.track("Usage-Based Pricing Set",eventpayload)
         handleClose();
+        EventEmitter.dispatch('usageUpgrade',true);
       }
       console.log("data--->", data);
       console.log("error-", error);

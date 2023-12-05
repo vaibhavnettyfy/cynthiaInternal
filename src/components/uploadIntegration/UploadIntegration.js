@@ -69,7 +69,8 @@ const UploadIntegration = () => {
   const [queryUsage, setQueryUsage] = useState(0);
   const [baseQueries, setBaseQueries] = useState(0);
   const [usageBased,setUsageBased] = useState(false);
-
+  const [extraCurrentUsage, setExtraCurrentUsage] = useState(0);
+  
   useEffect(() => {
     checkHandler();
     notificationHandler();
@@ -111,6 +112,7 @@ const UploadIntegration = () => {
     setReviewUsed(data[0]?.reviews_used);
     setQueryUsage(data[0]?.query_usage);
     setUsageBased(data[0]?.usage_based_pricing);
+    setExtraCurrentUsage(data[0]?.extra_current_usage)
   };
 
   const productDataHandler = async (pId) => {
@@ -177,7 +179,10 @@ const UploadIntegration = () => {
               setIsModalOpen({
                 open: true,
                 currentComponent: "ExtraUsage",
-                data: null,
+                data: {
+                  reviewUsed :reviewUsed,
+                  extra_current_usage:extraCurrentUsage
+                },
               })
             }
           >
