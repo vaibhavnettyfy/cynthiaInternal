@@ -107,6 +107,7 @@ const LogIn = () => {
           logged_in_at:Math.floor(Date.now() / 1000) 
         }
         amplitude.track("Logged In",eventpayload)
+        amplitude.setUserId(data.user.id);
         if(activeCheck != "false"){
           setIsActive("true");
         }else{
