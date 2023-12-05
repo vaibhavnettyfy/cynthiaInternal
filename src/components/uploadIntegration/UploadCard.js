@@ -143,12 +143,23 @@ const UploadCard = ({ data }) => {
   };
 
   const buttonHandler = (data) => {
+    console.log(data,"datatata");
     if (data === "Upload CSV File") {
       document.getElementById("file-upload").click();
-    } else {
+    } else if(data === "Connect Google Play Store" || data === "Connect App Store app") {
       setIsModalOpen({
         open: true,
         currentComponent: "playstore",
+        name: `${data}`,
+        data: {
+          fileName: "",
+          file: "",
+        },
+      });
+    }else{
+      setIsModalOpen({
+        open: true,
+        currentComponent: "CommingSoon",
         name: `${data}`,
         data: {
           fileName: "",

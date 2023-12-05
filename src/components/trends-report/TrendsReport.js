@@ -17,8 +17,11 @@ import WithAuth from "../WithAuth";
 import ReportDetails from "./sections/ReportDetails";
 import { COMPLAINTS, COMPLIMENTS, QUESTIONS, REQUESTS, TOPFEEDBACK, TRENDSREPORT, checkFeatures } from "@/helper";
 import CommonModal from "../common/Modal";
+import * as amplitude from '@amplitude/analytics-browser';
 
 const TrendsReport = () => {
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [reportData,setReportData] = React.useState([]);
 
@@ -92,6 +95,11 @@ const TrendsReport = () => {
   // const handleComplimentsClick = () => setCompliments((show) => !show);
 
   const handleComplimentsClick = () => {
+    const eventpayload = {
+      source_name : "Compliments"
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments((show) => !show);
     setTopFeedBack(false);
@@ -101,6 +109,11 @@ const TrendsReport = () => {
   }
   
   const handleTopFeedBackClick = () => {
+    const eventpayload = {
+      source_name : "Top Feedbacks"
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments(false);
     setTopFeedBack((show) => !show);
@@ -110,6 +123,11 @@ const TrendsReport = () => {
   }
   
   const handleComplaintsClick = () => {
+    const eventpayload = {
+      source_name : "Complaints"
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Report Filtered",eventpayload)
     complimentsListHandler(fileId);
     setCompliments(false);
     setTopFeedBack(false);
@@ -119,6 +137,11 @@ const TrendsReport = () => {
   }
   
   const handleRequestClick = () => {
+    const eventpayload = {
+      source_name : "Requests"
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Report Filtered",eventpayload)
     setCompliments(false);
     setTopFeedBack(false);
     setComplaints(false);

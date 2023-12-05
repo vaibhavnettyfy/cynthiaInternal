@@ -36,6 +36,8 @@ import { errorNotification } from "@/helper/Notification";
 import moment from "moment";
 import { managePlanHandler } from "@/helper";
 import CommonModal from "@/components/common/Modal";
+import * as amplitude from '@amplitude/analytics-browser';
+
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -54,6 +56,8 @@ const Usage = () => {
   const classes = useStyles();
 
   var status = getInvoiceStatus(true);
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
 
   const [switchState, setSwitchState] = useState(false);
   //  usageDetails
@@ -90,6 +94,15 @@ const Usage = () => {
       const {data,error} = await supabase.from("user_usage").update(payload).eq("user_id",userId);
       console.log("data--->",data);
       console.log("error-",error);
+      if(!error){
+        const eventpayload = {
+          usage:value,
+          setting_timestamp:Math.floor(Date.now() / 1000),
+          current_usage:'' 
+        }
+        console.log("eventpayload",eventpayload);
+        amplitude.track("Usage-Based Pricing Set",eventpayload)
+      }
     }else{
       const payload = {
         usage_based_pricing:value

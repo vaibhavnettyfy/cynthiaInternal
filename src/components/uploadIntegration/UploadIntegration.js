@@ -33,7 +33,7 @@ const uploadData = [
   },
   {
     image: <Image src={Zendesk} style={{ width: "90px", height: "90px" }} />,
-    button: " Connect Zendesk",
+    button: "Connect Zendesk",
   },
   {
     image: <Image src={Intercom} style={{ width: "90px", height: "90px" }} />,

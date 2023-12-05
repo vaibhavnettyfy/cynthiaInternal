@@ -10,11 +10,16 @@ import React, { useEffect, useState } from "react";
 import { errorNotification } from "@/helper/Notification";
 import { supabase } from "@/Client";
 import { EventEmitter } from "@/helper";
+import * as amplitude from '@amplitude/analytics-browser';
 
 const ExtraUsage = ({ handleClose }) => {
   let userId = "";
   let orgId = "";
   let userRole = "";
+
+
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
 
   if (typeof window !== "undefined") {
     userId = localStorage.getItem("userId");
@@ -32,6 +37,13 @@ const ExtraUsage = ({ handleClose }) => {
         .update(payload)
         .eq("user_id", userId);
       if (!error) {
+        const eventpayload = {
+          usage:value,
+          setting_timestamp:Math.floor(Date.now() / 1000),
+          current_usage:'' 
+        }
+        console.log("eventpayload",eventpayload);
+        amplitude.track("Usage-Based Pricing Set",eventpayload)
         handleClose();
         EventEmitter.dispatch('usageUpgrade',true);
       }

@@ -15,6 +15,10 @@ import Cookies from "universal-cookie";
 import { loginIv } from "@/helper/Formik/intialValues";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { subScriptionHandler, subscriptionscheck } from "@/helper/Subscription";
+// import { amplitude } from "@/helper/AmplitudeHandler";
+import * as amplitude from '@amplitude/analytics-browser';
+import moment from "moment";
+
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -44,6 +48,9 @@ const LogIn = () => {
   const cookies = new Cookies();
   const [rememberMe, setRememberMe] = useState(false);
   const [isActive, setIsActive] = useState("Not Defiend");
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  console.log("amplitudekey",amplitudekey);
+  amplitude.init(amplitudekey);
 
   // to fetch data from cookie while login screen
   useEffect(() => {
@@ -93,7 +100,15 @@ const LogIn = () => {
         localStorage.setItem("userPassword",formik.values.password)
         }
         const activeCheck = data.session.user.app_metadata.is_active;
+
         localStorage.setItem("activeCheck",activeCheck);
+
+        const eventpayload = {
+          login_method:"Email",
+          logged_in_at:Math.floor(Date.now() / 1000) 
+        }
+        console.log("eventpayload",eventpayload);
+        amplitude.track("Logged In",eventpayload)
         if(activeCheck != "false"){
           setIsActive("true");
         }else{

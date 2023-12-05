@@ -18,11 +18,14 @@ import CommonSelect from "@/components/common/Select";
 import { supabase } from "@/Client";
 import { errorNotification, successNotification } from "@/helper/Notification";
 import { EventEmitter } from "@/helper";
+import * as amplitude from '@amplitude/analytics-browser';
 
 // const selectList = [{ name: "US", value: "us" }];
 
 const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
   console.log("modalOpen",modalOpen);
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
   const [appId, setAppId] = useState("");
   const [country, setCountry] = useState("");
   const [countryList, setCountryList] = useState([]);
@@ -62,6 +65,14 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
         app_id:appId,
         integration_source:modalOpen.name === "Connect Google Play Store" ? "Play Store"  : "App Store"
       }
+
+      const eventpayload = {
+        integration_source:modalOpen.name === "Connect Google Play Store" ? "Play Store"  : "App Store",
+        integration_timestamp:Math.floor(Date.now() / 1000),
+        integration_name:appId
+      }
+      console.log("eventpayload",eventpayload);
+      amplitude.track("Integration Made",eventpayload)
 
       if(userRole === "individual"){
         payload.user_id = userId

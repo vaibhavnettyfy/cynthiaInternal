@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { EventEmitter } from "@/helper";
+import * as amplitude from '@amplitude/analytics-browser';
 
 
 const askCynthiaHandler = () =>{
@@ -63,12 +64,20 @@ export const SidebarList = [
 ];
 
 const Sidebar = ({ handleDrawerToggle }) => {
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
+
   const router = useRouter();
   const pathname = usePathname();
 
   const logoutHandler = () => {
     router.push(`/`);
     localStorage.clear();
+    const eventpayload = {
+      logged_in_at:Math.floor(Date.now() / 1000) 
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Logged Out",eventpayload)
   };
 
   return (

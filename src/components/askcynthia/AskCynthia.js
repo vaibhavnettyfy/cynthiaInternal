@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import WithAuth from "../WithAuth";
 import { ASKCYNTHIA, EventEmitter, checkFeatures } from "@/helper";
 import AskCynthiaDetails from "./AskCynthiaDetails";
+import * as amplitude from '@amplitude/analytics-browser';
 
 const selectDateList = [
   { name: "19 Jul - 19 Aug 23", value: "1", sideList: "0 reviews" },
@@ -39,6 +40,8 @@ const selectAppList = [
 ];
 
 const AskCynthia = () => {
+  const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
+  amplitude.init(amplitudekey);
   const textareaRef = useRef(null);
   const [info, setInfo] = useState(null);
   const [ShowResult, setShowResult] = useState(false);
@@ -238,6 +241,11 @@ const AskCynthia = () => {
   // when user Click on particular source
   const sourceHandler = (source) => {
     setSelectSource(source);
+    const eventpayload = {
+      source_name : source
+    }
+    console.log("eventpayload",eventpayload);
+    amplitude.track("Source Changed",eventpayload)
     setSavedQueries([]);
     // we will get data of source which is selected
     sourceDataHandler(source);
