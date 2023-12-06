@@ -139,6 +139,7 @@ const UploadModal = ({ handleClose ,modalOpen}) => {
           handleClickBack3={handleClickBack3}
           handleClickStep4={handleClickStep4}
           processData={processData}
+          fileName={fileName}
           file={modalOpen.data.file}
           selectedColumn={selectedColumn}
         />

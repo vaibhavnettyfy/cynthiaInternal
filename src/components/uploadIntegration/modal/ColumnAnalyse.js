@@ -19,6 +19,8 @@ const selectList = [{ name: "Feedbacks 1", value: "feedbacks1" }];
 const ColumnAnalyse = ({ handleClickStep3, handleClickBack2, columnArray,selectColumn ,selectedColumnData }) => {
   const [selectedColumn, setSelectedColumn] = useState("");
   const [columData, setColumnData] = useState([]);
+  const [isColumnSelected, setIsColumnSelected] = useState(false);
+
 
   useEffect(() => {
     setColumnData(columnArray);
@@ -34,7 +36,10 @@ const ColumnAnalyse = ({ handleClickStep3, handleClickBack2, columnArray,selectC
     // to pass which column selected to parents
     selectColumn(event.target.value);
     setSelectedColumn(event.target.value);
+    setIsColumnSelected(true);
   };
+
+  const isButtonDisabled = !isColumnSelected;
 
   return (
     <>
@@ -120,6 +125,7 @@ const ColumnAnalyse = ({ handleClickStep3, handleClickBack2, columnArray,selectC
         <CommonButton
           buttonName="Continue"
           fullWidth
+          disabled={isButtonDisabled}
           onClick={handleClickStep3}
         />
       </Stack>

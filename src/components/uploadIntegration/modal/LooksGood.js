@@ -19,6 +19,7 @@ const LooksGood = ({
   processData,
   file,
   selectedColumn,
+  fileName
 }) => {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [selectedColumnData, setSelectedColumnData] = useState([]);
@@ -33,11 +34,13 @@ const LooksGood = ({
     }
   }, []);
 
+  console.log("fileName",fileName);
+
   const csvHandler = async () => {
     const formData = new FormData();
     formData.append("file", file); 
-    formData.append("source", "csv");
-    formData.append("filename",file.name);
+    formData.append("source", "CSV");
+    formData.append("filename",fileName);
     formData.append("column_name",selectedColumn);
     const { data, message, success } = await uploadCsvHandler(formData);
     if (success) {

@@ -14,12 +14,24 @@ import CommonInput from "@/components/common/Input";
 import SendIcon from "@mui/icons-material/Send";
 const NameCsv = ({ handleClickStep2, handleClickBack1 ,fileNameHandler,fileNameData}) => {
     const [fileName,setFileName] = useState("");
+    const [validationError, setValidationError] = useState("");
 
+
+    const isContinueButtonDisabled = validationError !== "";
 
     const fileHandler = (event) =>{
         setFileName(event.target.value);
+        validateFileName(event.target.value);
         fileNameHandler(event.target.value);
     }
+
+    const validateFileName = (name) => {
+      if (name.trim() === "") {
+        setValidationError("File name cannot be blank.");
+      } else {
+        setValidationError("");
+      }
+    };
 
     useEffect(()=>{
         if(fileNameData){
@@ -76,6 +88,11 @@ const NameCsv = ({ handleClickStep2, handleClickBack1 ,fileNameHandler,fileNameD
           Name your CSV file. Date will be automatically added beside the file
           name.
         </Typography>
+        {validationError && (
+            <Typography color="error" fontSize="12px" marginTop="8px">
+              {validationError}
+            </Typography>
+          )}
         <Box margin={"30px 0"}>
           <CommonInput
             placeholder="Google Forms Survey"
@@ -95,6 +112,7 @@ const NameCsv = ({ handleClickStep2, handleClickBack1 ,fileNameHandler,fileNameD
         <CommonButton
           buttonName="Continue"
           fullWidth
+          disabled={isContinueButtonDisabled}
           onClick={handleClickStep2}
         />
       </Stack>

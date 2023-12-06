@@ -34,9 +34,10 @@ export const subscriptionsStatus = async () => {
     if (error) {
       errorNotification(error.message);
     } else {
+      console.log("data",data);
       // we will get admin id and check subscription is active or not
       const { status, subscriptionsStatus } = await subscriptionscheck(
-        data[0].admin_id
+        data[0]?.admin_id
       );
       localStorage.setItem("subscriptionsStatus", subscriptionsStatus);
       if (status) {
@@ -110,3 +111,8 @@ export const EventEmitter = {
       this.events[event].push(callback)
   }
 }
+
+
+// 
+
+export const ASKCYNTHIATITLE = "Ask Cynthia"

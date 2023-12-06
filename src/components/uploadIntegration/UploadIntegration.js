@@ -13,7 +13,7 @@ import {
 } from "@/helper/constant";
 import Link from "next/link";
 import WithAuth from "../WithAuth";
-import { EventEmitter, UPLOADINTEGRATION, checkFeatures } from "@/helper";
+import { ASKCYNTHIATITLE, EventEmitter, UPLOADINTEGRATION, checkFeatures } from "@/helper";
 import CommonModal from "../common/Modal";
 import { supabase } from "@/Client";
 import { errorNotification } from "@/helper/Notification";
@@ -68,19 +68,19 @@ const UploadIntegration = () => {
   const [baseReview, setBaseReview] = useState(0);
   const [queryUsage, setQueryUsage] = useState(0);
   const [baseQueries, setBaseQueries] = useState(0);
-  const [usageBased,setUsageBased] = useState(false);
+  const [usageBased, setUsageBased] = useState(false);
   const [extraCurrentUsage, setExtraCurrentUsage] = useState(0);
-  
+
   useEffect(() => {
     checkHandler();
     notificationHandler();
   }, []);
 
   // EventEmitter.dispatch('usageUpgrade',true);
-  EventEmitter.subscribe('usageUpgrade',(res)=>{
+  EventEmitter.subscribe("usageUpgrade", (res) => {
     userUsageHandler();
     subscriptionsDataHandler();
-  })
+  });
 
   const checkHandler = async () => {
     const { status, message } = await checkFeatures(UPLOADINTEGRATION);
@@ -112,7 +112,7 @@ const UploadIntegration = () => {
     setReviewUsed(data[0]?.reviews_used);
     setQueryUsage(data[0]?.query_usage);
     setUsageBased(data[0]?.usage_based_pricing);
-    setExtraCurrentUsage(data[0]?.extra_current_usage)
+    setExtraCurrentUsage(data[0]?.extra_current_usage);
   };
 
   const productDataHandler = async (pId) => {
@@ -170,26 +170,31 @@ const UploadIntegration = () => {
             color: "#000",
           }}
         >
-          {`You have used ${reviewUsed??0} of ${baseReview??0} credits. You have used ${queryUsage??0} of ${baseQueries??0} free queries`}
-          {
-            usageBased ? 'Usage-based pricing is enabled. You will be charged additionally for extra usage based on your plan. You may disable it in the usage settings.' :
-          <span
-            style={{ color: "#7a52f4", cursor: "pointer" }}
-            onClick={() =>
-              setIsModalOpen({
-                open: true,
-                currentComponent: "ExtraUsage",
-                data: {
-                  reviewUsed :reviewUsed,
-                  extra_current_usage:extraCurrentUsage
-                },
-              })
-            }
-          >
-            {" "}
-            Please enable usage-based pricing for extra usage.
-          </span>
-          }
+          {`You have used ${reviewUsed ?? 0} of ${
+            baseReview ?? 0
+          } credits. You have used ${queryUsage ?? 0} of ${
+            baseQueries ?? 0
+          } free queries`}
+          {usageBased ? (
+            "Usage-based pricing is enabled. You will be charged additionally for extra usage based on your plan. You may disable it in the usage settings."
+          ) : (
+            <span
+              style={{ color: "#7a52f4", cursor: "pointer" }}
+              onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  currentComponent: "ExtraUsage",
+                  data: {
+                    reviewUsed: reviewUsed,
+                    extra_current_usage: extraCurrentUsage,
+                  },
+                })
+              }
+            >
+              {" "}
+              Please enable usage-based pricing for extra usage.
+            </span>
+          )}
         </Typography>
       </Box>
       <Box padding={3}>
