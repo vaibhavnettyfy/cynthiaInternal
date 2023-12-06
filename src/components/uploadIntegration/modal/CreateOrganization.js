@@ -24,10 +24,12 @@ const CreateOrganization = ({ handleClose }) => {
     }
     const {data,message,success} = await createOrganizationApiHandler(payload);
     if(success){
+      handleClose();
       successNotification(message);
       localStorage.clear();
       router.push(`/`);
     }else{
+      handleClose();
       errorNotification(message);
     }
   }

@@ -38,14 +38,14 @@ const ExtraUsage = ({ handleClose ,modalOpen}) => {
         .eq("user_id", userId);
       if (!error) {
         const eventpayload = {
-          usage:value,
+          usage:"TRUE",
           setting_timestamp:Math.floor(Date.now() / 1000),
           current_usage:modalOpen?.data?.reviewUsed,
           extra_current_usage:modalOpen?.data?.extra_current_usage
         }
         amplitude.track("Usage-Based Pricing Set",eventpayload)
-        handleClose();
         EventEmitter.dispatch('usageUpgrade',true);
+        handleClose();
       }
     } else {
       const payload = {

@@ -66,7 +66,9 @@ const SwitchAccount = ({ handleClose }) => {
           successNotification(message);
           localStorage.clear();
           router.push(`/`);
+          handleClose();
         } else {
+          handleClose();
           errorNotification(message);
         }
       }else{
@@ -81,7 +83,9 @@ const SwitchAccount = ({ handleClose }) => {
         successNotification(message);
         localStorage.clear();
         router.push(`/`);
+        handleClose();
       } else {
+        handleClose();
         errorNotification(message);
       }
     }

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { DialogContent, Box, Typography, Stack, Divider } from "@mui/material";
 import CommonButton from "@/components/common/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import { EventEmitter } from "@/helper";
 const ProcessFile = ({
   handleClose,
   handleClickBack4,
@@ -105,7 +106,7 @@ const ProcessFile = ({
       >
         <CommonButton
           buttonName="Done"
-          onClick={handleClose}
+          onClick={[handleClose,EventEmitter.dispatch("jobId", true)]}
           style={{ padding: "10px 40px" }}
         />
       </Stack>
