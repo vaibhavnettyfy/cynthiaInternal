@@ -23,7 +23,8 @@ const LooksGood = ({
 }) => {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [selectedColumnData, setSelectedColumnData] = useState([]);
-  
+  const [loading, setLoading] = useState(false);
+
   // to show particular data selected
   useEffect(() => {
     if (selectedColumn && processData[0][selectedColumn]) {
@@ -37,20 +38,30 @@ const LooksGood = ({
   console.log("fileName",fileName);
 
   const csvHandler = async () => {
+    setLoading(true); // Step 3: Set loading state to true before API call
+
     const formData = new FormData();
-    formData.append("file", file); 
+    formData.append("file", file);
     formData.append("source", "CSV");
-    formData.append("filename",fileName);
-    formData.append("column_name",selectedColumn);
-    const { data, message, success } = await uploadCsvHandler(formData);
-    if (success) {
-      successNotification(message);
-      localStorage.setItem("jobId",data.job_id)
-      handleClickStep4();
-      EventEmitter.dispatch('jobId',true);
-    } else {
-      errorNotification(message);
+    formData.append("filename", fileName);
+    formData.append("column_name", selectedColumn);
+
+    try {
+      const { data, message, success } = await uploadCsvHandler(formData);
+      if (success) {
+        successNotification(message);
+        localStorage.setItem("jobId", data.job_id);
+        handleClickStep4();
+        EventEmitter.dispatch("jobId", true);
+      } else {
+        errorNotification(message);
+      }
+    } catch (error) {
+      errorNotification("An error occurred while uploading the CSV.");
+    } finally {
+      setLoading(false); // Step 4: Set loading state back to false after API response
     }
+
   };
 
   return (
@@ -164,6 +175,9 @@ const LooksGood = ({
         <CommonButton
           buttonName="Continue"
           fullWidth
+          loading={loading}
+          loader={true}
+          disabled={loading}
           onClick={() => csvHandler()}
         />
       </Stack>

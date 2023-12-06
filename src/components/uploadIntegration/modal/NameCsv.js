@@ -17,7 +17,7 @@ const NameCsv = ({ handleClickStep2, handleClickBack1 ,fileNameHandler,fileNameD
     const [validationError, setValidationError] = useState("");
 
 
-    const isContinueButtonDisabled = validationError !== "";
+    const isContinueButtonDisabled = validationError !== "" || fileName.trim() === "";
 
     const fileHandler = (event) =>{
         setFileName(event.target.value);
