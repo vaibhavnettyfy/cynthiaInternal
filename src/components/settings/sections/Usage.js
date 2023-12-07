@@ -126,7 +126,6 @@ const Usage = () => {
             extra_current_usage :extraCurrentUsage 
           };
           amplitude.track("Usage-Based Pricing Set", eventpayload);
-          // console.log("eventpayload",eventpayload);
         }
     }
   };

@@ -35,8 +35,6 @@ const LooksGood = ({
     }
   }, []);
 
-  console.log("fileName",fileName);
-
   const csvHandler = async () => {
     setLoading(true); // Step 3: Set loading state to true before API call
 

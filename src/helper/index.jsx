@@ -34,7 +34,6 @@ export const subscriptionsStatus = async () => {
     if (error) {
       errorNotification(error.message);
     } else {
-      console.log("data",data);
       // we will get admin id and check subscription is active or not
       const { status, subscriptionsStatus } = await subscriptionscheck(
         data[0]?.admin_id

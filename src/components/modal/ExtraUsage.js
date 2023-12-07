@@ -66,7 +66,6 @@ const ExtraUsage = ({ handleClose ,modalOpen}) => {
         handleClose();
         EventEmitter.dispatch('usageUpgrade',true);
       }
-      console.log("data--->", data);
       console.log("error-", error);
     }
   };
