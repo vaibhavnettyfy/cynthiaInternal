@@ -14,6 +14,7 @@ import { useFormik } from "formik";
 import { registerIv } from "@/helper/Formik/intialValues";
 import { userRegister } from "@/service/userRegister.service";
 import { errorNotification, successNotification } from "@/helper/Notification";
+import EmailIcon from "@mui/icons-material/Email";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -166,7 +167,9 @@ const SignUp = () => {
                   <Box>
                     <CommonInput
                       placeholder="Work Email"
-                      iconsInput
+                      iconsInput={
+                        <EmailIcon sx={{ width: "16px", height: "16px" }} />
+                      }
                       name="workEmail"
                       inputProps={{ maxLength: 100 }}
                       formik={formik}

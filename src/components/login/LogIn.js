@@ -18,6 +18,7 @@ import { subScriptionHandler, subscriptionscheck } from "@/helper/Subscription";
 // import { amplitude } from "@/helper/AmplitudeHandler";
 import * as amplitude from '@amplitude/analytics-browser';
 import moment from "moment";
+import EmailIcon from "@mui/icons-material/Email";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -205,7 +206,9 @@ const LogIn = () => {
                     labal="Enter your email"
                     formik={formik}
                     inputProps={{ maxLength: 100 }}
-                    iconsInput
+                iconsInput={
+                  <EmailIcon sx={{ width: "16px", height: "16px" }} />
+                }
                   />
                 </Box>
                 <Box>

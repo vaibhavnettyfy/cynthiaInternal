@@ -4,7 +4,6 @@ import { Box, Typography } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
-import EmailIcon from "@mui/icons-material/Email";
 
 const CommonInput = (props) => {
   const {
@@ -99,11 +98,7 @@ const CommonInput = (props) => {
           />
           <InputAdornment position="end" className="eye_btn">
             <IconButton aria-label="toggle password visibility" edge="end">
-              {iconsInput ? (
-                iconsInput
-              ) : (
-                <EmailIcon sx={{ width: "16px", height: "16px" }} />
-              )}
+              {iconsInput &&iconsInput}
             </IconButton>
           </InputAdornment>
         </div>
