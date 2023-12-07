@@ -106,7 +106,7 @@ const ProcessFile = ({
       >
         <CommonButton
           buttonName="Done"
-          onClick={[handleClose,EventEmitter.dispatch("jobId", true)]}
+          onClick={()=>[handleClose(),EventEmitter.dispatch("jobId", true)]}
           style={{ padding: "10px 40px" }}
         />
       </Stack>
