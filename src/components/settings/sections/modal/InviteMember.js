@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   DialogContent,
@@ -51,10 +51,11 @@ const StyledTextarea = styled(TextareaAutosize)(
 const InviteMember = ({ handleClose }) => {
   const [emails, setEmails] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const emailHandler = async () => {
     const trimmedEmails = emails.trim();
-
+    setLoading(true);
     if (trimmedEmails.length === 0) {
       setErrorMessage("Please enter at least one email address.");
     } else {
@@ -67,12 +68,14 @@ const InviteMember = ({ handleClose }) => {
           emails: emailList,
         };
         const { data, message, success } = await inviteMemberHandler(payload);
-  
+
         if (success) {
           successNotification(message);
           handleClose();
+          setLoading(false);
         } else {
           errorNotification(message);
+          setLoading(false);
         }
       }
     }
@@ -105,7 +108,13 @@ const InviteMember = ({ handleClose }) => {
             onChange={(e) => setEmails(e.target.value)}
           />
         </Stack>
-        <Typography fontSize={"14px"} mt={1} ml={2} fontWeight={"400"} lineHeight={"20px"}>
+        <Typography
+          fontSize={"14px"}
+          mt={1}
+          ml={2}
+          fontWeight={"400"}
+          lineHeight={"20px"}
+        >
           User must be already have account not be organization admin.
         </Typography>
       </DialogContent>
@@ -123,6 +132,9 @@ const InviteMember = ({ handleClose }) => {
         <CommonButton
           buttonName="Send Invites"
           onClick={emailHandler}
+          loading={loading}
+          loader={true}
+          disabled={loading}
           style={{ borderRadius: "5px" }}
         />
         <CommonButton

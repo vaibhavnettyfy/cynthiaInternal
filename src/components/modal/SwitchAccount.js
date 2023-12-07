@@ -26,7 +26,8 @@ const SwitchAccount = ({ handleClose }) => {
   }
 
   const [members, setMembers] = useState([]);
-  const [memberFlag,setMemberFlag] = useState(false);
+  const [memberFlag, setMemberFlag] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     checkMemeber();
@@ -53,6 +54,7 @@ const SwitchAccount = ({ handleClose }) => {
   };
 
   const switchToindividualHandler = async () => {
+    setLoading(true);
     const payload = {
       user_id: userId,
     };
@@ -63,16 +65,20 @@ const SwitchAccount = ({ handleClose }) => {
           payload
         );
         if (success) {
+          setLoading(false);
           successNotification(message);
           localStorage.clear();
           router.push(`/`);
           handleClose();
         } else {
+          setLoading(false);
           handleClose();
           errorNotification(message);
         }
-      }else{
-        errorNotification("before swicth to individual you have to remove member");
+      } else {
+        errorNotification(
+          "before swicth to individual you have to remove member"
+        );
       }
     } else {
       const { data, message, success } = await setIndividualHandler(
@@ -80,11 +86,13 @@ const SwitchAccount = ({ handleClose }) => {
         payload
       );
       if (success) {
+        setLoading(false);
         successNotification(message);
         localStorage.clear();
         router.push(`/`);
         handleClose();
       } else {
+        setLoading(false);
         handleClose();
         errorNotification(message);
       }
@@ -122,7 +130,13 @@ const SwitchAccount = ({ handleClose }) => {
               : "Your account type will switch to individual and you will have to relogin"}
           </Typography>
           <Stack flexDirection={"row"} gap={"10px"}>
-            <CommonButton buttonName="Confirm" onClick={()=>switchToindividualHandler()} />
+            <CommonButton
+              buttonName="Confirm"
+              loading={loading}
+              loader={true}
+              disabled={loading}
+              onClick={() => switchToindividualHandler()}
+            />
             <CommonButton buttonName="Cancel" onClick={handleClose} />
           </Stack>
         </DialogContent>

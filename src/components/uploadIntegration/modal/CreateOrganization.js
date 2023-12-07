@@ -1,4 +1,10 @@
-import { Box, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  DialogActions,
+  DialogContent,
+  Stack,
+  Typography,
+} from "@mui/material";
 // import CommonButton from "../common/Button";
 import React, { useState } from "react";
 import CommonButton from "@/components/common/Button";
@@ -8,31 +14,37 @@ import { errorNotification, successNotification } from "@/helper/Notification";
 import { useRouter } from "next/navigation";
 
 const CreateOrganization = ({ handleClose }) => {
-  const [orgName,setOrgName] = useState("");
+  const [orgName, setOrgName] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const CreateOrganizationHandler = async () =>{
+  const CreateOrganizationHandler = async () => {
     if (!orgName.trim()) {
       setError("Organization name cannot be just blank spaces");
       return;
     }
 
+    setLoading(true);
 
     const payload = {
-      organization_name:orgName
-    }
-    const {data,message,success} = await createOrganizationApiHandler(payload);
-    if(success){
+      organization_name: orgName,
+    };
+    const { data, message, success } = await createOrganizationApiHandler(
+      payload
+    );
+    if (success) {
+      setLoading(false);
       handleClose();
       successNotification(message);
       localStorage.clear();
       router.push(`/`);
-    }else{
+    } else {
+      setLoading(false);
       handleClose();
       errorNotification(message);
     }
-  }
+  };
 
   return (
     <>
@@ -55,16 +67,26 @@ const CreateOrganization = ({ handleClose }) => {
             Enter your organisation name
           </Typography>
 
-          <CommonInput style={{ width: "280px" }}
-            name="organisation Name" value={orgName} onChange={(event)=>setOrgName(event.target.value)}/>
-         
-         {error && (
+          <CommonInput
+            style={{ width: "280px" }}
+            name="organisation Name"
+            value={orgName}
+            onChange={(event) => setOrgName(event.target.value)}
+          />
+
+          {error && (
             <Typography color="error" variant="caption">
               {error}
             </Typography>
           )}
           <Stack flexDirection={"row"} gap={"10px"}>
-            <CommonButton buttonName="save" onClick={()=>CreateOrganizationHandler()} />
+            <CommonButton
+              buttonName="save"
+              loading={loading}
+              loader={true}
+              disabled={loading}
+              onClick={() => CreateOrganizationHandler()}
+            />
             <CommonButton buttonName="Cancel" onClick={handleClose} />
           </Stack>
         </DialogContent>
@@ -74,7 +96,5 @@ const CreateOrganization = ({ handleClose }) => {
 };
 
 // export default SwitchAccount;
-
-
 
 export default CreateOrganization;

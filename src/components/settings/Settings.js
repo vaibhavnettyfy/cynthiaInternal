@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { Tabs, Tab, Paper, Typography, Box } from "@mui/material";
+import React, { useState } from "react";
+import { Tabs, Tab, Paper, Typography, Box,CircularProgress } from "@mui/material";
 import PersonalInformation from "./sections/PersonalInformation";
 import Password from "./sections/Password";
 import Plan from "./sections/Plan";
@@ -15,7 +15,7 @@ import { managePlanHandler } from "@/helper";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
-
+  const [loading, setLoading] = useState(false);
   const allowRoleUsage = ["individual", "org_admin"];
   const memberRoleUsage = ["org_admin"];
 
@@ -26,6 +26,7 @@ const Settings = () => {
 
   const handleChange = async (event, newValue) => {
     if (newValue === 2) {
+      setLoading(true);
       managePlanHandler();
     }
     setSelectedTab(newValue);
@@ -77,7 +78,7 @@ const Settings = () => {
           <Tab label="Password" />
           {allowRoleUsage.includes(userRole && userRole) && (
             <Box
-              onClick={() => managePlanHandler()}
+              onClick={() => [managePlanHandler(),setLoading(true)]}
               sx={{
                 fontSize: "0.875rem",
                 padding: "10px 25px !important",
@@ -90,7 +91,7 @@ const Settings = () => {
                 cursor: "pointer",
               }}
             >
-              Manage Your Plan
+              Manage Your Plan { loading && <CircularProgress size="1.5rem"/>}
             </Box>
           )}
           {allowRoleUsage.includes(userRole && userRole) && (
