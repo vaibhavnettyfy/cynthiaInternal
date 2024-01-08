@@ -29,7 +29,7 @@ export const post = async (url, data) => {
         return {
             success: true,
             data : response.data,
-            message : "getting Data succesfully"
+            message : "Your request is completed successfully."
         }
     }else{
         return {
@@ -42,7 +42,7 @@ export const post = async (url, data) => {
     return {
       success: false,
       data : [],
-      message : error.message||'Something_went_wrong_please_try_later'
+      message : error.response.data.detail ||'Something_went_wrong_please_try_later'
     }
   }
 };
@@ -120,6 +120,48 @@ export const DELETE = async (id) => {
       success: false,
       data : [],
       message : 'something_Went_wrong'
+    }
+  }
+};
+
+
+
+export const GET = async (url) => {
+  try {
+    let accessToken = ""
+    if (typeof window !== 'undefined') {
+      accessToken = localStorage.getItem("accessToken")
+    }
+
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+
+    const response = await axios.get(url,{
+      headers,
+    });
+
+    console.log("response-response",response);
+    if(response.status === 200){
+      return {
+        success: true,
+        data : response.data.prices,
+        message : "data fetch successfully"
+      } 
+    }else{
+      return {
+        success: false,
+        data : response.data.prices || [],
+        message : "data fetch successfully"
+      } 
+    }
+    // return response.data;
+  } catch (error) {
+    return {
+      success: false,
+      data : [],
+      message : error.message||'Something_went_wrong_please_try_later'
     }
   }
 };

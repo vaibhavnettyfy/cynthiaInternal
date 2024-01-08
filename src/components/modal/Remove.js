@@ -25,7 +25,7 @@ const Remove = ({ handleClose ,modalOpen }) => {
           if (error) {
             errorNotification(error.message);
           } else {
-            successNotification("Record deleted successfully");
+            successNotification("File deleted successfully");
             handleClose();
           }
         } catch (error) {

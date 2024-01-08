@@ -65,7 +65,7 @@ export const SidebarList = [
 
 const Sidebar = ({ handleDrawerToggle }) => {
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
 
   const router = useRouter();
   const pathname = usePathname();

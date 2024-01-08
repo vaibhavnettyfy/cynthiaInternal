@@ -61,7 +61,7 @@ const InviteMember = ({ handleClose }) => {
     } else {
       const emailList = emails.split(",").map((email) => email.trim());
       if (emailList.length > 10) {
-        setErrorMessage("You can enter up to 10 email addresses.");
+        setErrorMessage("You can enter up to 10 email addresses only.");
       } else {
         setErrorMessage("");
         const payload = {
@@ -115,7 +115,7 @@ const InviteMember = ({ handleClose }) => {
           fontWeight={"400"}
           lineHeight={"20px"}
         >
-          User must be already have account not be organization admin.
+          User must already have an account not be an organization admin.
         </Typography>
       </DialogContent>
       {errorMessage && (

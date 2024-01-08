@@ -32,7 +32,7 @@ const RecoveryEmail = () => {
         redirectTo: "https://cynthia-dev.vercel.app/recoveryPassword",
       });
       if(!error){
-        successNotification("recovery password mail sent successfully")
+        successNotification("Password recovery mail sent successfully.")
       }else{
         errorNotification("something_went_wrong");
       }

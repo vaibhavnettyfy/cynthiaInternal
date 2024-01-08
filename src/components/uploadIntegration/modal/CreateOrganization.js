@@ -81,7 +81,7 @@ const CreateOrganization = ({ handleClose }) => {
           )}
           <Stack flexDirection={"row"} gap={"10px"}>
             <CommonButton
-              buttonName="save"
+              buttonName="Confirm"
               loading={loading}
               loader={true}
               disabled={loading}

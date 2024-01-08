@@ -50,7 +50,7 @@ const LogIn = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isActive, setIsActive] = useState("Not Defiend");
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
 
   // to fetch data from cookie while login screen
   useEffect(() => {
@@ -292,7 +292,7 @@ const LogIn = () => {
                   buttonName="Login with Google"
                   buttonColor="white"
                   icon={Google}
-                  // onClick={loginWithGoogle}
+                  onClick={() => alert('Logging in with Google is currently unavailable!')} //{loginWithGoogle}
                   style={{ width: "fit-content", padding: "10px 40px" }}
                 />
               </Stack>

@@ -56,7 +56,7 @@ const Usage = () => {
 
   var status = getInvoiceStatus(true);
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
 
   const [switchState, setSwitchState] = useState(false);
   //  usageDetails

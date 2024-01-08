@@ -41,7 +41,7 @@ const selectAppList = [
 
 const AskCynthia = () => {
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
   const textareaRef = useRef(null);
   const [info, setInfo] = useState(null);
   const [ShowResult, setShowResult] = useState(false);

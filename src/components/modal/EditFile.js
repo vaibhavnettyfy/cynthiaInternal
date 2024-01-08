@@ -35,7 +35,7 @@ const EditFile = ({ handleClose, modalOpen }) => {
       if (error) {
         errorNotification(error.message);
       } else {
-        successNotification("Record update successfully");
+        successNotification("Filename updated successfully");
         handleClose();
       }
     } catch (err) {

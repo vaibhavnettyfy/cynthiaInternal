@@ -21,7 +21,7 @@ import * as amplitude from '@amplitude/analytics-browser';
 
 const TrendsReport = () => {
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [reportData,setReportData] = React.useState([]);
 

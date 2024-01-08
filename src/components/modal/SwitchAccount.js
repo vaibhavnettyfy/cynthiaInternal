@@ -77,7 +77,7 @@ const SwitchAccount = ({ handleClose }) => {
         }
       } else {
         errorNotification(
-          "before swicth to individual you have to remove member"
+          "Before switching to individual you have to remove all members from your organization."
         );
       }
     } else {
@@ -126,8 +126,8 @@ const SwitchAccount = ({ handleClose }) => {
             marginBottom={2}
           >
             {userRole === "org_admin"
-              ? "Your account type will switch to individual and your organization will be deleted. please ensure you have no members. you will have to relogin for changes to take effect."
-              : "Your account type will switch to individual and you will have to relogin"}
+              ? "Your account type will switch to individual and your organization will be deleted. Please ensure you have no members in your organization. You will have to relogin for changes to take effect."
+              : "Your account type will switch to individual and you will have to relogin for changes to take effect."}
           </Typography>
           <Stack flexDirection={"row"} gap={"10px"}>
             <CommonButton

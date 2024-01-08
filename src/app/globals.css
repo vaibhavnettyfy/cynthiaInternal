@@ -9,9 +9,11 @@
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif !important;
 }
+
 .Montserrat {
   font-family: 'Montserrat', sans-serif !important;
 }
+
 .Raleway {
   font-family: 'Raleway', sans-serif !important;
 }
@@ -94,7 +96,7 @@ a:hover {
 }
 
 .MuiTabs-indicator {
-  left: 0 !important;
+  /* left: 0 !important; */
   right: unset !important;
 }
 
@@ -110,7 +112,7 @@ a:hover {
 }
 
 .MuiLinearProgress-bar {
-background-color: #7a52f4 !important;
+  background-color: #7a52f4 !important;
 }
 
 .inputbox .input_upload_file {
@@ -183,8 +185,8 @@ background-color: #7a52f4 !important;
   border: 1.5px solid #fff !important;
 }
 
-.select_csv .MuiList-root{
- max-height: 220px !important;
+.select_csv .MuiList-root {
+  max-height: 220px !important;
 }
 
 /* :root {
@@ -229,7 +231,36 @@ background-color: #7a52f4 !important;
   position: absolute;
   bottom: -20px;
 } */
-        
+
 html {
   scroll-behavior: smooth;
+}
+
+.pricing_area .MuiTabs-root {
+  background: #1a1a1a0d;
+  border: 1px solid #1a1a1a1a;
+  border-radius: 10px;
+}
+
+.pricing_area .MuiTabs-flexContainer {
+  padding: 0 3px;
+}
+
+.pricing_area .MuiTabs-indicator {
+  background: #7a52f4;
+  height: 88%;
+  z-index: 10;
+  bottom: 3px;
+  /* right: 3px !important; */
+  /* left: 3px !important; */
+  border-radius: 7px;
+}
+
+.pricing_area .Mui-selected {
+  z-index: 9999;
+  color: #fff;
+}
+
+.pricing_card button {
+  box-shadow: unset !important;
 }

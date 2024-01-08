@@ -138,11 +138,25 @@ const UploadIntegration = () => {
 
   const subscriptionsDataHandler = async () => {
     try {
+      let adminId = userId;
+      if (userRole === 'member') {
+        const { data, error } = await supabase
+          .from("organizations")
+          .select("admin_id")
+          .eq("id", orgId);
+        if (error) {
+          // Handle error
+        } else {
+          adminId = data[0]?.admin_id;
+        }
+      }
+
       const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", adminId);
       if (error) {
+        // Handle error
       } else {
         // setProductId(data[0]?.product_id);
         productDataHandler(data[0]?.product_id);
@@ -174,7 +188,7 @@ const UploadIntegration = () => {
             baseReview ?? 0
           } credits. You have used ${queryUsage ?? 0} of ${
             baseQueries ?? 0
-          } free queries`}
+          } free queries. `}
           {usageBased ? (
             "Usage-based pricing is enabled. You will be charged additionally for extra usage based on your plan. You may disable it in the usage settings."
           ) : (

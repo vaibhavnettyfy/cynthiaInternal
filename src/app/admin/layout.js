@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
                 >
                     <Box
                         component="main"
-                        sx={{ flexGrow: 1, width: { xs: `calc(100%)` } }}
+                        sx={{ flexGrow: 1, width: { xs: `calc(100%)` },height:'100%' }}
                     >
                         {children}
                     </Box>

@@ -36,7 +36,7 @@ const Disconnect = ({ handleClose, modalOpen }) => {
   return (
     <div>
       <DialogTitle sx={{ m: 0, p: 2 }} id="Common_modal">
-        Disconnect
+        Are You Sure?
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -51,7 +51,7 @@ const Disconnect = ({ handleClose, modalOpen }) => {
         <CloseIcon />
       </IconButton>
       <DialogContent dividers>
-        <Typography>Are you sure?</Typography>
+        <Typography>Disconnecting</Typography>
         <Typography
           fontSize={"16px"}
           fontWeight={"500"}

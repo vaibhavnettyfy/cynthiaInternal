@@ -84,7 +84,7 @@ const PersonalInformation = () => {
         error?.message || authError.message || "Error updating user details"
       );
     } else {
-      successNotification("User details updated successfully:");
+      successNotification("Details updated successfully.");
     }
   };
 

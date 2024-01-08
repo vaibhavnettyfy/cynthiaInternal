@@ -5,6 +5,7 @@ import Image from "next/image";
 import * as Yup from "yup";
 import React from "react";
 import "./style.css";
+import { useState } from "react";
 import CommonInput from "../common/Input";
 import CommonButton from "../common/Button";
 import Link from "next/link";
@@ -49,8 +50,11 @@ const accountType = [
 const SignUp = () => {
   const classes = useStyles();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async () => {
+    setLoading(true);
     const payload = {
       "first_name" : formik.values.firstName,
       "last_name" : formik.values.lastName,
@@ -61,9 +65,11 @@ const SignUp = () => {
     }
     const {data,message,success} = await userRegister(payload);
     if(success){
-      successNotification("User Signed up successfully");
+      setLoading(false);
+      successNotification("You're Signed up successfully. Please Confirm your email.");
       router.push(`/login`);
     }else{
+      setLoading(false);
       errorNotification(message);
     }
   };
@@ -189,6 +195,9 @@ const SignUp = () => {
               <Stack padding={"16px 0"}>
                 <CommonButton
                   buttonName="Sign Up"
+                  loading={loading}
+                  loader={true}
+                  disabled={loading}
                   onClick = {()=>formik.handleSubmit()}
                 />
               </Stack>
@@ -204,6 +213,7 @@ const SignUp = () => {
                   buttonColor="white"
                   icon={Google}
                   style={{ width: "fit-content", padding: "10px 40px" }}
+                  onClick={() => alert('Sign up with Google is currently unavailable')}
                 />
               </Stack>
               <Stack padding={"10px 0"}>

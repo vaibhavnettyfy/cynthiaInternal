@@ -24,7 +24,7 @@ import * as amplitude from '@amplitude/analytics-browser';
 
 const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
   const amplitudekey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY
-  amplitude.init(amplitudekey);
+  amplitude.init(amplitudekey, {defaultTracking: true});
   const [appId, setAppId] = useState("");
   const [country, setCountry] = useState("");
   const [countryList, setCountryList] = useState([]);
@@ -82,7 +82,7 @@ const PlayStoreConnect = ({ handleClose, handleClickBack1 ,modalOpen}) => {
         errorNotification(error.message);
       }else{
         EventEmitter.dispatch('appIntegrations',true);
-        successNotification("update Sucessfull");
+        successNotification("You will be notified when your insights are ready.");
         handleClose();
       }
     }

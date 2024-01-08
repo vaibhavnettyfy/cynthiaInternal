@@ -355,7 +355,7 @@ function AskCynthiaDetails({
                   lineHeight={"35px"}
                   marginBottom={1}
                 >
-                  {jsonData.main_topic}
+                  "{jsonData.main_topic}"
                 </Typography>
               ) : (
                 <Skeleton animation="wave" width={"50%"} height={40} />

@@ -81,7 +81,7 @@ export const checkFeatures = async (name) => {
   }
 };
 
-
+export const letTalkUrl = "https://cynthia-ai.andromeda-intelligence.com/f/addb6a60-46fd-4fb2-ae33-d2cf062f5fe9"
 export const managePlanHandler = async () =>{
   try {
     const { data, message, success } = await upgradePlanHandler();

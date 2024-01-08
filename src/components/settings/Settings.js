@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Tabs, Tab, Paper, Typography, Box,CircularProgress } from "@mui/material";
+import { Tabs, Tab, Paper, Typography, Box, CircularProgress } from "@mui/material";
 import PersonalInformation from "./sections/PersonalInformation";
 import Password from "./sections/Password";
 import Plan from "./sections/Plan";
@@ -12,16 +12,19 @@ import WithAuth from "../WithAuth";
 import { supabase } from "@/Client";
 import { upgradePlanHandler } from "@/service/plan.service";
 import { managePlanHandler } from "@/helper";
+import Pricing from "./sections/Pricing";
+import { useRouter } from "next/navigation";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [loading, setLoading] = useState(false);
   const allowRoleUsage = ["individual", "org_admin"];
   const memberRoleUsage = ["org_admin"];
+  const router = useRouter()
 
   let userRole = "";
   if (typeof window !== "undefined") {
-    userRole = localStorage.getItem("userRole")||"";
+    userRole = localStorage.getItem("userRole") || "";
   }
 
   const handleChange = async (event, newValue) => {
@@ -54,13 +57,15 @@ const Settings = () => {
         return <TermsService />;
       case 6:
         return <PrivacyPolicy />;
+      case 7:
+        return <Pricing />;
       default:
         return null; // Return null if the selectedTab doesn't match any case.
     }
   };
 
-  const handleClick = () =>{
-    if(!loading){
+  const handleClick = () => {
+    if (!loading) {
       managePlanHandler()
       setLoading(true)
     }
@@ -85,7 +90,7 @@ const Settings = () => {
           <Tab label="Password" />
           {allowRoleUsage.includes(userRole && userRole) && (
             <Box
-            // [managePlanHandler(),setLoading(true)]
+              // [managePlanHandler(),setLoading(true)]
               onClick={() => handleClick()}
               sx={{
                 fontSize: "0.875rem",
@@ -94,13 +99,13 @@ const Settings = () => {
                 width: "100%",
                 display: "flex",
                 alignItems: "center",
-                color: loading ? 'rgba(0, 0, 0, 0.3)':"rgba(0, 0, 0, 0.6)",
+                color: loading ? 'rgba(0, 0, 0, 0.3)' : "rgba(0, 0, 0, 0.6)",
                 fontWeight: "500",
                 cursor: "pointer",
               }}
               disabled={loading}
             >
-              Manage Your Plan &nbsp;&nbsp; { loading && <CircularProgress size="1.5rem"/>}
+              Manage Your Plan &nbsp;&nbsp; {loading && <CircularProgress size="1.5rem" />}
             </Box>
           )}
           {allowRoleUsage.includes(userRole && userRole) && (
@@ -111,6 +116,22 @@ const Settings = () => {
           )}
           <Tab label="Terms of Service" value={5} />
           <Tab label="Privacy Policy" value={6} />
+          <Box
+            onClick={() => router.push('/admin/pricing')}
+            sx={{
+              fontSize: "0.875rem",
+              padding: "10px 25px !important",
+              minHeight: "48px",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              color: "rgba(0, 0, 0, 0.6)",
+              fontWeight: "500",
+              cursor: "pointer",
+            }}
+          >
+            Pricing
+          </Box>
         </Tabs>
       </Paper>
       <Box

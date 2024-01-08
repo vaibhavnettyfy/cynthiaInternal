@@ -39,6 +39,9 @@ export const theme = createTheme({
       head: '#333333',
       para: '#7f7f7f',
     },
+    light:{
+      main: '#eeeeee',
+    }
   },
   components: {
     // input ------------

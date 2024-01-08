@@ -93,7 +93,7 @@ const ColumnAnalyse = ({ handleClickStep3, handleClickBack2, columnArray,selectC
         </Typography>
         <Typography fontSize={"13px"} color={"#5d5d5b"} lineHeight={"18px"}>
           We will analyse and generate actionable insights for the selected
-          column, Feedbacks.
+          column.
         </Typography>
         <Box margin={"30px 0"}>
           {/* <CommonSelect selectHead="select" selectList={columData} /> */}

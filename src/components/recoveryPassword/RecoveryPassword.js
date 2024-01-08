@@ -78,7 +78,7 @@ const RecoveryPassword = () => {
       if (error) {
         errorNotification(error.message || "Error changing password");
       } else {
-        successNotification("User password updated successfully");
+        successNotification("Password updated successfully");
         router.push(`/`)
       }
 

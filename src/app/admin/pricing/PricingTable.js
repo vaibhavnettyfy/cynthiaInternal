@@ -4,13 +4,35 @@ import React, { useEffect, useState } from "react";
 
 const PricingTable = () => {
   const [userEmailId,setUserEmailId] = useState("");
+  const [prices, setPrices] = useState(null);
   let userEmail = ""
+  
   useEffect(()=>{
     if (typeof window !== 'undefined') {
       userEmail = localStorage.getItem("userEmail");
       setUserEmailId(userEmail);
     }
+    
+    const fetchPrices = async (PlanInterval) => {
+      const stripe = await loadStripe(process.env.NEXT_APP_STRIPE_SECRET_KEY);
+      const prices = await stripe.prices.list({ 
+        expand: ['data.product'], 
+        recurring: { interval: PlanInterval }, 
+        lookup_keys: [
+          'starter',
+          'starter_annual',
+          'growth',
+          'growth_annual',
+          'enterprise',
+          'enterprise_annual', 
+        ]
+      });
+      setPrices(prices);
+    };
+    
+    fetchPrices();
   },[]);
+  
   return (
     <Box
       height={"100vh"}

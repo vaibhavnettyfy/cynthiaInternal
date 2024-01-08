@@ -124,6 +124,9 @@ const LooksGood = ({
         >
           Your file contains {selectedColumnData.length} reviews. This will use{" "}
           {selectedColumnData.length} credits.
+
+          Please note reviews greater than 80 words will be split at preprocessing stage. This 
+          will use additional credits.
         </Typography>
         <Typography
           fontSize={"18px"}
@@ -131,7 +134,7 @@ const LooksGood = ({
           fontWeight={"700"}
           lineHeight={"28px"}
         >
-          Feedbacks
+          {selectedColumn}
         </Typography>
         {!dataNotFound && (
           <Box height={"200px"} sx={{ overflowY: "auto" }}>
