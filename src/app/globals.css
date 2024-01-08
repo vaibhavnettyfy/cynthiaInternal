@@ -258,7 +258,7 @@ html {
 
 .pricing_area .Mui-selected {
   z-index: 9999;
-  color: #fff;
+  color: #fff !important;
 }
 
 .pricing_card button {
